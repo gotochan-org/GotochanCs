@@ -1,11 +1,11 @@
-namespace Gotochan;
+namespace GotochanCs;
 
 public abstract record Expression {
     public required int Line { get; init; }
 }
 
 public record ConstantExpression : Expression {
-    public required object? Value { get; init; }
+    public required Thingie Value { get; init; }
 }
 
 public record GetVariableExpression : Expression {

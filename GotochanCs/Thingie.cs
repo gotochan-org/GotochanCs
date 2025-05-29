@@ -29,11 +29,27 @@ public readonly struct Thingie {
     public static explicit operator bool(Thingie Thingie) => Thingie.CastFlag();
     public static explicit operator double(Thingie Thingie) => Thingie.CastNumber();
     public static explicit operator string?(Thingie Thingie) => Thingie.Type is ThingieType.Nothing ? null : Thingie.CastString();
+
+    public object? AsObject => Type switch {
+        ThingieType.Nothing => CastNothing(),
+        ThingieType.Flag => CastFlag(),
+        ThingieType.Number => CastNumber(),
+        ThingieType.String => CastString(),
+        _ => throw new NotImplementedException($"type not handled: '{Type}'")
+    };
+
+    public override string ToString() => Type switch {
+        ThingieType.Nothing => "nothing",
+        ThingieType.Flag => CastFlag() ? "yes" : "no",
+        ThingieType.Number => CastNumber().ToString(),
+        ThingieType.String => CastString(),
+        _ => throw new NotImplementedException($"type not handled: '{Type}'")
+    };
 }
 
 public enum ThingieType {
-    Nothing,
-    Flag,
-    Number,
-    String,
+    Nothing = 0,
+    Flag = 1,
+    Number = 2,
+    String = 3,
 }

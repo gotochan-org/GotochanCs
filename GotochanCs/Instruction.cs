@@ -1,4 +1,4 @@
-namespace Gotochan;
+namespace GotochanCs;
 
 public abstract record Instruction {
     public required int Line { get; init; }

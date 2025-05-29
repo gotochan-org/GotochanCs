@@ -2,7 +2,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using ResultZero;
 
-namespace Gotochan;
+namespace GotochanCs;
 
 public static class Parser {
     private static ReadOnlySpan<char> NewlineChars => ['\n', '\r', '\u2028', '\u2029'];
@@ -179,38 +179,38 @@ public static class Parser {
         if (Words.Length == 1) {
             string Word1 = Words[0];
 
-            // Null
-            if (Word1 is "null") {
+            // Nothing
+            if (Word1 is "nothing") {
                 return new ConstantExpression() {
                     Line = Line,
-                    Value = null,
+                    Value = Thingie.Nothing(),
                 };
             }
-            // Bool
+            // Flag
             else if (Word1 is "yes") {
                 return new ConstantExpression() {
                     Line = Line,
-                    Value = true,
+                    Value = Thingie.Flag(true),
                 };
             }
             else if (Word1 is "no") {
                 return new ConstantExpression() {
                     Line = Line,
-                    Value = false,
+                    Value = Thingie.Flag(false),
                 };
             }
             // String
             else if (Word1.StartsWith('~')) {
                 return new ConstantExpression() {
                     Line = Line,
-                    Value = EscapeString(Word1[1..].Replace('~', ' ')),
+                    Value = Thingie.String(EscapeString(Word1[1..].Replace('~', ' '))),
                 };
             }
             // Double
             else if (double.TryParse(Word1, out double Double)) {
                 return new ConstantExpression() {
                     Line = Line,
-                    Value = Double,
+                    Value = Thingie.Number(Double),
                 };
             }
             // Get Variable

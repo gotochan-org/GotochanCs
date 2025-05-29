@@ -1,4 +1,4 @@
-namespace Gotochan.Tests;
+namespace GotochanCs.Tests;
 
 public class Tests {
     [Fact]
