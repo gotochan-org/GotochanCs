@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="Gotochan.Tests/Gotochan.Tests.csproj" Id="322e8909-8a2b-4bd5-b313-f5c789b7de0a" />
+  <Project Path="Gotochan/Gotochan.csproj" />
+</Solution>
