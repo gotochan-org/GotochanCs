@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Gotochan\Gotochan.csproj" />
+    <ProjectReference Include="../GotochanCs/GotochanCs.csproj" />
   </ItemGroup>
 
   <ItemGroup>
