@@ -10,28 +10,28 @@ public static class Parser {
     public static Result<List<Instruction>> Parse(TextReader Source) {
         List<Instruction> Instructions = [];
 
-        List<string> CurrentWords = [];
-        StringBuilder CurrentWord = new();
+        List<string> CurrentTokens = [];
+        StringBuilder CurrentToken = new();
         int CurrentLine = 0;
 
-        bool TrySubmitWord() {
-            if (CurrentWord.Length <= 0) {
+        bool TrySubmitToken() {
+            if (CurrentToken.Length <= 0) {
                 return false;
             }
-            CurrentWords.Add(CurrentWord.ToString());
-            CurrentWord.Clear();
+            CurrentTokens.Add(CurrentToken.ToString());
+            CurrentToken.Clear();
             return true;
         }
-        Result TrySubmitWords() {
-            TrySubmitWord();
-            if (CurrentWords.Count <= 0) {
+        Result TrySubmitTokens() {
+            TrySubmitToken();
+            if (CurrentTokens.Count <= 0) {
                 return Result.Success;
             }
-            if (ParseInstruction(CurrentLine, CollectionsMarshal.AsSpan(CurrentWords)).TryGetError(out Error ParseInstructionError, out Instruction? Instruction)) {
+            if (ParseInstruction(CurrentLine, CollectionsMarshal.AsSpan(CurrentTokens)).TryGetError(out Error ParseInstructionError, out Instruction? Instruction)) {
                 return ParseInstructionError;
             }
             Instructions.Add(Instruction);
-            CurrentWords.Clear();
+            CurrentTokens.Clear();
             return Result.Success;
         }
 
@@ -45,7 +45,7 @@ public static class Parser {
             // Escape
             if (Next is '\\') {
                 // Ensure escape is not within string
-                if (CurrentWord.Length >= 1 && CurrentWord[0] is '~') {
+                if (CurrentToken.Length >= 1 && CurrentToken[0] is '~') {
                     continue;
                 }
 
@@ -65,25 +65,25 @@ public static class Parser {
             }
             // End of instruction
             else if (Next is ';' || NewlineChars.Contains(Next)) {
-                // Try submit words
-                if (TrySubmitWords().TryGetError(out Error SubmitWordsError)) {
-                    return SubmitWordsError;
+                // Try submit tokens
+                if (TrySubmitTokens().TryGetError(out Error SubmitTokensError)) {
+                    return SubmitTokensError;
                 }
             }
-            // End of word
+            // End of token
             else if (char.IsWhiteSpace(Next)) {
-                // Try submit word
-                TrySubmitWord();
+                // Try submit token
+                TrySubmitToken();
             }
-            // Part of word
+            // Part of token
             else {
-                CurrentWord.Append(Next);
+                CurrentToken.Append(Next);
             }
         }
 
-        // Try submit last words
-        if (TrySubmitWords().TryGetError(out Error SubmitLastWordsError)) {
-            return SubmitLastWordsError;
+        // Try submit last tokens
+        if (TrySubmitTokens().TryGetError(out Error SubmitLastTokensError)) {
+            return SubmitLastTokensError;
         }
 
         return Instructions;
@@ -91,23 +91,23 @@ public static class Parser {
     public static Result<List<Instruction>> Parse(string Source) {
         return Parse(new StringReader(Source));
     }
-    public static Result<Instruction> ParseInstruction(int Line, scoped ReadOnlySpan<string> Words) {
-        if (Words.Length is 2) {
-            string Word1 = Words[0];
-            string Word2 = Words[1];
+    public static Result<Instruction> ParseInstruction(int Line, scoped ReadOnlySpan<string> Tokens) {
+        if (Tokens.Length is 2) {
+            string Token1 = Tokens[0];
+            string Token2 = Tokens[1];
 
             // Goto
-            if (Word1 is "goto") {
+            if (Token1 is "goto") {
                 // Goto line
-                if (Word2[0] is '-' or '+' or (>= '0' and <= '9')) {
+                if (Token2[0] is '-' or '+' or (>= '0' and <= '9')) {
                     // Parse line number
-                    int TargetLine = int.Parse(Word2[1..], System.Globalization.NumberStyles.AllowThousands | System.Globalization.NumberStyles.AllowExponent);
+                    int TargetLine = int.Parse(Token2[1..], System.Globalization.NumberStyles.AllowThousands | System.Globalization.NumberStyles.AllowExponent);
 
                     // Apply offset from current line
-                    if (Word2[0] is '-') {
+                    if (Token2[0] is '-') {
                         TargetLine = Line - TargetLine;
                     }
-                    else if (Word2[1] is '+') {
+                    else if (Token2[1] is '+') {
                         TargetLine = Line + TargetLine;
                     }
 
@@ -122,35 +122,35 @@ public static class Parser {
                     // Create instruction
                     return new GotoLabelInstruction() {
                         Line = Line,
-                        TargetLabel = Word2,
+                        TargetLabel = Token2,
                     };
                 }
             }
             // Label
-            else if (Word1 is "label") {
+            else if (Token1 is "label") {
                 // Create instruction
                 return new LabelInstruction() {
                     Line = Line,
-                    Name = Word2,
+                    Name = Token2,
                 };
             }
         }
-        else if (Words.Length >= 3) {
-            string Word1 = Words[0];
-            string Word2 = Words[1];
-            string Word3 = Words[2];
+        else if (Tokens.Length >= 3) {
+            string Token1 = Tokens[0];
+            string Token2 = Tokens[1];
+            string Token3 = Tokens[2];
 
             // Goto goto
-            if (Word1 is "goto" && Word2 is "goto") {
+            if (Token1 is "goto" && Token2 is "goto") {
                 // Create instruction
                 return new GotoGotoLabelInstruction() {
                     Line = Line,
-                    TargetLabel = Word3,
+                    TargetLabel = Token3,
                 };
             }
             // Set variable
             else {
-                Result<BinaryOperator?> SetOperator = Word2 switch {
+                Result<BinaryOperator?> SetOperator = Token2 switch {
                     "=" => (BinaryOperator?)null,
                     "+=" => BinaryOperator.Add,
                     "-=" => BinaryOperator.Subtract,
@@ -164,13 +164,13 @@ public static class Parser {
                     return SetOperator.Error;
                 }
                 // Parse expression
-                if (ParseExpression(Line, Words[2..]).TryGetError(out Error ParseExpressionError, out Expression? Expression)) {
+                if (ParseExpression(Line, Tokens[2..]).TryGetError(out Error ParseExpressionError, out Expression? Expression)) {
                     return ParseExpressionError;
                 }
                 // Create instruction
                 return new SetVariableInstruction() {
                     Line = Line,
-                    TargetVariable = Word1,
+                    TargetVariable = Token1,
                     Expression = Expression,
                 };
             }
@@ -178,39 +178,39 @@ public static class Parser {
         // Invalid
         return new Error($"{Line}: invalid instruction");
     }
-    public static Result<Expression> ParseExpression(int Line, scoped ReadOnlySpan<string> Words) {
-        if (Words.Length == 1) {
-            string Word1 = Words[0];
+    public static Result<Expression> ParseExpression(int Line, scoped ReadOnlySpan<string> Tokens) {
+        if (Tokens.Length == 1) {
+            string Token1 = Tokens[0];
 
             // Nothing
-            if (Word1 is "nothing") {
+            if (Token1 is "nothing") {
                 return new ConstantExpression() {
                     Line = Line,
                     Value = Thingie.Nothing(),
                 };
             }
             // Flag
-            else if (Word1 is "yes") {
+            else if (Token1 is "yes") {
                 return new ConstantExpression() {
                     Line = Line,
                     Value = Thingie.Flag(true),
                 };
             }
-            else if (Word1 is "no") {
+            else if (Token1 is "no") {
                 return new ConstantExpression() {
                     Line = Line,
                     Value = Thingie.Flag(false),
                 };
             }
             // String
-            else if (Word1.StartsWith('~')) {
+            else if (Token1.StartsWith('~')) {
                 return new ConstantExpression() {
                     Line = Line,
-                    Value = Thingie.String(EscapeString(Word1[1..].Replace('~', ' '))),
+                    Value = Thingie.String(EscapeString(Token1[1..].Replace('~', ' '))),
                 };
             }
             // Double
-            else if (double.TryParse(Word1, out double Double)) {
+            else if (double.TryParse(Token1, out double Double)) {
                 return new ConstantExpression() {
                     Line = Line,
                     Value = Thingie.Number(Double),
@@ -220,7 +220,7 @@ public static class Parser {
             else {
                 return new GetVariableExpression() {
                     Line = Line,
-                    TargetVariable = Word1,
+                    TargetVariable = Token1,
                 };
             }
         }
