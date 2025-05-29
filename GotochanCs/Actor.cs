@@ -35,6 +35,10 @@ public class Actor {
             if (Expression is ConstantExpression ConstantExpression) {
                 return ConstantExpression.Value;
             }
+            // Get variable
+            else if (Expression is GetVariableExpression GetVariableExpression) {
+                return Variables.GetValueOrDefault(GetVariableExpression.TargetVariable);
+            }
             // Unary
             else if (Expression is UnaryExpression UnaryExpression) {
                 // Evaluate expression
