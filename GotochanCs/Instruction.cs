@@ -21,6 +21,6 @@ public record GotoLabelInstruction : Instruction {
     public required string TargetLabel { get; init; }
 }
 
-public record BacktoInstruction : Instruction {
+public record GotoGotoLabelInstruction : Instruction {
     public required string TargetLabel { get; init; }
 }

@@ -134,43 +134,46 @@ public static class Parser {
                     Name = Word2,
                 };
             }
-            // Backto
-            else if (Word1 is "backto") {
-                // Create instruction
-                return new BacktoInstruction() {
-                    Line = Line,
-                    TargetLabel = Word2,
-                };
-            }
         }
         else if (Words.Length >= 3) {
             string Word1 = Words[0];
             string Word2 = Words[1];
+            string Word3 = Words[2];
 
+            // Goto goto
+            if (Word1 is "goto" && Word2 is "goto") {
+                // Create instruction
+                return new GotoGotoLabelInstruction() {
+                    Line = Line,
+                    TargetLabel = Word3,
+                };
+            }
             // Set variable
-            Result<BinaryOperator?> SetOperator = Word2 switch {
-                "=" => (BinaryOperator?)null,
-                "+=" => BinaryOperator.Add,
-                "-=" => BinaryOperator.Subtract,
-                "*=" => BinaryOperator.Multiply,
-                "/=" => BinaryOperator.Divide,
-                "%=" => BinaryOperator.Modulo,
-                "^=" => BinaryOperator.Exponentiate,
-                _ => new Error($"{Line}: invalid operator")
-            };
-            if (SetOperator.IsError) {
-                return SetOperator.Error;
+            else {
+                Result<BinaryOperator?> SetOperator = Word2 switch {
+                    "=" => (BinaryOperator?)null,
+                    "+=" => BinaryOperator.Add,
+                    "-=" => BinaryOperator.Subtract,
+                    "*=" => BinaryOperator.Multiply,
+                    "/=" => BinaryOperator.Divide,
+                    "%=" => BinaryOperator.Modulo,
+                    "^=" => BinaryOperator.Exponentiate,
+                    _ => new Error($"{Line}: invalid operator")
+                };
+                if (SetOperator.IsError) {
+                    return SetOperator.Error;
+                }
+                // Parse expression
+                if (ParseExpression(Line, Words[2..]).TryGetError(out Error ParseExpressionError, out Expression? Expression)) {
+                    return ParseExpressionError;
+                }
+                // Create instruction
+                return new SetVariableInstruction() {
+                    Line = Line,
+                    TargetVariable = Word1,
+                    Expression = Expression,
+                };
             }
-            // Parse expression
-            if (ParseExpression(Line, Words[2..]).TryGetError(out Error ParseExpressionError, out Expression? Expression)) {
-                return ParseExpressionError;
-            }
-            // Create instruction
-            return new SetVariableInstruction() {
-                Line = Line,
-                TargetVariable = Word1,
-                Expression = Expression,
-            };
         }
         // Invalid
         return new Error($"{Line}: invalid instruction");
