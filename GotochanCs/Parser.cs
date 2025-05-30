@@ -1,5 +1,5 @@
-using System.Runtime.InteropServices;
 using System.Text;
+using System.Runtime.InteropServices;
 using ResultZero;
 
 namespace GotochanCs;
@@ -187,7 +187,7 @@ public static class Parser {
                     "/=" => BinaryOperator.Divide,
                     "%=" => BinaryOperator.Modulo,
                     "^=" => BinaryOperator.Exponentiate,
-                    _ => new Error($"{Line}: invalid operator")
+                    _ => new Error($"{Line}: invalid set operator")
                 };
                 if (CompoundOperator.IsError) {
                     return CompoundOperator.Error;
@@ -264,6 +264,73 @@ public static class Parser {
                     TargetVariable = Token1,
                 };
             }
+        }
+        else if (Tokens.Length == 2) {
+            string Token1 = Tokens[0];
+            string Token2 = Tokens[1];
+
+            // Parse expression
+            if (ParseExpression(Line, [Token2]).TryGetError(out Error ParseExpressionError, out Expression? Expression)) {
+                return ParseExpressionError;
+            }
+
+            // Get unary operator
+            Result<UnaryOperator> Operator = Token1 switch {
+                "+" => UnaryOperator.Plus,
+                "-" => UnaryOperator.Minus,
+                _ => new Error($"invalid unary operator: '{Token1}'")
+            };
+            if (Operator.IsError) {
+                return Operator.Error;
+            }
+
+            // Unary
+            return new UnaryExpression() {
+                Line = Line,
+                Operator = Operator.Value,
+                Expression = Expression,
+            };
+        }
+        else if (Tokens.Length == 3) {
+            string Token1 = Tokens[0];
+            string Token2 = Tokens[1];
+            string Token3 = Tokens[2];
+
+            // Parse expressions
+            if (ParseExpression(Line, [Token1]).TryGetError(out Error ParseExpression1Error, out Expression? Expression1)) {
+                return ParseExpression1Error;
+            }
+            if (ParseExpression(Line, [Token3]).TryGetError(out Error ParseExpression2Error, out Expression? Expression2)) {
+                return ParseExpression2Error;
+            }
+
+            // Get binary operator
+            Result<BinaryOperator> Operator = Token2 switch {
+                "+" => BinaryOperator.Add,
+                "-" => BinaryOperator.Subtract,
+                "*" => BinaryOperator.Multiply,
+                "/" => BinaryOperator.Divide,
+                "%" => BinaryOperator.Modulo,
+                "^" => BinaryOperator.Exponentiate,
+                "==" => BinaryOperator.Equals,
+                "!=" => BinaryOperator.NotEquals,
+                ">" => BinaryOperator.GreaterThan,
+                "<" => BinaryOperator.LessThan,
+                ">=" => BinaryOperator.GreaterThanOrEqualTo,
+                "<=" => BinaryOperator.LessThanOrEqualTo,
+                _ => new Error($"invalid binary operator: '{Token2}'")
+            };
+            if (Operator.IsError) {
+                return Operator.Error;
+            }
+
+            // Binary
+            return new BinaryExpression() {
+                Line = Line,
+                Operator = Operator.Value,
+                Expression1 = Expression1,
+                Expression2 = Expression2,
+            };
         }
         // Invalid
         return new Error($"{Line}: invalid expression");
