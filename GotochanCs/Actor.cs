@@ -43,24 +43,30 @@ public class Actor {
                     }
 
                     // Goto line
-                    if (GotoInstruction is GotoLineInstruction GotoLineInstruction) {
-                        // Get index of first instruction on line
+                    if (GotoInstruction is GotoIndexInstruction GotoIndexInstruction) {
+                        // Go to index
+                        Index = GotoIndexInstruction.TargetIndex;
+                        Index--;
+                    }
+                    // Goto line
+                    else if (GotoInstruction is GotoLineInstruction GotoLineInstruction) {
+                        /*// Get index of first instruction on line
                         if (!Script.LineIndexes.TryGetValue(GotoLineInstruction.TargetLine, out int TargetIndex)) {
                             return new Error($"{Instruction.Line}: invalid line");
                         }
                         // Go to index
                         Index = TargetIndex;
-                        Index--;
+                        Index--;*/
                     }
                     // Goto label
                     else if (GotoInstruction is GotoLabelInstruction GotoLabelInstruction) {
-                        // Get index of label
+                        /*// Get index of label
                         if (!Script.LabelIndexes.TryGetValue(GotoLabelInstruction.TargetLabel, out int TargetIndex)) {
                             return new Error($"{Instruction.Line}: invalid label");
                         }
                         // Go to index
                         Index = TargetIndex;
-                        Index--;
+                        Index--;*/
                     }
                     // Goto goto
                     else if (GotoInstruction is GotoGotoLabelInstruction GotoGotoLabelInstruction) {

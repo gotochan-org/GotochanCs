@@ -111,6 +111,38 @@ public static class Parser {
             return SubmitLastTokensError;
         }
 
+        // Convert goto line/label to goto index
+        for (int Index = 0; Index < Instructions.Count; Index++) {
+            Instruction Instruction = Instructions[Index];
+
+            // Goto line
+            if (Instruction is GotoLineInstruction GotoLineInstruction) {
+                // Get index of first instruction on line
+                if (!LineIndexes.TryGetValue(GotoLineInstruction.TargetLine, out int TargetIndex)) {
+                    return new Error($"{Instruction.Line}: invalid label");
+                }
+                // Replace with goto index
+                Instructions[Index] = new GotoIndexInstruction() {
+                    Line = GotoLineInstruction.Line,
+                    TargetIndex = TargetIndex,
+                    Condition = GotoLineInstruction.Condition,
+                };
+            }
+            // Goto label
+            else if (Instruction is GotoLabelInstruction GotoLabelInstruction) {
+                // Get index of label
+                if (!LabelIndexes.TryGetValue(GotoLabelInstruction.TargetLabel, out int TargetIndex)) {
+                    return new Error($"{Instruction.Line}: invalid label");
+                }
+                // Replace with goto index
+                Instructions[Index] = new GotoIndexInstruction() {
+                    Line = GotoLabelInstruction.Line,
+                    TargetIndex = TargetIndex,
+                    Condition = GotoLabelInstruction.Condition,
+                };
+            }
+        }
+
         // Create script from results
         return new Script() {
             Source = Source,

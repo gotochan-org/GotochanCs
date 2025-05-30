@@ -17,6 +17,10 @@ public abstract record GotoInstruction : Instruction {
     public required Expression Condition { get; init; }
 }
 
+public record GotoIndexInstruction : GotoInstruction {
+    public required int TargetIndex { get; init; }
+}
+
 public record GotoLineInstruction : GotoInstruction {
     public required int TargetLine { get; init; }
 }
