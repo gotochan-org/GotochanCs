@@ -54,7 +54,13 @@ public class Actor {
                     }
                     // Goto label
                     else if (GotoInstruction is GotoLabelInstruction GotoLabelInstruction) {
-                        throw new NotImplementedException();
+                        // Get index of label
+                        if (!Script.LabelIndexes.TryGetValue(GotoLabelInstruction.TargetLabel, out int TargetIndex)) {
+                            return new Error($"{Instruction.Line}: invalid label");
+                        }
+                        // Go to index
+                        Index = TargetIndex;
+                        Index--;
                     }
                     // Goto goto
                     else if (GotoInstruction is GotoGotoLabelInstruction GotoGotoLabelInstruction) {
