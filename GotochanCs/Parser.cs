@@ -15,7 +15,7 @@ public static class Parser {
 
         List<string> CurrentTokens = [];
         StringBuilder CurrentToken = new();
-        int CurrentLine = 0;
+        int CurrentLine = 1;
 
         bool TrySubmitToken() {
             // Ensure token was built
