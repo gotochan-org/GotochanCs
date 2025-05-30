@@ -6,7 +6,6 @@ namespace GotochanCs;
 
 public static class Parser {
     private static ReadOnlySpan<char> NewlineChars => ['\n', '\r', '\u2028', '\u2029'];
-    private static ReadOnlySpan<char> ReservedChars => [';', '~', '.', '=', '+', '-', '*', '/', '%', '^', '!', '>', '<'];
 
     public static Result<Script> Parse(string Source) {
         List<Instruction> Instructions = [];
@@ -90,14 +89,6 @@ public static class Parser {
             else if (char.IsWhiteSpace(Next)) {
                 // Try submit token
                 TrySubmitToken();
-            }
-            // Inferred end of token (e.g. "a=b")
-            // (Next is reserved & last is not reserved) OR (next is not reserved & last is reserved)
-            else if (CurrentToken.Length > 0 && ReservedChars.Contains(Next) != ReservedChars.Contains(CurrentToken[^1])) {
-                // Try submit token
-                TrySubmitToken();
-                // Build token
-                CurrentToken.Append(Next);
             }
             // Part of token
             else {
