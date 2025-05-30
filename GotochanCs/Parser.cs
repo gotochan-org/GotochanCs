@@ -261,7 +261,7 @@ public static class Parser {
     }
 }
 
-public sealed class Script {
+public class Script {
     public required string Source { get; init; }
     public required List<Instruction> Instructions { get; init; }
     public required Dictionary<int, int> LineIndexes { get; init; }
