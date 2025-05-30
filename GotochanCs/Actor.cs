@@ -1,3 +1,7 @@
+#if !NET9_0_OR_GREATER
+using Lock = object;
+#endif
+
 using ResultZero;
 
 namespace GotochanCs;
