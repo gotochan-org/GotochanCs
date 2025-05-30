@@ -178,7 +178,8 @@ public static class Parser {
             }
             // Set variable
             else {
-                Result<BinaryOperator?> SetOperator = Token2 switch {
+                // Get compound operator
+                Result<BinaryOperator?> CompoundOperator = Token2 switch {
                     "=" => (BinaryOperator?)null,
                     "+=" => BinaryOperator.Add,
                     "-=" => BinaryOperator.Subtract,
@@ -188,12 +189,24 @@ public static class Parser {
                     "^=" => BinaryOperator.Exponentiate,
                     _ => new Error($"{Line}: invalid operator")
                 };
-                if (SetOperator.IsError) {
-                    return SetOperator.Error;
+                if (CompoundOperator.IsError) {
+                    return CompoundOperator.Error;
                 }
                 // Parse expression
                 if (ParseExpression(Line, Tokens[2..]).TryGetError(out Error ParseExpressionError, out Expression? Expression)) {
                     return ParseExpressionError;
+                }
+                // Apply compound operator
+                if (CompoundOperator.Value is not null) {
+                    Expression = new BinaryExpression() {
+                        Line = Line,
+                        Operator = CompoundOperator.Value.Value,
+                        Expression1 = new GetVariableExpression() {
+                            Line = Line,
+                            TargetVariable = Token1,
+                        },
+                        Expression2 = Expression,
+                    };
                 }
                 // Create instruction
                 return new SetVariableInstruction() {
