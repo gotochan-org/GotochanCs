@@ -20,22 +20,46 @@ public class Actor {
 
                 // Set variable
                 if (Instruction is SetVariableInstruction SetVariableInstruction) {
-                    if (Interpret(SetVariableInstruction.Expression).TryGetError(out Error Error, out Thingie Value)) {
-                        return Error;
+                    // Evaluate value
+                    if (InterpretExpression(SetVariableInstruction.Expression).TryGetError(out Error ValueError, out Thingie Value)) {
+                        return ValueError;
                     }
+                    // Set variable to value
                     Variables[SetVariableInstruction.TargetVariable] = Value;
                 }
-                // Goto line
-                else if (Instruction is GotoLineInstruction GotoLineInstruction) {
-                    if (!Script.LineIndexes.TryGetValue(GotoLineInstruction.Line, out int TargetIndex)) {
-                        return new Error($"{Instruction.Line}: invalid line");
+                // Goto
+                else if (Instruction is GotoInstruction GotoInstruction) {
+                    // Evaluate condition
+                    if (InterpretExpression(GotoInstruction.Condition).TryGetError(out Error ConditionError, out Thingie ConditionResult)) {
+                        return ConditionError;
                     }
-                    Index = TargetIndex;
-                    Index--;
-                }
-                // Goto label
-                else if (Instruction is GotoLabelInstruction GotoLabelInstruction) {
+                    // Ensure condition is flag
+                    if (ConditionResult.Type is not ThingieType.Flag) {
+                        return new Error($"{Instruction.Line}: condition must be flag, not '{ConditionResult.Type}'");
+                    }
+                    // Skip instruction if not condition
+                    if (!ConditionResult.CastFlag()) {
+                        continue;
+                    }
 
+                    // Goto line
+                    if (GotoInstruction is GotoLineInstruction GotoLineInstruction) {
+                        // Get index of first instruction on line
+                        if (!Script.LineIndexes.TryGetValue(GotoLineInstruction.TargetLine, out int TargetIndex)) {
+                            return new Error($"{Instruction.Line}: invalid line");
+                        }
+                        // Go to index
+                        Index = TargetIndex;
+                        Index--;
+                    }
+                    // Goto label
+                    else if (GotoInstruction is GotoLabelInstruction GotoLabelInstruction) {
+                        throw new NotImplementedException();
+                    }
+                    // Goto goto
+                    else if (GotoInstruction is GotoGotoLabelInstruction GotoGotoLabelInstruction) {
+                        throw new NotImplementedException();
+                    }
                 }
                 // Invalid
                 else {
@@ -45,7 +69,7 @@ public class Actor {
             return Result.Success;
         }
     }
-    public Result<Thingie> Interpret(Expression Expression) {
+    public Result<Thingie> InterpretExpression(Expression Expression) {
         lock (Lock) {
             // Constant
             if (Expression is ConstantExpression ConstantExpression) {
@@ -58,7 +82,7 @@ public class Actor {
             // Unary
             else if (Expression is UnaryExpression UnaryExpression) {
                 // Evaluate expression
-                if (Interpret(UnaryExpression.Expression).TryGetError(out Error ExpressionError, out Thingie Value)) {
+                if (InterpretExpression(UnaryExpression.Expression).TryGetError(out Error ExpressionError, out Thingie Value)) {
                     return ExpressionError;
                 }
 
@@ -92,10 +116,10 @@ public class Actor {
             // Binary
             else if (Expression is BinaryExpression BinaryExpression) {
                 // Evaluate expressions
-                if (Interpret(BinaryExpression.Expression1).TryGetError(out Error Expression1Error, out Thingie Value1)) {
+                if (InterpretExpression(BinaryExpression.Expression1).TryGetError(out Error Expression1Error, out Thingie Value1)) {
                     return Expression1Error;
                 }
-                if (Interpret(BinaryExpression.Expression2).TryGetError(out Error Expression2Error, out Thingie Value2)) {
+                if (InterpretExpression(BinaryExpression.Expression2).TryGetError(out Error Expression2Error, out Thingie Value2)) {
                     return Expression2Error;
                 }
 

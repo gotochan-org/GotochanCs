@@ -120,7 +120,7 @@ public static class Parser {
         };
     }
     public static Result<Instruction> ParseInstruction(int Line, scoped ReadOnlySpan<string> Tokens) {
-        if (Tokens.Length is 2) {
+        if (Tokens.Length == 2) {
             string Token1 = Tokens[0];
             string Token2 = Tokens[1];
 
@@ -143,6 +143,10 @@ public static class Parser {
                     return new GotoLineInstruction() {
                         Line = Line,
                         TargetLine = TargetLine,
+                        Condition = new ConstantExpression() {
+                            Line = Line,
+                            Value = Thingie.Flag(true),
+                        },
                     };
                 }
                 // Goto label
@@ -151,6 +155,10 @@ public static class Parser {
                     return new GotoLabelInstruction() {
                         Line = Line,
                         TargetLabel = Token2,
+                        Condition = new ConstantExpression() {
+                            Line = Line,
+                            Value = Thingie.Flag(true),
+                        },
                     };
                 }
             }
@@ -174,6 +182,10 @@ public static class Parser {
                 return new GotoGotoLabelInstruction() {
                     Line = Line,
                     TargetLabel = Token3,
+                    Condition = new ConstantExpression() {
+                        Line = Line,
+                        Value = Thingie.Flag(true),
+                    },
                 };
             }
             // Set variable

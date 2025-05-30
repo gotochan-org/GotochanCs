@@ -13,14 +13,18 @@ public record LabelInstruction : Instruction {
     public required string Name { get; init; }
 }
 
-public record GotoLineInstruction : Instruction {
+public abstract record GotoInstruction : Instruction {
+    public required Expression Condition { get; init; }
+}
+
+public record GotoLineInstruction : GotoInstruction {
     public required int TargetLine { get; init; }
 }
 
-public record GotoLabelInstruction : Instruction {
+public record GotoLabelInstruction : GotoInstruction {
     public required string TargetLabel { get; init; }
 }
 
-public record GotoGotoLabelInstruction : Instruction {
+public record GotoGotoLabelInstruction : GotoInstruction {
     public required string TargetLabel { get; init; }
 }
