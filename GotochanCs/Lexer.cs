@@ -1,55 +1,23 @@
-using System.Runtime.InteropServices;
-using System.Text;
+/*using System.Text;
 using ResultZero;
 
 namespace GotochanCs;
 
-public static class Parser {
+public static class Lexer {
     private static ReadOnlySpan<char> NewlineChars => ['\n', '\r', '\u2028', '\u2029'];
-    private static ReadOnlySpan<char> ReservedChars => [';', '~', '.', '=', '+', '-', '*', '/', '%', '^', '!', '>', '<'];
 
-    public static Result<Script> Parse(TextReader Source) {
-        List<Instruction> Instructions = [];
-        Dictionary<int, int> LineIndexes = [];
-        Dictionary<string, int> LabelIndexes = [];
+    public static Result<List<Token>> Lex(TextReader Source) {
+        List<Token> Tokens = [];
 
-        List<string> CurrentTokens = [];
         StringBuilder CurrentToken = new();
         int CurrentLine = 0;
 
         bool TrySubmitToken() {
-            // Ensure token was built
             if (CurrentToken.Length <= 0) {
                 return false;
             }
-            // Submit token to list
-            CurrentTokens.Add(CurrentToken.ToString());
+            Tokens.Add(CurrentToken.ToString());
             CurrentToken.Clear();
-            return true;
-        }
-        Result<bool> TrySubmitTokens() {
-            // Submit last token to list
-            TrySubmitToken();
-            // Ensure tokens were built
-            if (CurrentTokens.Count <= 0) {
-                return false;
-            }
-            // Parse instruction from tokens
-            if (ParseInstruction(CurrentLine, CollectionsMarshal.AsSpan(CurrentTokens)).TryGetError(out Error ParseInstructionError, out Instruction? Instruction)) {
-                return ParseInstructionError;
-            }
-            // Submit instruction to list
-            CurrentTokens.Clear();
-            Instructions.Add(Instruction);
-            int InstructionIndex = Instructions.Count - 1;
-            // Track index of first instruction on each line
-            LineIndexes.TryAdd(CurrentLine, InstructionIndex);
-            // Track index of labels
-            if (Instruction is LabelInstruction LabelInstruction) {
-                if (!LabelIndexes.TryAdd(LabelInstruction.Name, InstructionIndex)) {
-                    return new Error($"duplicate label: '{LabelInstruction.Name}'");
-                }
-            }
             return true;
         }
 
@@ -93,17 +61,8 @@ public static class Parser {
                 // Try submit token
                 TrySubmitToken();
             }
-            // Inferred end of token (e.g. "a=b")
-            // (Next is reserved & last is not reserved) OR (next is not reserved & last is reserved)
-            else if (CurrentToken.Length > 0 && ReservedChars.Contains(Next) != ReservedChars.Contains(CurrentToken[^1])) {
-                // Try submit token
-                TrySubmitToken();
-                // Build token
-                CurrentToken.Append(Next);
-            }
             // Part of token
             else {
-                // Build token
                 CurrentToken.Append(Next);
             }
         }
@@ -113,14 +72,9 @@ public static class Parser {
             return SubmitLastTokensError;
         }
 
-        // Create script from results
-        return new Script() {
-            Instructions = Instructions,
-            LineIndexes = LineIndexes,
-            LabelIndexes = LabelIndexes,
-        };
+        return Tokens;
     }
-    public static Result<Script> Parse(string Source) {
+    public static Result<List<Instruction>> Parse(string Source) {
         return Parse(new StringReader(Source));
     }
     public static Result<Instruction> ParseInstruction(int Line, scoped ReadOnlySpan<string> Tokens) {
@@ -262,8 +216,34 @@ public static class Parser {
 
     private static string EscapeString(string String) {
         return String;
+    }*/
+    /*private static int? FindLine(int Line, int CurrentLine, List<LineInfo> LineInfos) {
+        if (Line < 0 || Line > LineInfos.Count) {
+
+        }
+
+
+        if (Line < 0 || Line > CurrentLine) {
+            return null;
+        }
+        for (int Index = LineInfos.Count - 1; Index >= 0; Index--) {
+            LineInfo LineInfo = LineInfos[Index];
+
+            if (Instruction.Line == Line) {
+                return Index;
+            }
+            else if (Instruction.Line > Line) {
+                if (Index + 1 >= Instructions.Count) {
+                    return null;
+                }
+                return Index + 1;
+            }
+        }
     }
-    private static char? Read(TextReader Source, ref int CurrentLine) {
+    private static int? FindLabel(string Label, int CurrentLine, List<LineInfo> LineInfos) {
+
+    }*/
+    /*private static char? Read(TextReader Source, ref int CurrentLine) {
         // Read next char
         int NextAsInt = Source.Read();
         if (NextAsInt < 0) {
@@ -287,38 +267,7 @@ public static class Parser {
             }
         }
         return false;
-    }
-
-    /*private static Result<Dictionary<string, int>> GetLabelIndexes(scoped ReadOnlySpan<Instruction> Instructions) {
-        Dictionary<string, int> LabelIndexes = [];
-
-        for (int Index = 0; Index < Instructions.Length; Index++) {
-            Instruction Instruction = Instructions[Index];
-
-            if (Instruction is LabelInstruction LabelInstruction) {
-                if (!LabelIndexes.TryAdd(LabelInstruction.Name, Index)) {
-                    return new Error($"duplicate label: '{LabelInstruction.Name}'");
-                }
-            }
-        }
-
-        return LabelIndexes;
-    }
-    private static Result<Dictionary<int, int>> GetLineIndexes(scoped ReadOnlySpan<Instruction> Instructions) {
-        Dictionary<int, int> LineIndexes = [];
-
-        for (int Index = 0; Index < Instructions.Length; Index++) {
-            Instruction Instruction = Instructions[Index];
-
-            LineIndexes[Instruction.Line] = Index;
-        }
-
-        return LineIndexes;
     }*/
-}
-
-public sealed class Script {
-    public required List<Instruction> Instructions { get; init; }
-    public required Dictionary<int, int> LineIndexes { get; init; }
-    public required Dictionary<string, int> LabelIndexes { get; init; }
-}
+    /*
+    //private readonly record struct LineInfo(Instruction? Instruction, string Label);
+}*/

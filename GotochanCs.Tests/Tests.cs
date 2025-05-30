@@ -13,11 +13,11 @@ public class Tests {
             goto say
             """;
 
-        List<Instruction> Instructions = Parser.Parse(Source).Value;
+        Script Script = Parser.Parse(Source).Value;
 
-        Instructions.Count.ShouldBe(4);
+        Script.Instructions.Count.ShouldBe(4);
 
-        Actor.Default.Interpret(CollectionsMarshal.AsSpan(Instructions)).ShouldBe(Result.Success);
+        Actor.Default.Interpret(Script).ShouldBe(Result.Success);
     }
     /*[Fact]
     public void ReadmeTest() {

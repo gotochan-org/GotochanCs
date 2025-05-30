@@ -9,12 +9,10 @@ public class Actor {
 
     private readonly Dictionary<string, Thingie> Variables = [];
 
-    public Result Interpret(scoped ReadOnlySpan<Instruction> Instructions) {
+    public Result Interpret(Script Script) {
         lock (Lock) {
-            Dictionary<string, int> LabelIndexes = FindLabels();
-
-            for (int Index = 0; Index < Instructions.Length; Index++) {
-                Instruction Instruction = Instructions[Index];
+            for (int Index = 0; Index < Script.Instructions.Count; Index++) {
+                Instruction Instruction = Script.Instructions[Index];
 
                 // Set variable
                 if (Instruction is SetVariableInstruction SetVariableInstruction) {
@@ -25,11 +23,10 @@ public class Actor {
                 }
                 // Goto line
                 else if (Instruction is GotoLineInstruction GotoLineInstruction) {
-                    int? TargetInstructionIndex = FindFirstInstructionOnLine(Instructions, GotoLineInstruction.Line);
-                    if (TargetInstructionIndex is null) {
+                    if (!Script.LineIndexes.TryGetValue(GotoLineInstruction.Line, out int TargetIndex)) {
                         return new Error($"{Instruction.Line}: invalid line");
                     }
-                    Index = TargetInstructionIndex.Value;
+                    Index = TargetIndex;
                     Index--;
                 }
                 // Goto label
@@ -187,51 +184,5 @@ public class Actor {
                 return new Error($"invalid expression: '{Expression}'");
             }
         }
-    }
-
-    private static int? FindFirstInstructionOnLine(scoped ReadOnlySpan<Instruction> Instructions, int Line) {
-        int LeftPointer = 0;
-        int RightPointer = Instructions.Length - 1;
-
-        while (true) {
-            if (LeftPointer > RightPointer) {
-                return null;
-            }
-
-            int MidPointer = (LeftPointer + RightPointer) / 2;
-
-            if (Instructions[MidPointer].Line < Line) {
-                LeftPointer = MidPointer + 1;
-            }
-            else if (Instructions[MidPointer].Line > Line) {
-                RightPointer = MidPointer - 1;
-            }
-            else {
-                while (MidPointer > 0 && Instructions[MidPointer - 1].Line == Line) {
-                    MidPointer--;
-                }
-                return MidPointer;
-            }
-        }
-    }
-    /*private static int? FindLabel(scoped ReadOnlySpan<Instruction> Instructions) {
-        foreach (Instruction Instruction in Instructions) {
-
-        }
-    }*/
-    private static Result<Dictionary<string, int>> FindLabels(scoped ReadOnlySpan<Instruction> Instructions) {
-        Dictionary<string, int> LabelIndexes = [];
-
-        for (int Index = 0; Index < Instructions.Length; Index++) {
-            Instruction Instruction = Instructions[Index];
-
-            if (Instruction is LabelInstruction LabelInstruction) {
-                if (!LabelIndexes.TryAdd(LabelInstruction.Name, Index)) {
-                    return new Error($"duplicate label: '{LabelInstruction.Name}'");
-                }
-            }
-        }
-
-        return LabelIndexes;
     }
 }
