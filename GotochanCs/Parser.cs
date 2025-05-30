@@ -8,7 +8,7 @@ public static class Parser {
     private static ReadOnlySpan<char> NewlineChars => ['\n', '\r', '\u2028', '\u2029'];
     private static ReadOnlySpan<char> ReservedChars => [';', '~', '.', '=', '+', '-', '*', '/', '%', '^', '!', '>', '<'];
 
-    public static Result<Script> Parse(TextReader Source) {
+    public static Result<Script> Parse(string Source) {
         List<Instruction> Instructions = [];
         Dictionary<int, int> LineIndexes = [];
         Dictionary<string, int> LabelIndexes = [];
@@ -53,12 +53,8 @@ public static class Parser {
             return true;
         }
 
-        while (true) {
-            // Read next char
-            if (Read(Source, ref CurrentLine) is not char Next) {
-                break;
-            }
-            JoinCrLf(Source, Next);
+        for (int Index = 0; Index < Source.Length; Index++) {
+            char Next = Source[Index];
 
             // Escape
             if (Next is '\\') {
@@ -68,9 +64,11 @@ public static class Parser {
                 }
 
                 // Read escaped char
-                if (Read(Source, ref CurrentLine) is not char Escaped) {
+                Index++;
+                if (Index >= Source.Length) {
                     return new Error($"{CurrentLine}: incomplete escape sequence");
                 }
+                char Escaped = Source[Index];
 
                 // Escape newline
                 if (NewlineChars.Contains(Escaped)) {
@@ -106,6 +104,15 @@ public static class Parser {
                 // Build token
                 CurrentToken.Append(Next);
             }
+
+            // Increment line
+            if (NewlineChars.Contains(Next)) {
+                CurrentLine++;
+            }
+            // Join CR LF
+            if (Next is '\r' && Index + 1 < Source.Length && Source[Index + 1] is '\n') {
+                Index++;
+            }
         }
 
         // Try submit last tokens
@@ -115,13 +122,11 @@ public static class Parser {
 
         // Create script from results
         return new Script() {
+            Source = Source,
             Instructions = Instructions,
             LineIndexes = LineIndexes,
             LabelIndexes = LabelIndexes,
         };
-    }
-    public static Result<Script> Parse(string Source) {
-        return Parse(new StringReader(Source));
     }
     public static Result<Instruction> ParseInstruction(int Line, scoped ReadOnlySpan<string> Tokens) {
         if (Tokens.Length is 2) {
@@ -263,61 +268,10 @@ public static class Parser {
     private static string EscapeString(string String) {
         return String;
     }
-    private static char? Read(TextReader Source, ref int CurrentLine) {
-        // Read next char
-        int NextAsInt = Source.Read();
-        if (NextAsInt < 0) {
-            return null;
-        }
-        char Next = (char)NextAsInt;
-
-        // Increment line
-        if (NewlineChars.Contains(Next)) {
-            CurrentLine++;
-        }
-
-        // Return next char
-        return Next;
-    }
-    private static bool JoinCrLf(TextReader Source, char FirstChar) {
-        if (FirstChar is '\r') {
-            if (Source.Peek() is '\n') {
-                Source.Read();
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /*private static Result<Dictionary<string, int>> GetLabelIndexes(scoped ReadOnlySpan<Instruction> Instructions) {
-        Dictionary<string, int> LabelIndexes = [];
-
-        for (int Index = 0; Index < Instructions.Length; Index++) {
-            Instruction Instruction = Instructions[Index];
-
-            if (Instruction is LabelInstruction LabelInstruction) {
-                if (!LabelIndexes.TryAdd(LabelInstruction.Name, Index)) {
-                    return new Error($"duplicate label: '{LabelInstruction.Name}'");
-                }
-            }
-        }
-
-        return LabelIndexes;
-    }
-    private static Result<Dictionary<int, int>> GetLineIndexes(scoped ReadOnlySpan<Instruction> Instructions) {
-        Dictionary<int, int> LineIndexes = [];
-
-        for (int Index = 0; Index < Instructions.Length; Index++) {
-            Instruction Instruction = Instructions[Index];
-
-            LineIndexes[Instruction.Line] = Index;
-        }
-
-        return LineIndexes;
-    }*/
 }
 
 public sealed class Script {
+    public required string Source { get; init; }
     public required List<Instruction> Instructions { get; init; }
     public required Dictionary<int, int> LineIndexes { get; init; }
     public required Dictionary<string, int> LabelIndexes { get; init; }
