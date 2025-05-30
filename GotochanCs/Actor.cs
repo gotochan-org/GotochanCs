@@ -185,4 +185,19 @@ public class Actor {
             }
         }
     }
+    public Thingie GetVariable(string TargetVariable) {
+        lock (Lock) {
+            return Variables.GetValueOrDefault(TargetVariable);
+        }
+    }
+    public void SetVariable(string TargetVariable, Thingie Value) {
+        lock (Lock) {
+            if (Value.Type is ThingieType.Nothing) {
+                Variables.Remove(TargetVariable);
+            }
+            else {
+                Variables[TargetVariable] = Value;
+            }
+        }
+    }
 }

@@ -13,10 +13,11 @@ public class Tests {
             """;
 
         Script Script = Parser.Parse(Source).Value;
-
         Script.Instructions.Count.ShouldBe(4);
 
-        Actor.Default.Interpret(Script).ShouldBe(Result.Success);
+        Actor Actor = new();
+        Actor.Interpret(Script).ShouldBe(Result.Success);
+        Actor.GetVariable("param").ShouldBe("value: 10");
     }
     /*[Fact]
     public void ReadmeTest() {
