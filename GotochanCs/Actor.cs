@@ -13,7 +13,7 @@ public class Actor {
 
     private readonly Dictionary<string, Thingie> Variables = [];
 
-    public Result Interpret(Script Script) {
+    public Result Interpret(ParseResult Script) {
         lock (Lock) {
             for (int Index = 0; Index < Script.Instructions.Count; Index++) {
                 Instruction Instruction = Script.Instructions[Index];

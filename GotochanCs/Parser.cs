@@ -1,32 +1,30 @@
-using System.Text;
-using System.Runtime.InteropServices;
 using ResultZero;
+using System.Runtime.InteropServices;
 
 namespace GotochanCs;
 
 public static class Parser {
-    private static ReadOnlySpan<char> NewlineChars => ['\n', '\r', '\u2028', '\u2029'];
-
-    public static Result<Script> Parse(string Source) {
+    public static Result<ParseResult> Parse(LexResult LexResult) {
         List<Instruction> Instructions = [];
         Dictionary<int, int> LineIndexes = [];
         Dictionary<string, int> LabelIndexes = [];
 
-        List<string> CurrentTokens = [];
-        StringBuilder CurrentToken = new();
-        int CurrentLine = 1;
+        int CurrentInstructionIndex = 0;
 
-        bool TrySubmitToken() {
-            // Ensure token was built
-            if (CurrentToken.Length <= 0) {
-                return false;
+        for (int Index = 0; Index < LexResult.Tokens.Count; Index++) {
+            Token Token = LexResult.Tokens[Index];
+
+            if (Token.Type is TokenType.EndOfInstruction) {
+                ReadOnlySpan<Token> InstructionTokens = CollectionsMarshal.AsSpan(LexResult.Tokens)[CurrentInstructionIndex..Index];
+                if (ParseInstruction(InstructionTokens).TryGetError(out Error InstructionError, out Instruction? Instruction)) {
+                    return InstructionError;
+                }
+                Instructions.Add(Instruction);
+                CurrentInstructionIndex = Index + 1;
             }
-            // Submit token to list
-            CurrentTokens.Add(CurrentToken.ToString());
-            CurrentToken.Clear();
-            return true;
         }
-        Result<bool> TrySubmitTokens() {
+
+        /*Result<bool> TrySubmitTokens() {
             // Submit last token to list
             TrySubmitToken();
             // Ensure tokens were built
@@ -52,34 +50,11 @@ public static class Parser {
             return true;
         }
 
-        for (int Index = 0; Index < Source.Length; Index++) {
-            char Next = Source[Index];
+        for (int Index = 0; Index < Tokens.Length; Index++) {
+            Token Next = Tokens[Index];
 
-            // Escape
-            if (Next is '\\') {
-                // Ensure escape is not within string
-                if (CurrentToken.Length >= 1 && CurrentToken[0] is '~') {
-                    continue;
-                }
-
-                // Read escaped char
-                Index++;
-                if (Index >= Source.Length) {
-                    return new Error($"{CurrentLine}: incomplete escape sequence");
-                }
-                char Escaped = Source[Index];
-
-                // Escape newline
-                if (NewlineChars.Contains(Escaped)) {
-                    // Pass (don't end instruction)
-                }
-                // Invalid escape
-                else {
-                    return new Error($"{CurrentLine}: invalid escape sequence");
-                }
-            }
             // End of instruction
-            else if (Next is ';' || NewlineChars.Contains(Next)) {
+            if (Next.Type is TokenType.EndOfInstruction) {
                 // Try submit tokens
                 if (TrySubmitTokens().TryGetError(out Error SubmitTokensError)) {
                     return SubmitTokensError;
@@ -94,15 +69,6 @@ public static class Parser {
             else {
                 // Build token
                 CurrentToken.Append(Next);
-            }
-
-            // Increment line
-            if (NewlineChars.Contains(Next)) {
-                CurrentLine++;
-            }
-            // Join CR LF
-            if (Next is '\r' && Index + 1 < Source.Length && Source[Index + 1] is '\n') {
-                Index++;
             }
         }
 
@@ -141,25 +107,25 @@ public static class Parser {
                     Condition = GotoLabelInstruction.Condition,
                 };
             }
-        }
+        }*/
 
-        // Create script from results
-        return new Script() {
-            Source = Source,
+        // Finish
+        return new ParseResult() {
+            Source = LexResult.Source,
             Instructions = Instructions,
             LineIndexes = LineIndexes,
             LabelIndexes = LabelIndexes,
         };
     }
-    public static Result<Instruction> ParseInstruction(int Line, scoped ReadOnlySpan<string> Tokens) {
-        if (Tokens.Length == 2) {
-            string Token1 = Tokens[0];
-            string Token2 = Tokens[1];
+    public static Result<Instruction> ParseInstruction(scoped ReadOnlySpan<Token> Tokens) {
+        /*if (Tokens.Length == 2) {
+            Token Token1 = Tokens[0];
+            Token Token2 = Tokens[1];
 
             // Goto
-            if (Token1 is "goto") {
+            if (Token1.Type is TokenType.Goto) {
                 // Goto line
-                if (Token2[0] is '-' or '+' or (>= '0' and <= '9')) {
+                if (Token2.Type is TokenType.Operator or TokenType.Number) {
                     // Parse line number
                     int TargetLine = int.Parse(Token2[1..], System.Globalization.NumberStyles.AllowThousands | System.Globalization.NumberStyles.AllowExponent);
 
@@ -195,7 +161,7 @@ public static class Parser {
                 }
             }
             // Label
-            else if (Token1 is "label") {
+            else if (Token1.Type is TokenType.Label) {
                 // Create instruction
                 return new LabelInstruction() {
                     Line = Line,
@@ -204,9 +170,9 @@ public static class Parser {
             }
         }
         else if (Tokens.Length >= 3) {
-            string Token1 = Tokens[0];
-            string Token2 = Tokens[1];
-            string Token3 = Tokens[2];
+            Token Token1 = Tokens[0];
+            Token Token2 = Tokens[1];
+            Token Token3 = Tokens[2];
 
             // Goto goto
             if (Token1 is "goto" && Token2 is "goto") {
@@ -259,59 +225,66 @@ public static class Parser {
                     Expression = Expression,
                 };
             }
-        }
+        }*/
         // Invalid
-        return new Error($"{Line}: invalid instruction");
+        return new Error($"{Tokens[0].Location.Line}: invalid instruction");
     }
-    public static Result<Expression> ParseExpression(int Line, scoped ReadOnlySpan<string> Tokens) {
-        if (Tokens.Length == 1) {
-            string Token1 = Tokens[0];
+    public static Result<Expression> ParseExpression(int Line, scoped ReadOnlySpan<Token> Tokens) {
+        /*if (Tokens.Length == 1) {
+            Token Token1 = Tokens[0];
 
             // Nothing
-            if (Token1 is "nothing") {
+            if (Token1.Type is TokenType.Nothing) {
                 return new ConstantExpression() {
                     Line = Line,
                     Value = Thingie.Nothing(),
                 };
             }
             // Flag
-            else if (Token1 is "yes") {
+            else if (Token1.Type is TokenType.Flag && Token1.Value is "yes") {
                 return new ConstantExpression() {
                     Line = Line,
                     Value = Thingie.Flag(true),
                 };
             }
-            else if (Token1 is "no") {
+            else if (Token1.Type is TokenType.Flag && Token1.Value is "no") {
                 return new ConstantExpression() {
                     Line = Line,
                     Value = Thingie.Flag(false),
                 };
             }
             // String
-            else if (Token1.StartsWith('~')) {
+            else if (Token1.Type is TokenType.String) {
                 return new ConstantExpression() {
                     Line = Line,
-                    Value = Thingie.String(EscapeString(Token1[1..].Replace('~', ' '))),
+                    Value = Thingie.String(Token1.Value),
                 };
             }
             // Double
-            else if (double.TryParse(Token1, out double Double)) {
+            else if (Token1.Type is TokenType.Number) {
+                if (!double.TryParse(Token1.Value, out double Number)) {
+                    return new Error($"{Line}: invalid number");
+                }
                 return new ConstantExpression() {
                     Line = Line,
-                    Value = Thingie.Number(Double),
+                    Value = Thingie.Number(Number),
                 };
             }
             // Get Variable
-            else {
+            else if (Token1.Type is TokenType.Identifier) {
                 return new GetVariableExpression() {
                     Line = Line,
-                    TargetVariable = Token1,
+                    TargetVariable = Token1.Value,
                 };
+            }
+            // Not implemented
+            else {
+                throw new NotImplementedException(Token1.Type.ToString());
             }
         }
         else if (Tokens.Length == 2) {
-            string Token1 = Tokens[0];
-            string Token2 = Tokens[1];
+            Token Token1 = Tokens[0];
+            Token Token2 = Tokens[1];
 
             // Parse expression
             if (ParseExpression(Line, [Token2]).TryGetError(out Error ParseExpressionError, out Expression? Expression)) {
@@ -319,7 +292,7 @@ public static class Parser {
             }
 
             // Get unary operator
-            Result<UnaryOperator> Operator = Token1 switch {
+            Result<UnaryOperator> Operator = Token1.Value switch {
                 "+" => UnaryOperator.Plus,
                 "-" => UnaryOperator.Minus,
                 _ => new Error($"invalid unary operator: '{Token1}'")
@@ -336,9 +309,9 @@ public static class Parser {
             };
         }
         else if (Tokens.Length == 3) {
-            string Token1 = Tokens[0];
-            string Token2 = Tokens[1];
-            string Token3 = Tokens[2];
+            Token Token1 = Tokens[0];
+            Token Token2 = Tokens[1];
+            Token Token3 = Tokens[2];
 
             // Parse expressions
             if (ParseExpression(Line, [Token1]).TryGetError(out Error ParseExpression1Error, out Expression? Expression1)) {
@@ -349,7 +322,7 @@ public static class Parser {
             }
 
             // Get binary operator
-            Result<BinaryOperator> Operator = Token2 switch {
+            Result<BinaryOperator> Operator = Token2.Value switch {
                 "+" => BinaryOperator.Add,
                 "-" => BinaryOperator.Subtract,
                 "*" => BinaryOperator.Multiply,
@@ -375,7 +348,7 @@ public static class Parser {
                 Expression1 = Expression1,
                 Expression2 = Expression2,
             };
-        }
+        }*/
         // Invalid
         return new Error($"{Line}: invalid expression");
     }
@@ -385,7 +358,7 @@ public static class Parser {
     }
 }
 
-public class Script {
+public class ParseResult {
     public required string Source { get; init; }
     public required List<Instruction> Instructions { get; init; }
     public required Dictionary<int, int> LineIndexes { get; init; }

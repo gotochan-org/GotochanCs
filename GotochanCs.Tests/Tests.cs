@@ -12,7 +12,10 @@ public class Tests {
             goto say
             """;
 
-        Script Script = Parser.Parse(Source).Value;
+        LexResult LexResult = Lexer.Lex(Source).Value;
+        _ = LexResult;
+
+        ParseResult Script = Parser.Parse(LexResult).Value;
         Script.Instructions.Count.ShouldBe(4);
 
         Actor Actor = new();

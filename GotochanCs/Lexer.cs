@@ -4,32 +4,57 @@ using ResultZero;
 namespace GotochanCs;
 
 public static class Lexer {
-    private static ReadOnlySpan<char> NewlineChars => ['\n', '\r', '\u2028', '\u2029'];
+    public static ReadOnlySpan<char> NewlineChars => ['\n', '\r', '\u2028', '\u2029'];
+    public static ReadOnlySpan<char> ReservedChars => ['+', '-', '*', '/', '%', '^', '=', '!', '>', '<', '\\', ';', '~'];
 
-    public static Result<List<Token>> Lex(string Source) {
+    public static Result<LexResult> Lex(string Source) {
         List<Token> CurrentTokens = [];
-        int CurrentLine = 1;
 
         // Build tokens
         for (int Index = 0; Index < Source.Length; Index++) {
             char Next = Source[Index];
             char? NextNext = Index + 1 < Source.Length ? Source[Index + 1] : null;
 
+            // Escape
+            if (Next is '\\') {
+                // Read escaped char
+                Index++;
+                if (Index >= Source.Length) {
+                    return new Error($"{SourceLocation.GetLine(Source, Index)}: incomplete escape sequence");
+                }
+                char Escaped = Source[Index];
+
+                // Escape newline
+                if (NewlineChars.Contains(Escaped)) {
+                    // Pass
+                }
+                // Invalid escape
+                else {
+                    return new Error($"{SourceLocation.GetLine(Source, Index)}: invalid escape sequence");
+                }
+            }
+            // End of statement
+            else if (Next is ';' || NewlineChars.Contains(Next)) {
+                // Create token
+                CurrentTokens.Add(new Token(Source, Index, TokenType.EndOfInstruction, $"{Next}"));
+            }
             // String
-            if (Next is '~') {
+            else if (Next is '~') {
                 // Lex string
-                if (LexString(Source, ref Index, ref CurrentLine).TryGetError(out Error StringError, out string? String)) {
+                if (LexString(Source, ref Index).TryGetError(out Error StringError, out string? String)) {
                     return StringError;
                 }
                 // Create token
-                CurrentTokens.Add(new Token(CurrentLine, TokenType.String, String));
+                CurrentTokens.Add(new Token(Source, Index, TokenType.String, String));
             }
             // Number
             else if (Next is >= '0' and <= '9') {
                 // Lex number
-                if (LexNumber()) {
-
+                if (LexNumber(Source, ref Index).TryGetError(out Error NumberError, out string? Number)) {
+                    return NumberError;
                 }
+                // Create token
+                CurrentTokens.Add(new Token(Source, Index, TokenType.Number, Number));
             }
             // Arithmetic operator
             else if (Next is '+' or '-' or '*' or '/' or '%' or '^') {
@@ -37,11 +62,11 @@ public static class Lexer {
                     // Move forward
                     Index++;
                     // Create token
-                    CurrentTokens.Add(new Token(CurrentLine, TokenType.AssignmentOperator, $"{Next}="));
+                    CurrentTokens.Add(new Token(Source, Index, TokenType.SetOperator, $"{Next}="));
                 }
                 else {
                     // Create token
-                    CurrentTokens.Add(new Token(CurrentLine, TokenType.ArithmeticOperator, $"{Next}"));
+                    CurrentTokens.Add(new Token(Source, Index, TokenType.Operator, $"{Next}"));
                 }
             }
             // Equals
@@ -50,11 +75,11 @@ public static class Lexer {
                     // Move forward
                     Index++;
                     // Create token
-                    CurrentTokens.Add(new Token(CurrentLine, TokenType.ComparisonOperator, "=="));
+                    CurrentTokens.Add(new Token(Source, Index, TokenType.Operator, "=="));
                 }
                 else {
                     // Create token
-                    CurrentTokens.Add(new Token(CurrentLine, TokenType.AssignmentOperator, "="));
+                    CurrentTokens.Add(new Token(Source, Index, TokenType.SetOperator, "="));
                 }
             }
             // Not equals
@@ -63,11 +88,11 @@ public static class Lexer {
                     // Move forward
                     Index++;
                     // Create token
-                    CurrentTokens.Add(new Token(CurrentLine, TokenType.ComparisonOperator, "!="));
+                    CurrentTokens.Add(new Token(Source, Index, TokenType.Operator, "!="));
                 }
                 else {
                     // Invalid
-                    return new Error($"{CurrentLine}: invalid '!'");
+                    return new Error($"{SourceLocation.GetLine(Source, Index)}: invalid '!'");
                 }
             }
             // Greater than, less than
@@ -76,99 +101,43 @@ public static class Lexer {
                     // Move forward
                     Index++;
                     // Create token
-                    CurrentTokens.Add(new Token(CurrentLine, TokenType.ComparisonOperator, $"{Next}="));
+                    CurrentTokens.Add(new Token(Source, Index, TokenType.Operator, $"{Next}="));
                 }
                 else {
                     // Create token
-                    CurrentTokens.Add(new Token(CurrentLine, TokenType.AssignmentOperator, $"{Next}"));
+                    CurrentTokens.Add(new Token(Source, Index, TokenType.Operator, $"{Next}"));
                 }
             }
             // Identifier
             else {
+                // Lex identifier
+                if (LexIdentifier(Source, ref Index).TryGetError(out Error IdentifierError, out string? Identifier)) {
+                    return IdentifierError;
+                }
 
-            }
-            /*// Plus
-            else if (Next is '+') {
-                if (NextNext is '=') {
-                    // Move forward
-                    Index++;
-                    // Create token
-                    CurrentTokens.Add(new Token(CurrentLine, TokenType.Operator, "+="));
+                // Nothing
+                if (Identifier is "nothing") {
+                    CurrentTokens.Add(new Token(Source, Index, TokenType.Nothing, Identifier));
                 }
+                // Flag
+                else if (Identifier is "yes" or "no") {
+                    CurrentTokens.Add(new Token(Source, Index, TokenType.Flag, Identifier));
+                }
+                // Identifier
                 else {
-                    // Create token
-                    CurrentTokens.Add(new Token(CurrentLine, TokenType.Operator, "+"));
-                }
-            }
-            // Minus
-            else if (Next is '-') {
-                if (NextNext is '=') {
-                    // Move forward
-                    Index++;
-                    // Create token
-                    CurrentTokens.Add(new Token(CurrentLine, TokenType.Operator, "-="));
-                }
-                else {
-                    // Create token
-                    CurrentTokens.Add(new Token(CurrentLine, TokenType.Operator, "-"));
+                    CurrentTokens.Add(new Token(Source, Index, TokenType.Identifier, Identifier));
                 }
             }
-            // Multiply
-            else if (Next is '*') {
-                if (NextNext is '=') {
-                    // Move forward
-                    Index++;
-                    // Create token
-                    CurrentTokens.Add(new Token(CurrentLine, TokenType.Operator, "*="));
-                }
-                else {
-                    // Create token
-                    CurrentTokens.Add(new Token(CurrentLine, TokenType.Operator, "*"));
-                }
-            }
-            // Divide
-            else if (Next is '/') {
-                if (NextNext is '=') {
-                    // Move forward
-                    Index++;
-                    // Create token
-                    CurrentTokens.Add(new Token(CurrentLine, TokenType.Operator, "/="));
-                }
-                else {
-                    // Create token
-                    CurrentTokens.Add(new Token(CurrentLine, TokenType.Operator, "/"));
-                }
-            }
-            // Modulo
-            else if (Next is '%') {
-                if (NextNext is '=') {
-                    // Move forward
-                    Index++;
-                    // Create token
-                    CurrentTokens.Add(new Token(CurrentLine, TokenType.Operator, "%="));
-                }
-                else {
-                    // Create token
-                    CurrentTokens.Add(new Token(CurrentLine, TokenType.Operator, "%"));
-                }
-            }
-            // Exponentiate
-            else if (Next is '^') {
-                if (NextNext is '=') {
-                    // Move forward
-                    Index++;
-                    // Create token
-                    CurrentTokens.Add(new Token(CurrentLine, TokenType.Operator, "^="));
-                }
-                else {
-                    // Create token
-                    CurrentTokens.Add(new Token(CurrentLine, TokenType.Operator, "^"));
-                }
-            }*/
         }
+
+        // Finish
+        return new LexResult() {
+            Source = Source,
+            Tokens = CurrentTokens,
+        };
     }
 
-    private static Result<string> LexString(string Source, ref int Index, ref int CurrentLine) {
+    private static Result<string> LexString(string Source, ref int Index) {
         using ValueStringBuilder StringBuilder = new(stackalloc char[64]);
 
         // Move past first '~'
@@ -183,13 +152,13 @@ public static class Lexer {
                 // Read escaped char
                 Index++;
                 if (Index >= Source.Length) {
-                    return new Error($"{CurrentLine}: incomplete escape sequence");
+                    return new Error($"{SourceLocation.GetLine(Source, Index)}: incomplete escape sequence");
                 }
                 char Escaped = Source[Index];
 
                 // Newline
                 if (NewlineChars.Contains(Escaped)) {
-                    // Pass (don't end string)
+                    // Pass
                 }
                 // Character
                 else {
@@ -200,6 +169,10 @@ public static class Lexer {
             else if (Next is '~') {
                 StringBuilder.Append(' ');
             }
+            // Whitespace
+            else if (char.IsWhiteSpace(Next)) {
+                break;
+            }
             // Character
             else {
                 StringBuilder.Append(Next);
@@ -209,7 +182,7 @@ public static class Lexer {
         // Finish
         return StringBuilder.ToString();
     }
-    private static Result<string> LexNumber(string Source, ref int Index, ref int CurrentLine) {
+    private static Result<string> LexNumber(string Source, ref int Index) {
         using ValueStringBuilder NumberBuilder = new(stackalloc char[64]);
 
         // Build number
@@ -228,10 +201,39 @@ public static class Lexer {
 
         // Disallow trailing underscore
         if (NumberBuilder[^1] is '_') {
-            return new Error($"{CurrentLine}: trailing underscore in number");
+            return new Error($"{SourceLocation.GetLine(Source, Index)}: trailing underscore in number");
         }
 
         // Finish
         return NumberBuilder.ToString();
     }
+    private static Result<string> LexIdentifier(string Source, ref int Index) {
+        using ValueStringBuilder IdentifierBuilder = new(stackalloc char[64]);
+
+        // Build identifier
+        for (; Index < Source.Length; Index++) {
+            char Next = Source[Index];
+
+            // Reserved character
+            if (ReservedChars.Contains(Next)) {
+                break;
+            }
+            // Whitespace
+            else if (char.IsWhiteSpace(Next)) {
+                break;
+            }
+            // Character
+            else {
+                IdentifierBuilder.Append(Next);
+            }
+        }
+
+        // Finish
+        return IdentifierBuilder.ToString();
+    }
+}
+
+public class LexResult {
+    public required string Source { get; init; }
+    public required List<Token> Tokens { get; init; }
 }
