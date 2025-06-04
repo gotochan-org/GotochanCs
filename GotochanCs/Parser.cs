@@ -1,5 +1,5 @@
-using ResultZero;
 using System.Runtime.InteropServices;
+using ResultZero;
 
 namespace GotochanCs;
 
@@ -245,114 +245,6 @@ public static class Parser {
             }
         }
 
-        /*if (Tokens.Length == 2) {
-            Token Token1 = Tokens[0];
-            Token Token2 = Tokens[1];
-
-            // Goto
-            if (Token1.Type is TokenType.Goto) {
-                // Goto line
-                if (Token2.Type is TokenType.Operator or TokenType.Number) {
-                    // Parse line number
-                    int TargetLine = int.Parse(Token2[1..], System.Globalization.NumberStyles.AllowThousands | System.Globalization.NumberStyles.AllowExponent);
-
-                    // Apply offset from current line
-                    if (Token2[0] is '-') {
-                        TargetLine = Line - TargetLine;
-                    }
-                    else if (Token2[1] is '+') {
-                        TargetLine = Line + TargetLine;
-                    }
-
-                    // Create instruction
-                    return new GotoLineInstruction() {
-                        Line = Line,
-                        TargetLine = TargetLine,
-                        Condition = new ConstantExpression() {
-                            Line = Line,
-                            Value = Thingie.Flag(true),
-                        },
-                    };
-                }
-                // Goto label
-                else {
-                    // Create instruction
-                    return new GotoLabelInstruction() {
-                        Line = Line,
-                        TargetLabel = Token2,
-                        Condition = new ConstantExpression() {
-                            Line = Line,
-                            Value = Thingie.Flag(true),
-                        },
-                    };
-                }
-            }
-            // Label
-            else if (Token1.Type is TokenType.Label) {
-                // Create instruction
-                return new LabelInstruction() {
-                    Line = Line,
-                    Name = Token2,
-                };
-            }
-        }
-        else if (Tokens.Length >= 3) {
-            Token Token1 = Tokens[0];
-            Token Token2 = Tokens[1];
-            Token Token3 = Tokens[2];
-
-            // Goto goto
-            if (Token1 is "goto" && Token2 is "goto") {
-                // Create instruction
-                return new GotoGotoLabelInstruction() {
-                    Line = Line,
-                    TargetLabel = Token3,
-                    Condition = new ConstantExpression() {
-                        Line = Line,
-                        Value = Thingie.Flag(true),
-                    },
-                };
-            }
-            // Set variable
-            else {
-                // Get compound operator
-                Result<BinaryOperator?> CompoundOperator = Token2 switch {
-                    "=" => (BinaryOperator?)null,
-                    "+=" => BinaryOperator.Add,
-                    "-=" => BinaryOperator.Subtract,
-                    "*=" => BinaryOperator.Multiply,
-                    "/=" => BinaryOperator.Divide,
-                    "%=" => BinaryOperator.Modulo,
-                    "^=" => BinaryOperator.Exponentiate,
-                    _ => new Error($"{Line}: invalid set operator")
-                };
-                if (CompoundOperator.IsError) {
-                    return CompoundOperator.Error;
-                }
-                // Parse expression
-                if (ParseExpression(Line, Tokens[2..]).TryGetError(out Error ParseExpressionError, out Expression? Expression)) {
-                    return ParseExpressionError;
-                }
-                // Apply compound operator
-                if (CompoundOperator.Value is not null) {
-                    Expression = new BinaryExpression() {
-                        Line = Line,
-                        Operator = CompoundOperator.Value.Value,
-                        Expression1 = new GetVariableExpression() {
-                            Line = Line,
-                            TargetVariable = Token1,
-                        },
-                        Expression2 = Expression,
-                    };
-                }
-                // Create instruction
-                return new SetVariableInstruction() {
-                    Line = Line,
-                    TargetVariable = Token1,
-                    Expression = Expression,
-                };
-            }
-        }*/
         // Invalid
         return new Error($"{Tokens[0].Location.Line}: invalid instruction");
     }
@@ -362,125 +254,138 @@ public static class Parser {
             throw new ArgumentException("no tokens for expression", nameof(Tokens));
         }
 
-        /*if (Tokens.Length == 1) {
-            Token Token1 = Tokens[0];
+        // Value
+        if (Tokens.Length > 0 && Tokens[0].Type is TokenType.Identifier or TokenType.Nothing or TokenType.Flag or TokenType.Number or TokenType.String) {
+            // Operator
+            if (Tokens.Length > 1 && Tokens[1].Type is TokenType.Operator) {
+                // Value
+                if (Tokens.Length > 2 && Tokens[2].Type is TokenType.Identifier or TokenType.Nothing or TokenType.Flag or TokenType.Number or TokenType.String) {
+                    // Get binary operator
+                    BinaryOperator BinaryOperator = Tokens[1].Value switch {
+                        "+" => BinaryOperator.Add,
+                        "-" => BinaryOperator.Subtract,
+                        "*" => BinaryOperator.Multiply,
+                        "/" => BinaryOperator.Divide,
+                        "%" => BinaryOperator.Modulo,
+                        "^" => BinaryOperator.Exponentiate,
 
-            // Nothing
-            if (Token1.Type is TokenType.Nothing) {
-                return new ConstantExpression() {
-                    Line = Line,
-                    Value = Thingie.Nothing(),
-                };
-            }
-            // Flag
-            else if (Token1.Type is TokenType.Flag && Token1.Value is "yes") {
-                return new ConstantExpression() {
-                    Line = Line,
-                    Value = Thingie.Flag(true),
-                };
-            }
-            else if (Token1.Type is TokenType.Flag && Token1.Value is "no") {
-                return new ConstantExpression() {
-                    Line = Line,
-                    Value = Thingie.Flag(false),
-                };
-            }
-            // String
-            else if (Token1.Type is TokenType.String) {
-                return new ConstantExpression() {
-                    Line = Line,
-                    Value = Thingie.String(Token1.Value),
-                };
-            }
-            // Double
-            else if (Token1.Type is TokenType.Number) {
-                if (!double.TryParse(Token1.Value, out double Number)) {
-                    return new Error($"{Line}: invalid number");
+                        "==" => BinaryOperator.Equals,
+                        "!=" => BinaryOperator.NotEquals,
+                        ">" => BinaryOperator.GreaterThan,
+                        "<" => BinaryOperator.LessThan,
+                        ">=" => BinaryOperator.GreaterThanOrEqualTo,
+                        "<=" => BinaryOperator.LessThanOrEqualTo,
+                        _ => throw new NotImplementedException($"{Tokens[1].Location.Line}: unhandled binary operator: '{Tokens[1].Value}'")
+                    };
+
+                    // Get left value
+                    if (ParseExpression([Tokens[0]]).TryGetError(out Error Value1Error, out Expression? Value1)) {
+                        return Value1Error;
+                    }
+                    // Get right value
+                    if (ParseExpression([Tokens[0]]).TryGetError(out Error Value2Error, out Expression? Value2)) {
+                        return Value2Error;
+                    }
+
+                    // Create expression
+                    return new BinaryExpression() {
+                        Location = Tokens[0].Location,
+                        Operator = BinaryOperator,
+                        Expression1 = Value1,
+                        Expression2 = Value2,
+                    };
                 }
-                return new ConstantExpression() {
-                    Line = Line,
-                    Value = Thingie.Number(Number),
-                };
+                // Invalid
+                else {
+                    return new Error($"{Tokens[1].Location.Line}: unexpected operator");
+                }
             }
-            // Get Variable
-            else if (Token1.Type is TokenType.Identifier) {
-                return new GetVariableExpression() {
-                    Line = Line,
-                    TargetVariable = Token1.Value,
-                };
-            }
-            // Not implemented
+            // Value
             else {
-                throw new NotImplementedException(Token1.Type.ToString());
+                // Ensure no tokens remaining
+                if (Tokens.Length > 1) {
+                    return new Error($"{Tokens[1].Location.Line}: unexpected token");
+                }
+
+                // Nothing
+                if (Tokens[0].Type is TokenType.Nothing) {
+                    return new ConstantExpression() {
+                        Location = Tokens[0].Location,
+                        Value = Thingie.Nothing(),
+                    };
+                }
+                // Flag
+                else if (Tokens[0].Type is TokenType.Flag && Tokens[0].Value is "yes") {
+                    return new ConstantExpression() {
+                        Location = Tokens[0].Location,
+                        Value = Thingie.Flag(true),
+                    };
+                }
+                else if (Tokens[0].Type is TokenType.Flag && Tokens[0].Value is "no") {
+                    return new ConstantExpression() {
+                        Location = Tokens[0].Location,
+                        Value = Thingie.Flag(false),
+                    };
+                }
+                // String
+                else if (Tokens[0].Type is TokenType.String) {
+                    return new ConstantExpression() {
+                        Location = Tokens[0].Location,
+                        Value = Thingie.String(Tokens[0].Value),
+                    };
+                }
+                // Number
+                else if (Tokens[0].Type is TokenType.Number) {
+                    if (!double.TryParse(Tokens[0].Value, out double Number)) {
+                        return new Error($"{Tokens[0].Location.Line}: invalid number");
+                    }
+                    return new ConstantExpression() {
+                        Location = Tokens[0].Location,
+                        Value = Thingie.Number(Number),
+                    };
+                }
+                // Get Variable
+                else if (Tokens[0].Type is TokenType.Identifier) {
+                    return new GetVariableExpression() {
+                        Location = Tokens[0].Location,
+                        TargetVariable = Tokens[0].Value,
+                    };
+                }
+                // Invalid
+                else {
+                    return new Error($"{Tokens[0].Location.Line}: unexpected token");
+                }
             }
         }
-        else if (Tokens.Length == 2) {
-            Token Token1 = Tokens[0];
-            Token Token2 = Tokens[1];
+        // Operator
+        else if (Tokens.Length > 0 && Tokens[0].Type is TokenType.Operator) {
+            // Value
+            if (Tokens.Length > 1 && Tokens[1].Type is TokenType.Identifier or TokenType.Nothing or TokenType.Flag or TokenType.Number or TokenType.String) {
+                // Get unary operator
+                UnaryOperator UnaryOperator = Tokens[0].Value switch {
+                    "+" => UnaryOperator.Plus,
+                    "-" => UnaryOperator.Minus,
+                    _ => throw new NotImplementedException($"{Tokens[0].Location.Line}: unhandled unary operator: '{Tokens[0].Value}'")
+                };
 
-            // Parse expression
-            if (ParseExpression(Line, [Token2]).TryGetError(out Error ParseExpressionError, out Expression? Expression)) {
-                return ParseExpressionError;
+                // Get value
+                if (ParseExpression([Tokens[1]]).TryGetError(out Error ValueError, out Expression? Value)) {
+                    return ValueError;
+                }
+
+                // Create expression
+                return new UnaryExpression() {
+                    Location = Tokens[0].Location,
+                    Operator = UnaryOperator,
+                    Expression = Value,
+                };
             }
-
-            // Get unary operator
-            Result<UnaryOperator> Operator = Token1.Value switch {
-                "+" => UnaryOperator.Plus,
-                "-" => UnaryOperator.Minus,
-                _ => new Error($"invalid unary operator: '{Token1}'")
-            };
-            if (Operator.IsError) {
-                return Operator.Error;
+            // Invalid
+            else {
+                return new Error($"{Tokens[0].Location.Line}: unexpected operator");
             }
-
-            // Unary
-            return new UnaryExpression() {
-                Line = Line,
-                Operator = Operator.Value,
-                Expression = Expression,
-            };
         }
-        else if (Tokens.Length == 3) {
-            Token Token1 = Tokens[0];
-            Token Token2 = Tokens[1];
-            Token Token3 = Tokens[2];
 
-            // Parse expressions
-            if (ParseExpression(Line, [Token1]).TryGetError(out Error ParseExpression1Error, out Expression? Expression1)) {
-                return ParseExpression1Error;
-            }
-            if (ParseExpression(Line, [Token3]).TryGetError(out Error ParseExpression2Error, out Expression? Expression2)) {
-                return ParseExpression2Error;
-            }
-
-            // Get binary operator
-            Result<BinaryOperator> Operator = Token2.Value switch {
-                "+" => BinaryOperator.Add,
-                "-" => BinaryOperator.Subtract,
-                "*" => BinaryOperator.Multiply,
-                "/" => BinaryOperator.Divide,
-                "%" => BinaryOperator.Modulo,
-                "^" => BinaryOperator.Exponentiate,
-                "==" => BinaryOperator.Equals,
-                "!=" => BinaryOperator.NotEquals,
-                ">" => BinaryOperator.GreaterThan,
-                "<" => BinaryOperator.LessThan,
-                ">=" => BinaryOperator.GreaterThanOrEqualTo,
-                "<=" => BinaryOperator.LessThanOrEqualTo,
-                _ => new Error($"invalid binary operator: '{Token2}'")
-            };
-            if (Operator.IsError) {
-                return Operator.Error;
-            }
-
-            // Binary
-            return new BinaryExpression() {
-                Line = Line,
-                Operator = Operator.Value,
-                Expression1 = Expression1,
-                Expression2 = Expression2,
-            };
-        }*/
         // Invalid
         return new Error($"{Tokens[0].Location.Line}: invalid expression");
     }
