@@ -425,6 +425,29 @@ public static class Parser {
                     };
                 }
             }
+            // Remove constant conditions
+            if (Optimizations.HasFlag(ParseOptimizations.RemoveConstantConditions)) {
+                // Condition
+                if (Instruction.Condition is not null) {
+                    // Constant condition
+                    if (Instruction.Condition is ConstantExpression ConstantCondition) {
+                        // Constant flag condition
+                        if (ConstantCondition.Value.Type is ThingieType.Flag) {
+                            // Constant true condition
+                            if (ConstantCondition.Value.CastFlag()) {
+                                // Remove condition
+                                ParseResult.Instructions[Index] = Instruction with { Condition = null };
+                            }
+                            // Constant false condition
+                            else {
+                                // Remove instruction
+                                ParseResult.Instructions.RemoveAt(Index);
+                                Index--;
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         // Finish
@@ -447,6 +470,7 @@ public class ParseResult {
 public enum ParseOptimizations : long {
     ReplaceGotoLineWithGotoIndex = 1,
     ReplaceGotoLabelWithGotoIndex = 2,
+    RemoveConstantConditions = 3,
 
     None = 0,
     All = long.MaxValue,
