@@ -33,7 +33,7 @@ public static class Lexer {
                     return new Error($"{SourceLocation.GetLine(Source, Index)}: invalid escape sequence");
                 }
             }
-            // End of statement
+            // End of instruction
             else if (Next is ';' || NewlineChars.Contains(Next)) {
                 // Create token
                 CurrentTokens.Add(new Token(Source, Index, TokenType.EndOfInstruction, $"{Next}"));
@@ -119,8 +119,18 @@ public static class Lexer {
                     return IdentifierError;
                 }
 
+                // Keyword
+                if (Identifier is "goto") {
+                    CurrentTokens.Add(new Token(Source, Index, TokenType.Goto, Identifier));
+                }
+                else if (Identifier is "label") {
+                    CurrentTokens.Add(new Token(Source, Index, TokenType.Label, Identifier));
+                }
+                else if (Identifier is "if") {
+                    CurrentTokens.Add(new Token(Source, Index, TokenType.If, Identifier));
+                }
                 // Nothing
-                if (Identifier is "nothing") {
+                else if (Identifier is "nothing") {
                     CurrentTokens.Add(new Token(Source, Index, TokenType.Nothing, Identifier));
                 }
                 // Flag
@@ -207,6 +217,9 @@ public static class Lexer {
         if (NumberBuilder[^1] is '_') {
             return new Error($"{SourceLocation.GetLine(Source, Index)}: trailing underscore in number");
         }
+
+        // Remove underscores
+        NumberBuilder.Replace("_", "");
 
         // Finish
         return NumberBuilder.ToString();

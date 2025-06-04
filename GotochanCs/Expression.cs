@@ -1,7 +1,7 @@
 namespace GotochanCs;
 
 public abstract record Expression {
-    public required int Line { get; init; }
+    public required SourceLocation Location { get; init; }
 }
 
 public record ConstantExpression : Expression {

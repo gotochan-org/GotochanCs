@@ -11,15 +11,23 @@ public static class Parser {
 
         int CurrentInstructionIndex = 0;
 
-        for (int Index = 0; Index < LexResult.Tokens.Count; Index++) {
-            Token Token = LexResult.Tokens[Index];
+        // Get tokens as span
+        ReadOnlySpan<Token> TokensSpan = CollectionsMarshal.AsSpan(LexResult.Tokens);
 
-            if (Token.Type is TokenType.EndOfInstruction) {
-                ReadOnlySpan<Token> InstructionTokens = CollectionsMarshal.AsSpan(LexResult.Tokens)[CurrentInstructionIndex..Index];
+        // Split instructions at end of instruction token
+        for (int Index = 0; Index < TokensSpan.Length; Index++) {
+            Token Next = TokensSpan[Index];
+
+            // End of instruction
+            if (Next.Type is TokenType.EndOfInstruction) {
+                // Get span of tokens in instruction
+                ReadOnlySpan<Token> InstructionTokens = TokensSpan[CurrentInstructionIndex..Index];
+                // Parse tokens as instruction
                 if (ParseInstruction(InstructionTokens).TryGetError(out Error InstructionError, out Instruction? Instruction)) {
                     return InstructionError;
                 }
                 Instructions.Add(Instruction);
+                // Start instruction at next token
                 CurrentInstructionIndex = Index + 1;
             }
         }
@@ -118,6 +126,108 @@ public static class Parser {
         };
     }
     public static Result<Instruction> ParseInstruction(scoped ReadOnlySpan<Token> Tokens) {
+        // Ensure any token present
+        if (Tokens.Length <= 0) {
+            throw new ArgumentException("no tokens for instruction", nameof(Tokens));
+        }
+
+        // Condition
+        Expression? Condition = null;
+        for (int Index = 0; Index < Tokens.Length; Index++) {
+            Token Next = Tokens[Index];
+
+            // If
+            if (Next.Type is TokenType.If) {
+                // Ensure condition present
+                if (Tokens.Length < Index + 1) {
+                    return new Error($"{Next.Location.Line}: expected condition");
+                }
+
+                // Parse condition
+                if (ParseExpression(Tokens[(Index + 1)..]).TryGetError(out Error ExpressionError, out Condition)) {
+                    return ExpressionError;
+                }
+
+                // Remove condition tokens
+                Tokens = Tokens[..Index];
+                break;
+            }
+        }
+
+        // Identifier
+        if (Tokens.Length > 0 && Tokens[0].Type is TokenType.Identifier) {
+            // Set
+            if (Tokens.Length > 1 && Tokens[1].Type is TokenType.SetOperator) {
+                // Ensure value present
+                if (Tokens.Length < 2) {
+                    return new Error($"{Tokens[1].Location.Line}: expected value");
+                }
+
+                // Parse value
+                if (ParseExpression(Tokens[2..]).TryGetError(out Error ExpressionError, out Expression? Value)) {
+                    return ExpressionError;
+                }
+
+                // Create instruction
+                return new SetVariableInstruction() {
+                    Location = Tokens[0].Location,
+                    Condition = Condition,
+                    TargetVariable = Tokens[0].Value,
+                    Expression = Value,
+                };
+            }
+            // Invalid
+            else {
+                return new Error($"{Tokens[0].Location.Line}: unexpected identifier");
+            }
+        }
+        // Label
+        else if (Tokens.Length > 0 && Tokens[0].Type is TokenType.Label) {
+            // Identifier
+            if (Tokens.Length > 1 && Tokens[1].Type is TokenType.Identifier) {
+                // Create instruction
+                return new LabelInstruction() {
+                    Location = Tokens[0].Location,
+                    Condition = Condition,
+                    Name = Tokens[1].Value,
+                };
+            }
+            // Invalid
+            else {
+                return new Error($"{Tokens[0].Location.Line}: expected label identifier");
+            }
+        }
+        // Goto
+        else if (Tokens.Length > 0 && Tokens[0].Type is TokenType.Goto) {
+            // Identifier
+            if (Tokens.Length > 1 && Tokens[1].Type is TokenType.Identifier) {
+                // Create instruction
+                return new GotoLabelInstruction() {
+                    Location = Tokens[0].Location,
+                    Condition = Condition,
+                    TargetLabel = Tokens[1].Value,
+                };
+            }
+            // Number
+            else if (Tokens.Length > 1 && Tokens[1].Type is TokenType.Number) {
+                // Parse line number
+                if (!int.TryParse(Tokens[1].Value, out int TargetLine)) {
+                    return new Error($"{Tokens[1].Location.Line}: invalid line number");
+                }
+
+                // Create instruction
+                return new GotoLineInstruction() {
+                    Location = Tokens[0].Location,
+                    Condition = Condition,
+                    TargetLine = TargetLine,
+                };
+            }
+            // Invalid
+            else {
+                return new Error($"{Tokens[0].Location.Line}: expected label identifier");
+            }
+        }
+
         /*if (Tokens.Length == 2) {
             Token Token1 = Tokens[0];
             Token Token2 = Tokens[1];
@@ -229,7 +339,12 @@ public static class Parser {
         // Invalid
         return new Error($"{Tokens[0].Location.Line}: invalid instruction");
     }
-    public static Result<Expression> ParseExpression(int Line, scoped ReadOnlySpan<Token> Tokens) {
+    public static Result<Expression> ParseExpression(scoped ReadOnlySpan<Token> Tokens) {
+        // Ensure any token present
+        if (Tokens.Length <= 0) {
+            throw new ArgumentException("no tokens for expression", nameof(Tokens));
+        }
+
         /*if (Tokens.Length == 1) {
             Token Token1 = Tokens[0];
 
@@ -350,7 +465,7 @@ public static class Parser {
             };
         }*/
         // Invalid
-        return new Error($"{Line}: invalid expression");
+        return new Error($"{Tokens[0].Location.Line}: invalid expression");
     }
 
     private static string EscapeString(string String) {

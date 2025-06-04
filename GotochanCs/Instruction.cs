@@ -1,7 +1,8 @@
 namespace GotochanCs;
 
 public abstract record Instruction {
-    public required int Line { get; init; }
+    public required SourceLocation Location { get; init; }
+    public required Expression? Condition { get; init; }
 }
 
 public record SetVariableInstruction : Instruction {
@@ -13,22 +14,18 @@ public record LabelInstruction : Instruction {
     public required string Name { get; init; }
 }
 
-public abstract record GotoInstruction : Instruction {
-    public required Expression Condition { get; init; }
-}
-
-public record GotoIndexInstruction : GotoInstruction {
+public record GotoIndexInstruction : Instruction {
     public required int TargetIndex { get; init; }
 }
 
-public record GotoLineInstruction : GotoInstruction {
+public record GotoLineInstruction : Instruction {
     public required int TargetLine { get; init; }
 }
 
-public record GotoLabelInstruction : GotoInstruction {
+public record GotoLabelInstruction : Instruction {
     public required string TargetLabel { get; init; }
 }
 
-public record GotoGotoLabelInstruction : GotoInstruction {
+public record GotoGotoLabelInstruction : Instruction {
     public required string TargetLabel { get; init; }
 }

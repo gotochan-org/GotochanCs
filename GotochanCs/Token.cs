@@ -26,6 +26,7 @@ public enum TokenType {
     Identifier = 7,
     Goto = 8,
     Label = 9,
+    If = 10,
 }
 
 public readonly record struct SourceLocation {
@@ -33,10 +34,10 @@ public readonly record struct SourceLocation {
     public int Index { get; }
     public int Line { get; }
 
-    public SourceLocation(string Source, int Index) {
+    public SourceLocation(string Source, int Index, int? Line = null) {
         this.Source = Source;
         this.Index = Index;
-        Line = GetLine(Source, Index);
+        this.Line = Line ?? GetLine(Source, Index);
     }
 
     public static int GetLine(string Source, int Index) {

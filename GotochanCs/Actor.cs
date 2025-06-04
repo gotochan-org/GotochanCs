@@ -18,6 +18,22 @@ public class Actor {
             for (int Index = 0; Index < Script.Instructions.Count; Index++) {
                 Instruction Instruction = Script.Instructions[Index];
 
+                // Condition
+                if (Instruction.Condition is not null) {
+                    // Evaluate condition
+                    if (InterpretExpression(Instruction.Condition).TryGetError(out Error ConditionError, out Thingie ConditionResult)) {
+                        return ConditionError;
+                    }
+                    // Ensure condition is flag
+                    if (ConditionResult.Type is not ThingieType.Flag) {
+                        return new Error($"{Instruction.Location}: condition must be flag, not '{ConditionResult.Type}'");
+                    }
+                    // Skip instruction if not condition
+                    if (!ConditionResult.CastFlag()) {
+                        continue;
+                    }
+                }
+
                 // Set variable
                 if (Instruction is SetVariableInstruction SetVariableInstruction) {
                     // Evaluate value
@@ -27,55 +43,39 @@ public class Actor {
                     // Set variable to value
                     Variables[SetVariableInstruction.TargetVariable] = Value;
                 }
-                // Goto
-                else if (Instruction is GotoInstruction GotoInstruction) {
-                    // Evaluate condition
-                    if (InterpretExpression(GotoInstruction.Condition).TryGetError(out Error ConditionError, out Thingie ConditionResult)) {
-                        return ConditionError;
+                // Goto line
+                if (Instruction is GotoIndexInstruction GotoIndexInstruction) {
+                    // Go to index
+                    Index = GotoIndexInstruction.TargetIndex;
+                    Index--;
+                }
+                // Goto line
+                else if (Instruction is GotoLineInstruction GotoLineInstruction) {
+                    /*// Get index of first instruction on line
+                    if (!Script.LineIndexes.TryGetValue(GotoLineInstruction.TargetLine, out int TargetIndex)) {
+                        return new Error($"{Instruction.Line}: invalid line");
                     }
-                    // Ensure condition is flag
-                    if (ConditionResult.Type is not ThingieType.Flag) {
-                        return new Error($"{Instruction.Line}: condition must be flag, not '{ConditionResult.Type}'");
+                    // Go to index
+                    Index = TargetIndex;
+                    Index--;*/
+                }
+                // Goto label
+                else if (Instruction is GotoLabelInstruction GotoLabelInstruction) {
+                    /*// Get index of label
+                    if (!Script.LabelIndexes.TryGetValue(GotoLabelInstruction.TargetLabel, out int TargetIndex)) {
+                        return new Error($"{Instruction.Line}: invalid label");
                     }
-                    // Skip instruction if not condition
-                    if (!ConditionResult.CastFlag()) {
-                        continue;
-                    }
-
-                    // Goto line
-                    if (GotoInstruction is GotoIndexInstruction GotoIndexInstruction) {
-                        // Go to index
-                        Index = GotoIndexInstruction.TargetIndex;
-                        Index--;
-                    }
-                    // Goto line
-                    else if (GotoInstruction is GotoLineInstruction GotoLineInstruction) {
-                        /*// Get index of first instruction on line
-                        if (!Script.LineIndexes.TryGetValue(GotoLineInstruction.TargetLine, out int TargetIndex)) {
-                            return new Error($"{Instruction.Line}: invalid line");
-                        }
-                        // Go to index
-                        Index = TargetIndex;
-                        Index--;*/
-                    }
-                    // Goto label
-                    else if (GotoInstruction is GotoLabelInstruction GotoLabelInstruction) {
-                        /*// Get index of label
-                        if (!Script.LabelIndexes.TryGetValue(GotoLabelInstruction.TargetLabel, out int TargetIndex)) {
-                            return new Error($"{Instruction.Line}: invalid label");
-                        }
-                        // Go to index
-                        Index = TargetIndex;
-                        Index--;*/
-                    }
-                    // Goto goto
-                    else if (GotoInstruction is GotoGotoLabelInstruction GotoGotoLabelInstruction) {
-                        throw new NotImplementedException();
-                    }
+                    // Go to index
+                    Index = TargetIndex;
+                    Index--;*/
+                }
+                // Goto goto
+                else if (Instruction is GotoGotoLabelInstruction GotoGotoLabelInstruction) {
+                    throw new NotImplementedException();
                 }
                 // Invalid
                 else {
-                    return new Error($"{Instruction.Line}: invalid instruction: '{Instruction}'");
+                    return new Error($"{Instruction.Location.Line}: invalid instruction: '{Instruction}'");
                 }
             }
             return Result.Success;
@@ -106,7 +106,7 @@ public class Actor {
                     }
                     // Invalid
                     else {
-                        return new Error($"invalid type for '{UnaryExpression.Operator}': '{Value.Type}'");
+                        return new Error($"{Expression.Location.Line}: invalid type for '{UnaryExpression.Operator}': '{Value.Type}'");
                     }
                 }
                 // Minus
@@ -117,12 +117,12 @@ public class Actor {
                     }
                     // Invalid
                     else {
-                        return new Error($"invalid type for '{UnaryExpression.Operator}': '{Value.Type}'");
+                        return new Error($"{Expression.Location.Line}: invalid type for '{UnaryExpression.Operator}': '{Value.Type}'");
                     }
                 }
                 // Invalid
                 else {
-                    return new Error($"invalid unary operator: '{UnaryExpression.Operator}'");
+                    return new Error($"{Expression.Location.Line}: invalid unary operator: '{UnaryExpression.Operator}'");
                 }
             }
             // Binary
@@ -147,7 +147,7 @@ public class Actor {
                     }
                     // Invalid
                     else {
-                        return new Error($"invalid types for '{BinaryExpression.Operator}': '{Value1.Type}', '{Value2.Type}'");
+                        return new Error($"{Expression.Location.Line}: invalid types for '{BinaryExpression.Operator}': '{Value1.Type}', '{Value2.Type}'");
                     }
                 }
                 // Subtract
@@ -158,7 +158,7 @@ public class Actor {
                     }
                     // Invalid
                     else {
-                        return new Error($"invalid types for '{BinaryExpression.Operator}': '{Value1.Type}', '{Value2.Type}'");
+                        return new Error($"{Expression.Location.Line}: invalid types for '{BinaryExpression.Operator}': '{Value1.Type}', '{Value2.Type}'");
                     }
                 }
                 // Multiply
@@ -172,13 +172,13 @@ public class Actor {
                         double Number2 = Value2.CastNumber();
                         int Int2 = (int)Number2;
                         if (Int2 < 0 || Number2 != Int2) {
-                            return new Error("number must be positive integer to multiply string");
+                            return new Error($"{Expression.Location.Line}: number must be positive integer to multiply string");
                         }
                         return Thingie.String(string.Concat(Enumerable.Repeat(Value1.CastString(), Int2)));
                     }
                     // Invalid
                     else {
-                        return new Error($"invalid types for '{BinaryExpression.Operator}': '{Value1.Type}', '{Value2.Type}'");
+                        return new Error($"{Expression.Location.Line}: invalid types for '{BinaryExpression.Operator}': '{Value1.Type}', '{Value2.Type}'");
                     }
                 }
                 // Divide
@@ -189,7 +189,7 @@ public class Actor {
                     }
                     // Invalid
                     else {
-                        return new Error($"invalid types for '{BinaryExpression.Operator}': '{Value1.Type}', '{Value2.Type}'");
+                        return new Error($"{Expression.Location.Line}: invalid types for '{BinaryExpression.Operator}': '{Value1.Type}', '{Value2.Type}'");
                     }
                 }
                 // Modulo
@@ -200,7 +200,7 @@ public class Actor {
                     }
                     // Invalid
                     else {
-                        return new Error($"invalid types for '{BinaryExpression.Operator}': '{Value1.Type}', '{Value2.Type}'");
+                        return new Error($"{Expression.Location.Line}: invalid types for '{BinaryExpression.Operator}': '{Value1.Type}', '{Value2.Type}'");
                     }
                 }
                 // Exponentiate
@@ -211,17 +211,17 @@ public class Actor {
                     }
                     // Invalid
                     else {
-                        return new Error($"invalid types for '{BinaryExpression.Operator}': '{Value1.Type}', '{Value2.Type}'");
+                        return new Error($"{Expression.Location.Line}: invalid types for '{BinaryExpression.Operator}': '{Value1.Type}', '{Value2.Type}'");
                     }
                 }
                 // Invalid
                 else {
-                    return new Error($"invalid binary operator: '{BinaryExpression.Operator}'");
+                    return new Error($"{Expression.Location.Line}: invalid binary operator: '{BinaryExpression.Operator}'");
                 }
             }
             // Invalid
             else {
-                return new Error($"invalid expression: '{Expression}'");
+                return new Error($"{Expression.Location.Line}: invalid expression: '{Expression}'");
             }
         }
     }
