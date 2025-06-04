@@ -125,6 +125,11 @@ public static class Parser {
         else if (Tokens.Length > 0 && Tokens[0].Type is TokenType.Label) {
             // Identifier
             if (Tokens.Length > 1 && Tokens[1].Type is TokenType.Identifier) {
+                // Ensure no tokens remaining
+                if (Tokens.Length > 2) {
+                    return new Error($"{Tokens[2].Location.Line}: unexpected token");
+                }
+
                 // Create instruction
                 return new LabelInstruction() {
                     Location = Tokens[0].Location,
@@ -143,6 +148,11 @@ public static class Parser {
             if (Tokens.Length > 1 && Tokens[1].Type is TokenType.Goto) {
                 // Identifier
                 if (Tokens.Length > 2 && Tokens[2].Type is TokenType.Identifier) {
+                    // Ensure no tokens remaining
+                    if (Tokens.Length > 3) {
+                        return new Error($"{Tokens[3].Location.Line}: unexpected token");
+                    }
+
                     // Create instruction
                     return new GotoGotoLabelInstruction() {
                         Location = Tokens[0].Location,
@@ -157,6 +167,11 @@ public static class Parser {
             }
             // Identifier
             else if (Tokens.Length > 1 && Tokens[1].Type is TokenType.Identifier) {
+                // Ensure no tokens remaining
+                if (Tokens.Length > 2) {
+                    return new Error($"{Tokens[2].Location.Line}: unexpected token");
+                }
+
                 // Create instruction
                 return new GotoLabelInstruction() {
                     Location = Tokens[0].Location,
@@ -166,6 +181,11 @@ public static class Parser {
             }
             // Number
             else if (Tokens.Length > 1 && Tokens[1].Type is TokenType.Number) {
+                // Ensure no tokens remaining
+                if (Tokens.Length > 2) {
+                    return new Error($"{Tokens[2].Location.Line}: unexpected token");
+                }
+
                 // Parse line number
                 if (!int.TryParse(Tokens[1].Value, out int TargetLine)) {
                     return new Error($"{Tokens[1].Location.Line}: invalid line number");
@@ -183,10 +203,15 @@ public static class Parser {
                 // Plus / Minus
                 if (Tokens[1].Value is "+" or "-") {
                     // Number
-                    if (Tokens.Length > 1 && Tokens[1].Type is TokenType.Number) {
+                    if (Tokens.Length > 2 && Tokens[2].Type is TokenType.Number) {
+                        // Ensure no tokens remaining
+                        if (Tokens.Length > 3) {
+                            return new Error($"{Tokens[3].Location.Line}: unexpected token");
+                        }
+
                         // Parse line number offset
-                        if (!int.TryParse(Tokens[1].Value, out int TargetLineOffset)) {
-                            return new Error($"{Tokens[1].Location.Line}: invalid line number offset");
+                        if (!int.TryParse(Tokens[2].Value, out int TargetLineOffset)) {
+                            return new Error($"{Tokens[2].Location.Line}: invalid line number offset");
                         }
 
                         // Apply sign
