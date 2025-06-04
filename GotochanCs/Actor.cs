@@ -45,7 +45,7 @@ public class Actor {
                     Variables[SetVariableInstruction.TargetVariable] = Value;
                 }
                 // Goto index
-                if (Instruction is GotoIndexInstruction GotoIndexInstruction) {
+                else if (Instruction is GotoIndexInstruction GotoIndexInstruction) {
                     // Go to index
                     Index = GotoIndexInstruction.TargetIndex;
                     Index--;
