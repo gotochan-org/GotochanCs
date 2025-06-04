@@ -108,6 +108,10 @@ public static class Lexer {
                     CurrentTokens.Add(new Token(Source, Index, TokenType.Operator, $"{Next}"));
                 }
             }
+            // Whitespace
+            else if (char.IsWhiteSpace(Next)) {
+                // Pass
+            }
             // Identifier
             else {
                 // Lex identifier
