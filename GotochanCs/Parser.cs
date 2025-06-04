@@ -394,7 +394,7 @@ public static class Parser {
             Instruction Instruction = ParseResult.Instructions[Index];
 
             // Replace goto line with goto index
-            if (Optimizations is ParseOptimizations.ReplaceGotoLineWithGotoIndex) {
+            if (Optimizations.HasFlag(ParseOptimizations.ReplaceGotoLineWithGotoIndex)) {
                 // Goto line
                 if (Instruction is GotoLineInstruction GotoLineInstruction) {
                     // Get index of first instruction on line
@@ -410,7 +410,7 @@ public static class Parser {
                 }
             }
             // Replace goto label with goto index
-            if (Optimizations is ParseOptimizations.ReplaceGotoLabelWithGotoIndex) {
+            if (Optimizations.HasFlag(ParseOptimizations.ReplaceGotoLabelWithGotoIndex)) {
                 // Goto label
                 if (Instruction is GotoLabelInstruction GotoLabelInstruction) {
                     // Get index of label
