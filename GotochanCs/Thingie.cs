@@ -1,6 +1,6 @@
 namespace GotochanCs;
 
-public readonly struct Thingie {
+public readonly struct Thingie : IEquatable<Thingie> {
     public ThingieType Type { get; }
 
     private double NumberData { get; }
@@ -45,6 +45,27 @@ public readonly struct Thingie {
         ThingieType.String => CastString(),
         _ => throw new NotImplementedException($"type not handled: '{Type}'")
     };
+
+    public override bool Equals(object? Other) {
+        return Other is Thingie OtherThingie && Equals(OtherThingie);
+    }
+    public override int GetHashCode() {
+        return Type switch {
+            ThingieType.Nothing => 0,
+            ThingieType.Flag => CastFlag().GetHashCode(),
+            ThingieType.Number => CastNumber().GetHashCode(),
+            ThingieType.String => CastString().GetHashCode(),
+            _ => throw new NotImplementedException($"type not handled: '{Type}'")
+        };
+    }
+    public bool Equals(Thingie Other) {
+        return Type == Other.Type
+            && NumberData == Other.NumberData
+            && StringData == Other.StringData;
+    }
+
+    public static bool operator ==(Thingie A, Thingie B) => A.Equals(B);
+    public static bool operator !=(Thingie A, Thingie B) => !A.Equals(B);
 }
 
 public enum ThingieType {
