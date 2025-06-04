@@ -185,6 +185,7 @@ public static class Lexer {
             }
             // Whitespace
             else if (char.IsWhiteSpace(Next)) {
+                Index--;
                 break;
             }
             // Character
@@ -211,6 +212,11 @@ public static class Lexer {
             else if (Next is '_') {
                 NumberBuilder.Append(Next);
             }
+            // Character
+            else {
+                Index--;
+                break;
+            }
         }
 
         // Disallow trailing underscore
@@ -233,10 +239,12 @@ public static class Lexer {
 
             // Reserved character
             if (ReservedChars.Contains(Next)) {
+                Index--;
                 break;
             }
             // Whitespace
             else if (char.IsWhiteSpace(Next)) {
+                Index--;
                 break;
             }
             // Character
