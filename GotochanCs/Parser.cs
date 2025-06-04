@@ -453,10 +453,6 @@ public static class Parser {
         // Finish
         return Result.Success;
     }
-
-    private static string EscapeString(string String) {
-        return String;
-    }
 }
 
 public class ParseResult {
