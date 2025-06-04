@@ -22,14 +22,28 @@ public static class Parser {
             if (Next.Type is TokenType.EndOfInstruction) {
                 // Get span of tokens in instruction
                 ReadOnlySpan<Token> InstructionTokens = TokensSpan[CurrentInstructionIndex..Index];
-                // Parse tokens as instruction
-                if (ParseInstruction(InstructionTokens).TryGetError(out Error InstructionError, out Instruction? Instruction)) {
-                    return InstructionError;
+                // Ensure any tokens
+                if (!InstructionTokens.IsEmpty) {
+                    // Parse tokens as instruction
+                    if (ParseInstruction(InstructionTokens).TryGetError(out Error InstructionError, out Instruction? Instruction)) {
+                        return InstructionError;
+                    }
+                    Instructions.Add(Instruction);
+                    // Start instruction at next token
+                    CurrentInstructionIndex = Index + 1;
                 }
-                Instructions.Add(Instruction);
-                // Start instruction at next token
-                CurrentInstructionIndex = Index + 1;
             }
+        }
+
+        // Get span of tokens in last instruction
+        ReadOnlySpan<Token> LastInstructionTokens = TokensSpan[CurrentInstructionIndex..];
+        // Ensure any tokens
+        if (!LastInstructionTokens.IsEmpty) {
+            // Parse tokens as instruction
+            if (ParseInstruction(LastInstructionTokens).TryGetError(out Error InstructionError, out Instruction? Instruction)) {
+                return InstructionError;
+            }
+            Instructions.Add(Instruction);
         }
 
         // Finish
