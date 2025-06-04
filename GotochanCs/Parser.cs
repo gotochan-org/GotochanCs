@@ -222,9 +222,45 @@ public static class Parser {
                     TargetLine = TargetLine,
                 };
             }
+            // Operator
+            else if (Tokens.Length > 1 && Tokens[1].Type is TokenType.Operator) {
+                // Plus / Minus
+                if (Tokens[1].Value is "+" or "-") {
+                    // Number
+                    if (Tokens.Length > 1 && Tokens[1].Type is TokenType.Number) {
+                        // Parse line number offset
+                        if (!int.TryParse(Tokens[1].Value, out int TargetLineOffset)) {
+                            return new Error($"{Tokens[1].Location.Line}: invalid line number offset");
+                        }
+
+                        // Apply sign
+                        if (Tokens[1].Value is "-") {
+                            TargetLineOffset *= -1;
+                        }
+
+                        // Offset from current line
+                        int TargetLine = Tokens[1].Location.Line + TargetLineOffset;
+
+                        // Create instruction
+                        return new GotoLineInstruction() {
+                            Location = Tokens[0].Location,
+                            Condition = Condition,
+                            TargetLine = TargetLine,
+                        };
+                    }
+                    // Invalid
+                    else {
+                        return new Error($"{Tokens[1].Location.Line}: unexpected operator");
+                    }
+                }
+                // Invalid
+                else {
+                    return new Error($"{Tokens[1].Location.Line}: unexpected operator");
+                }
+            }
             // Invalid
             else {
-                return new Error($"{Tokens[0].Location.Line}: expected label identifier");
+                return new Error($"{Tokens[0].Location.Line}: expected goto target");
             }
         }
 
