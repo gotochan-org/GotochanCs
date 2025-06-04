@@ -32,91 +32,6 @@ public static class Parser {
             }
         }
 
-        /*Result<bool> TrySubmitTokens() {
-            // Submit last token to list
-            TrySubmitToken();
-            // Ensure tokens were built
-            if (CurrentTokens.Count <= 0) {
-                return false;
-            }
-            // Parse instruction from tokens
-            if (ParseInstruction(CurrentLine, CollectionsMarshal.AsSpan(CurrentTokens)).TryGetError(out Error ParseInstructionError, out Instruction? Instruction)) {
-                return ParseInstructionError;
-            }
-            // Submit instruction to list
-            CurrentTokens.Clear();
-            Instructions.Add(Instruction);
-            int InstructionIndex = Instructions.Count - 1;
-            // Track index of first instruction on each line
-            LineIndexes.TryAdd(CurrentLine, InstructionIndex);
-            // Track index of labels
-            if (Instruction is LabelInstruction LabelInstruction) {
-                if (!LabelIndexes.TryAdd(LabelInstruction.Name, InstructionIndex)) {
-                    return new Error($"duplicate label: '{LabelInstruction.Name}'");
-                }
-            }
-            return true;
-        }
-
-        for (int Index = 0; Index < Tokens.Length; Index++) {
-            Token Next = Tokens[Index];
-
-            // End of instruction
-            if (Next.Type is TokenType.EndOfInstruction) {
-                // Try submit tokens
-                if (TrySubmitTokens().TryGetError(out Error SubmitTokensError)) {
-                    return SubmitTokensError;
-                }
-            }
-            // End of token
-            else if (char.IsWhiteSpace(Next)) {
-                // Try submit token
-                TrySubmitToken();
-            }
-            // Part of token
-            else {
-                // Build token
-                CurrentToken.Append(Next);
-            }
-        }
-
-        // Try submit last tokens
-        if (TrySubmitTokens().TryGetError(out Error SubmitLastTokensError)) {
-            return SubmitLastTokensError;
-        }
-
-        // Convert goto line/label to goto index
-        for (int Index = 0; Index < Instructions.Count; Index++) {
-            Instruction Instruction = Instructions[Index];
-
-            // Goto line
-            if (Instruction is GotoLineInstruction GotoLineInstruction) {
-                // Get index of first instruction on line
-                if (!LineIndexes.TryGetValue(GotoLineInstruction.TargetLine, out int TargetIndex)) {
-                    return new Error($"{Instruction.Line}: invalid label");
-                }
-                // Replace with goto index
-                Instructions[Index] = new GotoIndexInstruction() {
-                    Line = GotoLineInstruction.Line,
-                    TargetIndex = TargetIndex,
-                    Condition = GotoLineInstruction.Condition,
-                };
-            }
-            // Goto label
-            else if (Instruction is GotoLabelInstruction GotoLabelInstruction) {
-                // Get index of label
-                if (!LabelIndexes.TryGetValue(GotoLabelInstruction.TargetLabel, out int TargetIndex)) {
-                    return new Error($"{Instruction.Line}: invalid label");
-                }
-                // Replace with goto index
-                Instructions[Index] = new GotoIndexInstruction() {
-                    Line = GotoLabelInstruction.Line,
-                    TargetIndex = TargetIndex,
-                    Condition = GotoLabelInstruction.Condition,
-                };
-            }
-        }*/
-
         // Finish
         return new ParseResult() {
             Source = LexResult.Source,
@@ -224,8 +139,24 @@ public static class Parser {
         }
         // Goto
         else if (Tokens.Length > 0 && Tokens[0].Type is TokenType.Goto) {
+            // Goto
+            if (Tokens.Length > 1 && Tokens[1].Type is TokenType.Goto) {
+                // Identifier
+                if (Tokens.Length > 2 && Tokens[2].Type is TokenType.Identifier) {
+                    // Create instruction
+                    return new GotoGotoLabelInstruction() {
+                        Location = Tokens[0].Location,
+                        Condition = Condition,
+                        TargetLabel = Tokens[2].Value,
+                    };
+                }
+                // Invalid
+                else {
+                    return new Error($"{Tokens[1].Location.Line}: expected goto goto target");
+                }
+            }
             // Identifier
-            if (Tokens.Length > 1 && Tokens[1].Type is TokenType.Identifier) {
+            else if (Tokens.Length > 1 && Tokens[1].Type is TokenType.Identifier) {
                 // Create instruction
                 return new GotoLabelInstruction() {
                     Location = Tokens[0].Location,
@@ -528,6 +459,47 @@ public static class Parser {
         // Invalid
         return new Error($"{Tokens[0].Location.Line}: invalid expression");
     }
+    public static Result Optimize(ParseResult ParseResult, ParseOptimizations Optimizations = ParseOptimizations.All) {
+        for (int Index = 0; Index < ParseResult.Instructions.Count; Index++) {
+            Instruction Instruction = ParseResult.Instructions[Index];
+
+            // Replace goto line with goto index
+            if (Optimizations is ParseOptimizations.ReplaceGotoLineWithGotoIndex) {
+                // Goto line
+                if (Instruction is GotoLineInstruction GotoLineInstruction) {
+                    // Get index of first instruction on line
+                    if (!ParseResult.LineIndexes.TryGetValue(GotoLineInstruction.TargetLine, out int TargetIndex)) {
+                        return new Error($"{Instruction.Location.Line}: invalid line");
+                    }
+                    // Replace with goto index
+                    ParseResult.Instructions[Index] = new GotoIndexInstruction() {
+                        Location = GotoLineInstruction.Location,
+                        TargetIndex = TargetIndex,
+                        Condition = GotoLineInstruction.Condition,
+                    };
+                }
+            }
+            // Replace goto label with goto index
+            if (Optimizations is ParseOptimizations.ReplaceGotoLabelWithGotoIndex) {
+                // Goto label
+                if (Instruction is GotoLabelInstruction GotoLabelInstruction) {
+                    // Get index of label
+                    if (!ParseResult.LabelIndexes.TryGetValue(GotoLabelInstruction.TargetLabel, out int TargetIndex)) {
+                        return new Error($"{Instruction.Location.Line}: invalid label");
+                    }
+                    // Replace with goto index
+                    ParseResult.Instructions[Index] = new GotoIndexInstruction() {
+                        Location = GotoLabelInstruction.Location,
+                        TargetIndex = TargetIndex,
+                        Condition = GotoLabelInstruction.Condition,
+                    };
+                }
+            }
+        }
+
+        // Finish
+        return Result.Success;
+    }
 
     private static string EscapeString(string String) {
         return String;
@@ -539,4 +511,13 @@ public class ParseResult {
     public required List<Instruction> Instructions { get; init; }
     public required Dictionary<int, int> LineIndexes { get; init; }
     public required Dictionary<string, int> LabelIndexes { get; init; }
+}
+
+[Flags]
+public enum ParseOptimizations : long {
+    ReplaceGotoLineWithGotoIndex = 1,
+    ReplaceGotoLabelWithGotoIndex = 2,
+
+    None = 0,
+    All = long.MaxValue,
 }
