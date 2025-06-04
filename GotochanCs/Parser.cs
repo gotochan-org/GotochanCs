@@ -168,6 +168,31 @@ public static class Parser {
                     return ExpressionError;
                 }
 
+                // Compound operator
+                if (Tokens[1].Value is not "=") {
+                    // Get operator
+                    BinaryOperator CompoundOperator = Tokens[1].Value switch {
+                        "+=" => BinaryOperator.Add,
+                        "-=" => BinaryOperator.Subtract,
+                        "*=" => BinaryOperator.Multiply,
+                        "/=" => BinaryOperator.Divide,
+                        "%=" => BinaryOperator.Modulo,
+                        "^=" => BinaryOperator.Exponentiate,
+                        _ => throw new NotImplementedException($"{Tokens[1].Location.Line}: unhandled operator: '{Tokens[1].Value}'")
+                    };
+
+                    // Wrap expression
+                    Value = new BinaryExpression() {
+                        Location = Value.Location,
+                        Operator = CompoundOperator,
+                        Expression1 = new GetVariableExpression() {
+                            Location = Tokens[0].Location,
+                            TargetVariable = Tokens[0].Value,
+                        },
+                        Expression2 = Value,
+                    };
+                }
+
                 // Create instruction
                 return new SetVariableInstruction() {
                     Location = Tokens[0].Location,
