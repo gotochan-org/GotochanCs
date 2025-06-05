@@ -174,6 +174,42 @@ public static class Lexer {
                 if (NewlineChars.Contains(Escaped)) {
                     // Pass
                 }
+                // Backspace
+                else if (Escaped is 'b') {
+                    StringBuilder.Append('\b');
+                }
+                // Form feed
+                else if (Escaped is 'f') {
+                    StringBuilder.Append('\f');
+                }
+                // Newline
+                else if (Escaped is 'n') {
+                    StringBuilder.Append('\n');
+                }
+                // Carriage return
+                else if (Escaped is 'r') {
+                    StringBuilder.Append('\r');
+                }
+                // Tab
+                else if (Escaped is 't') {
+                    StringBuilder.Append('\t');
+                }
+                // Vertical tab
+                else if (Escaped is 'v') {
+                    StringBuilder.Append('\v');
+                }
+                // Null
+                else if (Escaped is '0') {
+                    StringBuilder.Append('\0');
+                }
+                // Alert
+                else if (Escaped is 'a') {
+                    StringBuilder.Append('\a');
+                }
+                // Escape
+                else if (Escaped is 'e') {
+                    StringBuilder.Append('\e');
+                }
                 // Character
                 else {
                     StringBuilder.Append(Escaped);
