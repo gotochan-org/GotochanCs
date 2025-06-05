@@ -412,15 +412,14 @@ public static class Parser {
                 // Goto line
                 if (Instruction is GotoLineInstruction GotoLineInstruction) {
                     // Get index of first instruction on line
-                    if (!ParseResult.LineIndexes.TryGetValue(GotoLineInstruction.TargetLine, out int TargetIndex)) {
-                        return new Error($"{Instruction.Location.Line}: invalid line");
+                    if (ParseResult.LineIndexes.TryGetValue(GotoLineInstruction.TargetLine, out int TargetIndex)) {
+                        // Replace with goto index
+                        ParseResult.Instructions[Index] = new GotoIndexInstruction() {
+                            Location = GotoLineInstruction.Location,
+                            TargetIndex = TargetIndex,
+                            Condition = GotoLineInstruction.Condition,
+                        };
                     }
-                    // Replace with goto index
-                    ParseResult.Instructions[Index] = new GotoIndexInstruction() {
-                        Location = GotoLineInstruction.Location,
-                        TargetIndex = TargetIndex,
-                        Condition = GotoLineInstruction.Condition,
-                    };
                 }
             }
             // Replace goto label with goto index
@@ -428,15 +427,14 @@ public static class Parser {
                 // Goto label
                 if (Instruction is GotoLabelInstruction GotoLabelInstruction) {
                     // Get index of label
-                    if (!ParseResult.LabelIndexes.TryGetValue(GotoLabelInstruction.TargetLabel, out int TargetIndex)) {
-                        return new Error($"{Instruction.Location.Line}: invalid label");
+                    if (ParseResult.LabelIndexes.TryGetValue(GotoLabelInstruction.TargetLabel, out int TargetIndex)) {
+                        // Replace with goto index
+                        ParseResult.Instructions[Index] = new GotoIndexInstruction() {
+                            Location = GotoLabelInstruction.Location,
+                            TargetIndex = TargetIndex,
+                            Condition = GotoLabelInstruction.Condition,
+                        };
                     }
-                    // Replace with goto index
-                    ParseResult.Instructions[Index] = new GotoIndexInstruction() {
-                        Location = GotoLabelInstruction.Location,
-                        TargetIndex = TargetIndex,
-                        Condition = GotoLabelInstruction.Condition,
-                    };
                 }
             }
             // Remove constant conditions

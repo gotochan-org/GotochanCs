@@ -13,6 +13,7 @@ public class Actor {
 
     private readonly Dictionary<string, Thingie> Variables = [];
     private readonly Dictionary<string, int> GotoLabelIndexes = [];
+    private readonly Dictionary<string, Action<Actor>> ExternalLabels = [];
 
     public Result Interpret(ParseResult ParseResult) {
         lock (Lock) {
@@ -64,7 +65,15 @@ public class Actor {
                 else if (Instruction is GotoLabelInstruction GotoLabelInstruction) {
                     // Get index of label
                     if (!ParseResult.LabelIndexes.TryGetValue(GotoLabelInstruction.TargetLabel, out int TargetIndex)) {
-                        return new Error($"{Instruction.Location.Line}: invalid label");
+                        // Get external label
+                        if (ExternalLabels.TryGetValue(GotoLabelInstruction.TargetLabel, out Action<Actor>? ExternalLabel)) {
+                            // Call external label
+                            ExternalLabel(this);
+                        }
+                        // Invalid
+                        else {
+                            return new Error($"{Instruction.Location.Line}: invalid label");
+                        }
                     }
                     // Set index of goto label
                     GotoLabelIndexes[GotoLabelInstruction.TargetLabel] = Index;
@@ -247,6 +256,31 @@ public class Actor {
             else {
                 Variables[TargetVariable] = Value;
             }
+        }
+    }
+    public Dictionary<string, Thingie> GetVariables() {
+        lock (Lock) {
+            return Variables.ToDictionary();
+        }
+    }
+    public Delegate? GetExternalLabel(string TargetLabel) {
+        lock (Lock) {
+            return ExternalLabels.GetValueOrDefault(TargetLabel);
+        }
+    }
+    public void SetExternalLabel(string TargetLabel, Action<Actor>? Value) {
+        lock (Lock) {
+            if (Value is null) {
+                ExternalLabels.Remove(TargetLabel);
+            }
+            else {
+                ExternalLabels[TargetLabel] = Value;
+            }
+        }
+    }
+    public Dictionary<string, Action<Actor>> GetExternalLabels() {
+        lock (Lock) {
+            return ExternalLabels.ToDictionary();
         }
     }
 }
