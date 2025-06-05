@@ -18,32 +18,45 @@ public static class Parser {
         for (int Index = 0; Index < TokensSpan.Length; Index++) {
             Token Next = TokensSpan[Index];
 
+            bool EndOfInstruction = false;
             // End of instruction
             if (Next.Type is TokenType.EndOfInstruction) {
+                EndOfInstruction = true;
+            }
+            // Last instruction
+            else if (Index + 1 >= TokensSpan.Length) {
+                Index++;
+                EndOfInstruction = true;
+            }
+
+            // End of instruction
+            if (EndOfInstruction) {
                 // Get span of tokens in instruction
                 ReadOnlySpan<Token> InstructionTokens = TokensSpan[CurrentInstructionIndex..Index];
+
                 // Ensure any tokens
                 if (!InstructionTokens.IsEmpty) {
                     // Parse tokens as instruction
                     if (ParseInstruction(InstructionTokens).TryGetError(out Error InstructionError, out Instruction? Instruction)) {
                         return InstructionError;
                     }
+                    int InstructionIndex = Instructions.Count;
                     Instructions.Add(Instruction);
+
                     // Start instruction at next token
                     CurrentInstructionIndex = Index + 1;
+
+                    // Track line indexes
+                    LineIndexes.TryAdd(Instruction.Location.Line, InstructionIndex);
+
+                    // Track label indexes
+                    if (Instruction is LabelInstruction LabelInstruction) {
+                        if (!LabelIndexes.TryAdd(LabelInstruction.Name, InstructionIndex)) {
+                            return new Error($"{LabelInstruction.Location.Line}: duplicate label");
+                        }
+                    }
                 }
             }
-        }
-
-        // Get span of tokens in last instruction
-        ReadOnlySpan<Token> LastInstructionTokens = TokensSpan[CurrentInstructionIndex..];
-        // Ensure any tokens
-        if (!LastInstructionTokens.IsEmpty) {
-            // Parse tokens as instruction
-            if (ParseInstruction(LastInstructionTokens).TryGetError(out Error InstructionError, out Instruction? Instruction)) {
-                return InstructionError;
-            }
-            Instructions.Add(Instruction);
         }
 
         // Finish
@@ -274,6 +287,11 @@ public static class Parser {
             if (Tokens.Length > 1 && Tokens[1].Type is TokenType.Operator) {
                 // Value
                 if (Tokens.Length > 2 && Tokens[2].Type is TokenType.Identifier or TokenType.Nothing or TokenType.Flag or TokenType.Number or TokenType.String) {
+                    // Ensure no tokens remaining
+                    if (Tokens.Length > 3) {
+                        return new Error($"{Tokens[3].Location.Line}: unexpected token");
+                    }
+
                     // Get binary operator
                     BinaryOperator BinaryOperator = Tokens[1].Value switch {
                         "+" => BinaryOperator.Add,
@@ -297,7 +315,7 @@ public static class Parser {
                         return Value1Error;
                     }
                     // Get right value
-                    if (ParseExpression([Tokens[0]]).TryGetError(out Error Value2Error, out Expression? Value2)) {
+                    if (ParseExpression([Tokens[2]]).TryGetError(out Error Value2Error, out Expression? Value2)) {
                         return Value2Error;
                     }
 
@@ -375,6 +393,11 @@ public static class Parser {
         else if (Tokens.Length > 0 && Tokens[0].Type is TokenType.Operator) {
             // Value
             if (Tokens.Length > 1 && Tokens[1].Type is TokenType.Identifier or TokenType.Nothing or TokenType.Flag or TokenType.Number or TokenType.String) {
+                // Ensure no tokens remaining
+                if (Tokens.Length > 2) {
+                    return new Error($"{Tokens[2].Location.Line}: unexpected token");
+                }
+
                 // Get unary operator
                 UnaryOperator UnaryOperator = Tokens[0].Value switch {
                     "+" => UnaryOperator.Plus,

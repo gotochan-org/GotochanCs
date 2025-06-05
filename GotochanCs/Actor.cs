@@ -346,8 +346,8 @@ public class Actor {
     }
     public void IncludePackage(Package Package) {
         // Add external labels
-        foreach ((string Identifier, Action<Actor> Label) in Package.ExternalLabels) {
-            ExternalLabels[Identifier] = Label;
+        foreach (KeyValuePair<string, Action<Actor>> ExternalLabel in Package.ExternalLabels) {
+            ExternalLabels[ExternalLabel.Key] = ExternalLabel.Value;
         }
     }
 }
