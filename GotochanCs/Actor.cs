@@ -45,6 +45,11 @@ public class Actor {
                     // Set variable to value
                     Variables[SetVariableInstruction.TargetVariable] = Value;
                 }
+                // Label
+                else if (Instruction is LabelInstruction LabelInstruction) {
+                    // Set label index
+                    ParseResult.LabelIndexes[LabelInstruction.Name] = Index;
+                }
                 // Goto index
                 else if (Instruction is GotoIndexInstruction GotoIndexInstruction) {
                     // Go to index

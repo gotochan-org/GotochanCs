@@ -426,10 +426,59 @@ public static class Parser {
         // Invalid
         return new Error($"{Tokens[0].Location.Line}: invalid expression");
     }
-    public static Result Optimize(ParseResult ParseResult, ParseOptimizations Optimizations = ParseOptimizations.All) {
+    public static List<ParseAnalyzeResult> Analyze(ParseResult ParseResult, ParseAnalyses Analyses = ParseAnalyses.All) {
+        List<ParseAnalyzeResult> Results = [];
+
         for (int Index = 0; Index < ParseResult.Instructions.Count; Index++) {
             Instruction Instruction = ParseResult.Instructions[Index];
 
+            // Unused label
+            if (Analyses.HasFlag(ParseAnalyses.UnusedLabel)) {
+                // Label
+                if (Instruction is LabelInstruction LabelInstruction) {
+                    // Find goto label
+                    bool FoundGotoLabel = false;
+                    for (int Index2 = 0; Index2 < ParseResult.Instructions.Count; Index2++) {
+                        Instruction Instruction2 = ParseResult.Instructions[Index2];
+
+                        // Goto label
+                        if (Instruction2 is GotoLabelInstruction GotoLabelInstruction) {
+                            if (GotoLabelInstruction.TargetLabel == LabelInstruction.Name) {
+                                FoundGotoLabel = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    // Label is unused
+                    if (!FoundGotoLabel) {
+                        // Create analysis
+                        Results.Add(new ParseAnalyzeResult() {
+                            Location = LabelInstruction.Location,
+                            Analysis = ParseAnalyses.UnusedLabel,
+                            Message = "unused label",
+                        });
+                    }
+                }
+            }
+        }
+
+        return Results;
+    }
+    public static void Optimize(ParseResult ParseResult, ParseOptimizations Optimizations = ParseOptimizations.All) {
+        for (int Index = 0; Index < ParseResult.Instructions.Count; Index++) {
+            Instruction Instruction = ParseResult.Instructions[Index];
+
+            // Remove labels
+            if (Optimizations.HasFlag(ParseOptimizations.RemoveLabels)) {
+                // Label
+                if (Instruction is LabelInstruction) {
+                    // Remove instruction
+                    ParseResult.Instructions.RemoveAt(Index);
+                    Index--;
+                    continue;
+                }
+            }
             // Replace goto line with goto index
             if (Optimizations.HasFlag(ParseOptimizations.ReplaceGotoLineWithGotoIndex)) {
                 // Goto line
@@ -478,15 +527,13 @@ public static class Parser {
                                 // Remove instruction
                                 ParseResult.Instructions.RemoveAt(Index);
                                 Index--;
+                                continue;
                             }
                         }
                     }
                 }
             }
         }
-
-        // Finish
-        return Result.Success;
     }
 }
 
@@ -497,11 +544,26 @@ public class ParseResult {
     public required Dictionary<string, int> LabelIndexes { get; init; }
 }
 
+public readonly record struct ParseAnalyzeResult {
+    public required SourceLocation Location { get; init; }
+    public required ParseAnalyses Analysis { get; init; }
+    public required string Message { get; init; }
+}
+
+[Flags]
+public enum ParseAnalyses : long {
+    UnusedLabel = 1,
+
+    None = 0,
+    All = long.MaxValue,
+}
+
 [Flags]
 public enum ParseOptimizations : long {
-    ReplaceGotoLineWithGotoIndex = 1,
-    ReplaceGotoLabelWithGotoIndex = 2,
-    RemoveConstantConditions = 3,
+    RemoveLabels = 1,
+    ReplaceGotoLineWithGotoIndex = 2,
+    ReplaceGotoLabelWithGotoIndex = 4,
+    RemoveConstantConditions = 8,
 
     None = 0,
     All = long.MaxValue,
