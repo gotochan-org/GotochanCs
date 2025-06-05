@@ -7,20 +7,22 @@ public class Tests {
     public void BasicTest() {
         string Source = """
             counter = 10
-            param = ~value:~
-            param += counter
+            what = ~value:~
+            what += counter
             goto say
             """;
 
         LexResult LexResult = Lexer.Lex(Source).Value;
-        _ = LexResult;
 
         ParseResult ParseResult = Parser.Parse(LexResult).Value;
         ParseResult.Instructions.Count.ShouldBe(4);
 
+        Parser.Optimize(ParseResult);
+
         Actor Actor = new();
+        Actor.IncludePackage(new ConsoleAppPackage());
         Actor.Interpret(ParseResult).ShouldBe(Result.Success);
-        Actor.GetVariable("param").ShouldBe("value: 10");
+        Actor.GetVariable("what").ShouldBe("value: 10");
     }
     /*[Fact]
     public void ReadmeTest() {

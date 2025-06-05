@@ -68,7 +68,14 @@ public class Actor {
                         // Get external label
                         if (ExternalLabels.TryGetValue(GotoLabelInstruction.TargetLabel, out Action<Actor>? ExternalLabel)) {
                             // Call external label
-                            ExternalLabel(this);
+                            try {
+                                ExternalLabel(this);
+                                continue;
+                            }
+                            // Return exceptions as errors
+                            catch (Exception Ex) {
+                                return new Error($"{Instruction.Location.Line}: '{Ex.GetType()}': '{Ex.Message}'");
+                            }
                         }
                         // Invalid
                         else {
@@ -281,6 +288,12 @@ public class Actor {
     public Dictionary<string, Action<Actor>> GetExternalLabels() {
         lock (Lock) {
             return ExternalLabels.ToDictionary();
+        }
+    }
+    public void IncludePackage(Package Package) {
+        // Add external labels
+        foreach ((string Identifier, Action<Actor> Label) in Package.ExternalLabels) {
+            ExternalLabels[Identifier] = Label;
         }
     }
 }

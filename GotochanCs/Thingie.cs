@@ -1,3 +1,5 @@
+using ResultZero;
+
 namespace GotochanCs;
 
 public readonly struct Thingie : IEquatable<Thingie> {
@@ -25,6 +27,11 @@ public readonly struct Thingie : IEquatable<Thingie> {
     public bool CastFlag() => Type is ThingieType.Flag ? NumberData is not 0 : throw new InvalidCastException("thingie is not flag");
     public double CastNumber() => Type is ThingieType.Number ? NumberData : throw new InvalidCastException("thingie is not number");
     public string CastString() => Type is ThingieType.String ? StringData! : throw new InvalidCastException("thingie is not string");
+
+    public Result<object?> AsNothing() => Type is ThingieType.Nothing ? CastNothing() : new Error("thingie is not nothing");
+    public Result<bool> AsFlag() => Type is ThingieType.Flag ? CastFlag() : new Error("thingie is not flag");
+    public Result<double> AsNumber() => Type is ThingieType.Number ? CastNumber() : new Error("thingie is not number");
+    public Result<string> AsString() => Type is ThingieType.String ? CastString() : new Error("thingie is not string");
 
     public static explicit operator bool(Thingie Thingie) => Thingie.CastFlag();
     public static explicit operator double(Thingie Thingie) => Thingie.CastNumber();
