@@ -208,6 +208,14 @@ public static class Lexer {
             if (Next is >= '0' and <= '9') {
                 NumberBuilder.Append(Next);
             }
+            // Dot
+            else if (Next is '.') {
+                if (NumberBuilder.Contains(".")) {
+                    Index--;
+                    break;
+                }
+                NumberBuilder.Append(Next);
+            }
             // Underscore
             else if (Next is '_') {
                 NumberBuilder.Append(Next);

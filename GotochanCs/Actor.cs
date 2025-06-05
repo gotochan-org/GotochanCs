@@ -239,6 +239,60 @@ public class Actor {
                         return new Error($"{Expression.Location.Line}: invalid types for '{BinaryExpression.Operator}': '{Value1.Type}', '{Value2.Type}'");
                     }
                 }
+                // Equals
+                else if (BinaryExpression.Operator is BinaryOperator.Equals) {
+                    // Thingie, Thingie
+                    return Thingie.Flag(Value1 == Value2);
+                }
+                // Not equals
+                else if (BinaryExpression.Operator is BinaryOperator.NotEquals) {
+                    // Thingie, Thingie
+                    return Thingie.Flag(Value1 != Value2);
+                }
+                // Greater than
+                else if (BinaryExpression.Operator is BinaryOperator.GreaterThan) {
+                    // Number, Number
+                    if (Value1.Type is ThingieType.Number && Value2.Type is ThingieType.Number) {
+                        return Thingie.Flag(Value1.CastNumber() > Value2.CastNumber());
+                    }
+                    // Invalid
+                    else {
+                        return new Error($"{Expression.Location.Line}: invalid types for '{BinaryExpression.Operator}': '{Value1.Type}', '{Value2.Type}'");
+                    }
+                }
+                // Less than
+                else if (BinaryExpression.Operator is BinaryOperator.LessThan) {
+                    // Number, Number
+                    if (Value1.Type is ThingieType.Number && Value2.Type is ThingieType.Number) {
+                        return Thingie.Flag(Value1.CastNumber() < Value2.CastNumber());
+                    }
+                    // Invalid
+                    else {
+                        return new Error($"{Expression.Location.Line}: invalid types for '{BinaryExpression.Operator}': '{Value1.Type}', '{Value2.Type}'");
+                    }
+                }
+                // Greater than or equal to
+                else if (BinaryExpression.Operator is BinaryOperator.GreaterThanOrEqualTo) {
+                    // Number, Number
+                    if (Value1.Type is ThingieType.Number && Value2.Type is ThingieType.Number) {
+                        return Thingie.Flag(Value1.CastNumber() >= Value2.CastNumber());
+                    }
+                    // Invalid
+                    else {
+                        return new Error($"{Expression.Location.Line}: invalid types for '{BinaryExpression.Operator}': '{Value1.Type}', '{Value2.Type}'");
+                    }
+                }
+                // Less than or equal to
+                else if (BinaryExpression.Operator is BinaryOperator.LessThanOrEqualTo) {
+                    // Number, Number
+                    if (Value1.Type is ThingieType.Number && Value2.Type is ThingieType.Number) {
+                        return Thingie.Flag(Value1.CastNumber() <= Value2.CastNumber());
+                    }
+                    // Invalid
+                    else {
+                        return new Error($"{Expression.Location.Line}: invalid types for '{BinaryExpression.Operator}': '{Value1.Type}', '{Value2.Type}'");
+                    }
+                }
                 // Invalid
                 else {
                     return new Error($"{Expression.Location.Line}: invalid binary operator: '{BinaryExpression.Operator}'");
