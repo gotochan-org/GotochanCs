@@ -1,6 +1,6 @@
 namespace GotochanCs;
 
-public abstract class Pack {
+public abstract class Bundle {
     public abstract string Name { get; }
     public abstract Dictionary<string, Thingie> Options { get; }
     public abstract Dictionary<string, Action<Actor>> ExternalLabels { get; }

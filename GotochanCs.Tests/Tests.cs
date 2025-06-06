@@ -1,5 +1,5 @@
 using ResultZero;
-using GotochanCs.Packs;
+using GotochanCs.Bundles;
 
 namespace GotochanCs.Tests;
 
@@ -19,7 +19,7 @@ public class Tests {
         ParseResult.Instructions.Count.ShouldBe(4);
 
         Actor Actor = new();
-        Actor.IncludePack(new ConsoleAppPack());
+        Actor.IncludeBundle(new ConsoleAppBundle());
         Actor.Interpret(ParseResult).ShouldBe(Result.Success);
         Actor.GetVariable("what").ShouldBe("value: 10");
     }
@@ -47,7 +47,7 @@ public class Tests {
         ParseResult.Instructions.Count.ShouldBe(13);
 
         Actor Actor = new();
-        Actor.IncludePack(new ConsoleAppPack());
+        Actor.IncludeBundle(new ConsoleAppBundle());
         Actor.Interpret(ParseResult).ShouldBe(Result.Success);
     }
     [Fact]
@@ -65,7 +65,7 @@ public class Tests {
         ParseResult.Instructions.Count.ShouldBe(4);
 
         Actor Actor = new();
-        Actor.IncludePack(new ConsoleAppPack());
+        Actor.IncludeBundle(new ConsoleAppBundle());
         Actor.Interpret(ParseResult).ShouldBe(Result.Success);
         Actor.GetVariable("counter").ShouldBe(4);
     }

@@ -18,10 +18,10 @@ public class Actor {
 
     public Actor() {
     }
-    public Actor(IEnumerable<Pack> Packs)
+    public Actor(IEnumerable<Bundle> Bundles)
         : this() {
-        foreach (Pack Pack in Packs) {
-            IncludePack(Pack);
+        foreach (Bundle Bundle in Bundles) {
+            IncludeBundle(Bundle);
         }
     }
     public Result Interpret(ParseResult ParseResult) {
@@ -359,9 +359,9 @@ public class Actor {
             return ExternalLabels.ToDictionary();
         }
     }
-    public void IncludePack(Pack Pack) {
+    public void IncludeBundle(Bundle Bundle) {
         // Add external labels
-        foreach (KeyValuePair<string, Action<Actor>> ExternalLabel in Pack.ExternalLabels) {
+        foreach (KeyValuePair<string, Action<Actor>> ExternalLabel in Bundle.ExternalLabels) {
             ExternalLabels[ExternalLabel.Key] = ExternalLabel.Value;
         }
     }

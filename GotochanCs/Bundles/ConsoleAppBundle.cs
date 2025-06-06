@@ -1,11 +1,11 @@
-namespace GotochanCs.Packs;
+namespace GotochanCs.Bundles;
 
-public class ConsoleAppPack : Pack {
+public class ConsoleAppBundle : Bundle {
     public override string Name { get; } = "consoleapp";
     public override Dictionary<string, Thingie> Options { get; } = [];
     public override Dictionary<string, Action<Actor>> ExternalLabels { get; } = [];
 
-    public ConsoleAppPack() {
+    public ConsoleAppBundle() {
         ExternalLabels = GetExternalLabels();
     }
 

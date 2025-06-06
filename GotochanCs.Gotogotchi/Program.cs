@@ -1,4 +1,5 @@
 using ResultZero;
+using GotochanCs.Bundles;
 
 namespace GotochanCs.Gotogotchi;
 
@@ -8,7 +9,7 @@ public static class Program {
 
         ParseResult ParseResult = Parser.Parse(Source).Value;
 
-        Actor Actor = new([new ConsoleAppPack()]);
+        Actor Actor = new([new ConsoleAppBundle()]);
         Result Result = Actor.Interpret(ParseResult);
 
         Console.WriteLine(new string('-', 10));
