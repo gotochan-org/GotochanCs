@@ -4,6 +4,12 @@ using ResultZero;
 namespace GotochanCs;
 
 public static class Parser {
+    public static Result<ParseResult> Parse(string Source) {
+        if (Lexer.Lex(Source).TryGetError(out Error LexError, out LexResult? LexResult)) {
+            return LexError;
+        }
+        return Parse(LexResult);
+    }
     public static Result<ParseResult> Parse(LexResult LexResult) {
         List<Instruction> Instructions = [];
         Dictionary<int, int> LineIndexes = [];

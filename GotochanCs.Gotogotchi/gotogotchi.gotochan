@@ -1,0 +1,315 @@
+# gotogotchi v2.0
+# by Joyless
+
+# config
+screenwidth = 15 # should be odd
+screenheight = 10
+dialogueline = 8
+dialoguetwoline = 9
+petline = 5
+pettwoline = 6
+hungerline = 1
+thirstline = 2
+funline = 3
+
+# program
+intutorial = yes
+hunger = 100
+thirst = 100
+fun = 100
+
+pet = ~
+pettwo = ~
+
+dialogue = ~welcome.
+dialoguetwo = ~v1.0.0
+goto displaytutorialmessage
+
+dialogue = ~take~care~of
+dialoguetwo = ~your~neko.
+goto displaytutorialmessage
+
+dialogue = ~press~A~to
+dialoguetwo = ~feed~neko.
+goto displaytutorialmessage
+
+dialogue = ~press~B~to
+dialoguetwo = ~water~neko.
+goto displaytutorialmessage
+
+dialogue = ~press~C~to
+dialoguetwo = ~play~w/~neko.
+goto displaytutorialmessage
+
+dialogue = ~keep~numbers
+dialoguetwo = ~above~0.
+goto displaytutorialmessage
+
+intutorial = no
+pet = ~^~^
+pettwo = ~(>.<)
+dialogue = ~
+dialoguetwo = ~~A~~B~~C~
+
+goto gettime
+timelastreducedstats = result
+redraw = yes
+label gameloop
+  goto clear if redraw
+  goto drawgrid if redraw
+  
+  what = 0.15
+  goto wait
+  
+  redraw = no
+  
+  goto gettime
+  currenttime = result
+  result -= timelastreducedstats
+  nottimetoreducestats = result < 5
+  goto +6 if nottimetoreducestats
+  timelastreducedstats = currenttime
+  redraw = yes
+  hunger -= 2
+  thirst -= 3
+  fun -= 1
+  
+  goto hasinput
+  hasnoinput = result == no
+
+  goto endofinput if hasnoinput
+  goto lastinput
+    inputisnotfeed = result != ~a
+    goto +3 if inputisnotfeed
+    redraw = yes
+    hunger += 5
+    inputisnotwater = result != ~b
+    goto +3 if inputisnotwater
+    redraw = yes
+    thirst += 8
+    inputisnotplay = result != ~c
+    goto +3 if inputisnotplay
+    redraw = yes
+    fun += 15
+  label endofinput
+  goto clampstats
+  goto checkdeath
+goto gameloop
+
+# end of program
+goto +99999
+
+# methods
+
+label drawgrid
+  y = 0
+  label fory
+    y += 1
+    x = 0
+    goto displaytitle
+    yisnotatdialogueline = y != dialogueline
+      goto +4 if yisnotatdialogueline
+      what = dialogue
+      goto centertext
+      goto endofforx
+    yisnotatdialoguetwoline = y != dialoguetwoline
+      goto +4 if yisnotatdialoguetwoline
+      what = dialoguetwo
+      goto centertext
+      goto endofforx
+    yisnotatpetline = y != petline
+      goto +4 if yisnotatpetline
+      what = pet
+      goto centertext
+      goto endofforx
+    yisnotatpettwoline = y != pettwoline
+      goto +4 if yisnotatpettwoline
+      what = pettwo
+      goto centertext
+      goto endofforx
+    goto forx if intutorial
+      yisnotathungerline = y != hungerline
+        goto +6 if yisnotathungerline
+        what = ~o-<:~
+        what += hunger
+        what += ~~
+        goto leftaligntext
+        goto endofforx
+      yisnotatthirstline = y != thirstline
+        goto +6 if yisnotatthirstline
+        what = ~|_|:~
+        what += thirst
+        what += ~~
+        goto leftaligntext
+        goto endofforx
+      yisnotatfunline = y != funline
+        goto +6 if yisnotatfunline
+        what = ~^_^:~
+        what += fun
+        what += ~~
+        goto leftaligntext
+        goto endofforx
+     label forx
+        x += 1
+        what = ~\#
+        goto say
+        xisnotatlimit = x != screenwidth
+    goto forx if xisnotatlimit
+    label endofforx
+    what = ~\n
+    goto say
+    yisnotatlimit = y != screenheight
+  goto fory if yisnotatlimit
+goto goto drawgrid
+
+label centertext
+  texttocenter = what
+  numberofhashtags = screenwidth
+  goto length
+  lengthoftext = result
+  numberofhashtags -= lengthoftext
+  numberofhashtags /= 2
+  what = numberofhashtags
+  goto truncate
+  numberofhashtags = result
+  
+  numberofhashtagsprinted = 0
+  goto wraphashtags
+  what = texttocenter
+  goto say
+  goto wraphashtags
+  
+  # add another hashtag to fill the line if necessary
+  what = lengthoftext
+  goto iseven
+  result = result == no
+  goto +3 if result
+  what = ~\#
+  goto say
+goto goto centertext
+
+label leftaligntext
+  goto length
+  lengthoftext = result
+  goto say
+  numberofhashtags = screenwidth
+  numberofhashtags -= lengthoftext
+  goto wraphashtags
+goto goto leftaligntext
+
+label wraphashtags
+  counter = 0
+  label forcounter
+    counter += 1
+    what = ~\#
+    goto say
+    numberofhashtagsprinted += 1
+    counterisnumberofhashtags = counter == numberofhashtags
+    goto endofforcounter if counterisnumberofhashtags
+    goto forcounter
+  label endofforcounter
+goto goto wraphashtags
+
+label iseven
+  what /= 2
+  nontruncated = what
+  goto truncate
+  truncatedisnotsame = result != nontruncated
+  goto +3 if truncatedisnotsame
+  result = yes
+  goto +2
+  result = no
+goto goto iseven
+
+label clampstats
+  comparison = hunger >= 0
+  goto +2 if comparison
+  hunger = 0
+  comparison = hunger <= 100
+  goto +2 if comparison
+  hunger = 100
+  comparison = thirst >= 0
+  goto +2 if comparison
+  thirst = 0
+  comparison = thirst <= 100
+  goto +2 if comparison
+  thirst = 100
+  comparison = fun >= 0
+  goto +2 if comparison
+  fun = 0
+  comparison = fun <= 100
+  goto +2 if comparison
+  fun = 100
+goto goto clampstats
+
+label checkdeath
+  comparison = hunger == 0
+  goto death if comparison
+  comparison = thirst == 0
+  goto death if comparison
+  comparison = fun == 0
+  goto death if comparison
+goto goto checkdeath
+
+label death
+  goto clear
+  what = ~your~gotogotchi~died.~:C
+  goto say
+  goto +99999
+goto goto death
+
+label lastinput
+  goto input
+  lastinputresult = result
+  goto hasinput
+  goto -3 if result
+  result = lastinputresult
+goto goto lastinput
+
+label displaytitle
+  what = nothing
+  
+  checky = y != 1
+  goto +2 if checky
+  what = ~g
+  checky = y != 2
+  goto +2 if checky
+  what = ~o
+  checky = y != 3
+  goto +2 if checky
+  what = ~t
+  checky = y != 4
+  goto +2 if checky
+  what = ~o
+  checky = y != 5
+  goto +2 if checky
+  what = ~g
+  checky = y != 6
+  goto +2 if checky
+  what = ~o
+  checky = y != 7
+  goto +2 if checky
+  what = ~t
+  checky = y != 8
+  goto +2 if checky
+  what = ~c
+  checky = y != 9
+  goto +2 if checky
+  what = ~h
+  checky = y != 10
+  goto +2 if checky
+  what = ~i
+  
+  whatisnothing = what == nothing
+  goto +3 if whatisnothing
+  what += ~|
+  goto say
+goto goto displaytitle
+
+label displaytutorialmessage
+  goto clear
+  goto drawgrid
+  goto input
+  inputisnotenter = result != ~\n
+  goto -2 if inputisnotenter
+goto goto displaytutorialmessage

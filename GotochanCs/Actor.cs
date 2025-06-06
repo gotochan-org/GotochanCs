@@ -15,6 +15,14 @@ public class Actor {
     private readonly Dictionary<string, int> GotoLabelIndexes = [];
     private readonly Dictionary<string, Action<Actor>> ExternalLabels = [];
 
+    public Actor() {
+    }
+    public Actor(IEnumerable<Package> Packages)
+        : this() {
+        foreach (Package Package in Packages) {
+            IncludePackage(Package);
+        }
+    }
     public Result Interpret(ParseResult ParseResult) {
         lock (Lock) {
             for (int Index = 0; Index < ParseResult.Instructions.Count; Index++) {
