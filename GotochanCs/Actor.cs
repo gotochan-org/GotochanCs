@@ -3,6 +3,7 @@ using Lock = object;
 #endif
 
 using ResultZero;
+using System.Runtime.InteropServices;
 
 namespace GotochanCs;
 
@@ -25,8 +26,12 @@ public class Actor {
     }
     public Result Interpret(ParseResult ParseResult) {
         lock (Lock) {
-            for (int Index = 0; Index < ParseResult.Instructions.Count; Index++) {
-                Instruction Instruction = ParseResult.Instructions[Index];
+            // Get instructions as span
+            ReadOnlySpan<Instruction> InstructionsSpan = CollectionsMarshal.AsSpan(ParseResult.Instructions);
+
+            // Interpret each instruction
+            for (int Index = 0; Index < InstructionsSpan.Length; Index++) {
+                Instruction Instruction = InstructionsSpan[Index];
 
                 // Condition
                 if (Instruction.Condition is not null) {

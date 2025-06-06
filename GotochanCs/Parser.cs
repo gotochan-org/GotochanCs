@@ -487,26 +487,18 @@ public static class Parser {
         return Results;
     }
     public static void Optimize(ParseResult ParseResult, ParseOptimizations Optimizations = ParseOptimizations.All) {
+        // Note: Optimizations must not remove or add instructions
+
         for (int Index = 0; Index < ParseResult.Instructions.Count; Index++) {
             Instruction Instruction = ParseResult.Instructions[Index];
 
-            // Remove labels
-            if (Optimizations.HasFlag(ParseOptimizations.RemoveLabels)) {
-                // Label
-                if (Instruction is LabelInstruction) {
-                    // Remove instruction
-                    ParseResult.Instructions.RemoveAt(Index);
-                    Index--;
-                    continue;
-                }
-            }
             // Calculate goto line index
             if (Optimizations.HasFlag(ParseOptimizations.CalculateGotoLineIndex)) {
                 // Goto line
                 if (Instruction is GotoLineInstruction GotoLineInstruction) {
                     // Get index of first instruction on line
                     if (ParseResult.LineIndexes.TryGetValue(GotoLineInstruction.TargetLine, out int TargetIndex)) {
-                        // Replace with goto index
+                        // Pre-insert index
                         ParseResult.Instructions[Index] = GotoLineInstruction with { TargetIndex = TargetIndex };
                     }
                 }
@@ -517,7 +509,7 @@ public static class Parser {
                 if (Instruction is GotoLabelInstruction GotoLabelInstruction) {
                     // Get index of label
                     if (ParseResult.LabelIndexes.TryGetValue(GotoLabelInstruction.TargetLabel, out int TargetIndex)) {
-                        // Replace with goto index
+                        // Pre-insert index
                         ParseResult.Instructions[Index] = GotoLabelInstruction with { TargetIndex = TargetIndex };
                     }
                 }
@@ -534,13 +526,6 @@ public static class Parser {
                             if (ConstantCondition.Value.CastFlag()) {
                                 // Remove condition
                                 ParseResult.Instructions[Index] = Instruction with { Condition = null };
-                            }
-                            // Constant false condition
-                            else {
-                                // Remove instruction
-                                ParseResult.Instructions.RemoveAt(Index);
-                                Index--;
-                                continue;
                             }
                         }
                     }
@@ -573,10 +558,9 @@ public enum ParseAnalyses : long {
 
 [Flags]
 public enum ParseOptimizations : long {
-    RemoveLabels = 1,
-    CalculateGotoLineIndex = 2,
-    CalculateGotoLabelIndex = 4,
-    RemoveConstantConditions = 8,
+    CalculateGotoLineIndex = 1,
+    CalculateGotoLabelIndex = 2,
+    RemoveConstantConditions = 4,
 
     None = 0,
     All = long.MaxValue,
