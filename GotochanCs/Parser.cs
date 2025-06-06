@@ -60,6 +60,13 @@ public static class Parser {
                     // Track line indexes
                     LineIndexes.TryAdd(Instruction.Location.Line, InstructionIndex);
 
+                    // Fill in empty line indexes
+                    int CurrentFillInLine = Instruction.Location.Line - 1;
+                    while (CurrentFillInLine >= 0 && !LineIndexes.ContainsKey(CurrentFillInLine)) {
+                        LineIndexes.TryAdd(CurrentFillInLine, InstructionIndex);
+                        CurrentFillInLine--;
+                    }
+
                     // Track label indexes
                     if (Instruction is LabelInstruction LabelInstruction) {
                         if (!LabelIndexes.TryAdd(LabelInstruction.Label, InstructionIndex)) {
