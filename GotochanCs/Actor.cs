@@ -65,16 +65,13 @@ public class Actor {
                 }
                 // Goto line
                 else if (Instruction is GotoLineInstruction GotoLineInstruction) {
-                    int TargetIndex;
-                    if (GotoLineInstruction.TargetIndex is not null) {
-                        // Use pre-calculated index
-                        TargetIndex = GotoLineInstruction.TargetIndex.Value;
+                    // Check for goto end of program
+                    if (GotoLineInstruction.TargetLine > ParseResult.MaximumLine) {
+                        break;
                     }
-                    else {
-                        // Get index of first instruction on line
-                        if (!ParseResult.LineIndexes.TryGetValue(GotoLineInstruction.TargetLine, out TargetIndex)) {
-                            return new Error($"{Instruction.Location.Line}: invalid line");
-                        }
+                    // Get index of first instruction on line
+                    if (!ParseResult.LineIndexes.TryGetValue(GotoLineInstruction.TargetLine, out int TargetIndex)) {
+                        return new Error($"{Instruction.Location.Line}: invalid line");
                     }
                     // Go to index
                     Index = TargetIndex;
@@ -82,30 +79,23 @@ public class Actor {
                 }
                 // Goto label
                 else if (Instruction is GotoLabelInstruction GotoLabelInstruction) {
-                    int TargetIndex;
-                    if (GotoLabelInstruction.TargetIndex is not null) {
-                        // Use pre-calculated index
-                        TargetIndex = GotoLabelInstruction.TargetIndex.Value;
-                    }
-                    else {
-                        // Get index of label
-                        if (!ParseResult.LabelIndexes.TryGetValue(GotoLabelInstruction.TargetLabel, out TargetIndex)) {
-                            // Get external label
-                            if (ExternalLabels.TryGetValue(GotoLabelInstruction.TargetLabel, out Action<Actor>? ExternalLabel)) {
-                                // Call external label
-                                try {
-                                    ExternalLabel(this);
-                                    continue;
-                                }
-                                // Return exceptions as errors
-                                catch (Exception Ex) {
-                                    return new Error($"{Instruction.Location.Line}: '{Ex.GetType()}': '{Ex.Message}'");
-                                }
+                    // Get index of label
+                    if (!ParseResult.LabelIndexes.TryGetValue(GotoLabelInstruction.TargetLabel, out int TargetIndex)) {
+                        // Get external label
+                        if (ExternalLabels.TryGetValue(GotoLabelInstruction.TargetLabel, out Action<Actor>? ExternalLabel)) {
+                            // Call external label
+                            try {
+                                ExternalLabel(this);
+                                continue;
                             }
-                            // Invalid
-                            else {
-                                return new Error($"{Instruction.Location.Line}: invalid label");
+                            // Return exceptions as errors
+                            catch (Exception Ex) {
+                                return new Error($"{Instruction.Location.Line}: '{Ex.GetType()}': '{Ex.Message}'");
                             }
+                        }
+                        // Invalid
+                        else {
+                            return new Error($"{Instruction.Location.Line}: invalid label");
                         }
                     }
                     // Set index of goto label

@@ -299,7 +299,7 @@ label displaytitle
   checky = y != 10
   goto +2 if checky
   what = ~i
-  
+
   whatisnothing = what == nothing
   goto +3 if whatisnothing
   what += ~|

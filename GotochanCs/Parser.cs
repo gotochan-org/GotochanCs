@@ -80,11 +80,15 @@ public static class Parser {
             }
         }
 
+        // Get maximum line
+        int MaximumLine = LineIndexes.Max(LineIndex => LineIndex.Key);
+
         // Finish
         return new ParseResult() {
             Source = LexResult.Source,
             Instructions = Instructions,
             LineIndexes = LineIndexes,
+            MaximumLine = MaximumLine,
             LabelIndexes = LabelIndexes,
         };
     }
@@ -492,28 +496,6 @@ public static class Parser {
         for (int Index = 0; Index < ParseResult.Instructions.Count; Index++) {
             Instruction Instruction = ParseResult.Instructions[Index];
 
-            // Calculate goto line index
-            if (Optimizations.HasFlag(ParseOptimizations.CalculateGotoLineIndex)) {
-                // Goto line
-                if (Instruction is GotoLineInstruction GotoLineInstruction) {
-                    // Get index of first instruction on line
-                    if (ParseResult.LineIndexes.TryGetValue(GotoLineInstruction.TargetLine, out int TargetIndex)) {
-                        // Pre-insert index
-                        ParseResult.Instructions[Index] = GotoLineInstruction with { TargetIndex = TargetIndex };
-                    }
-                }
-            }
-            // Calculate goto label index
-            if (Optimizations.HasFlag(ParseOptimizations.CalculateGotoLabelIndex)) {
-                // Goto label
-                if (Instruction is GotoLabelInstruction GotoLabelInstruction) {
-                    // Get index of label
-                    if (ParseResult.LabelIndexes.TryGetValue(GotoLabelInstruction.TargetLabel, out int TargetIndex)) {
-                        // Pre-insert index
-                        ParseResult.Instructions[Index] = GotoLabelInstruction with { TargetIndex = TargetIndex };
-                    }
-                }
-            }
             // Remove constant conditions
             if (Optimizations.HasFlag(ParseOptimizations.RemoveConstantConditions)) {
                 // Condition
@@ -539,6 +521,7 @@ public class ParseResult {
     public required string Source { get; init; }
     public required List<Instruction> Instructions { get; init; }
     public required Dictionary<int, int> LineIndexes { get; init; }
+    public required int MaximumLine { get; init; }
     public required Dictionary<string, int> LabelIndexes { get; init; }
 }
 
@@ -558,9 +541,7 @@ public enum ParseAnalyses : long {
 
 [Flags]
 public enum ParseOptimizations : long {
-    CalculateGotoLineIndex = 1,
-    CalculateGotoLabelIndex = 2,
-    RemoveConstantConditions = 4,
+    RemoveConstantConditions = 1,
 
     None = 0,
     All = long.MaxValue,

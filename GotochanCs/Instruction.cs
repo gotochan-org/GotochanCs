@@ -16,12 +16,10 @@ public record LabelInstruction : Instruction {
 
 public record GotoLineInstruction : Instruction {
     public required int TargetLine { get; init; }
-    public int? TargetIndex { get; init; }
 }
 
 public record GotoLabelInstruction : Instruction {
     public required string TargetLabel { get; init; }
-    public int? TargetIndex { get; init; }
 }
 
 public record GotoGotoLabelInstruction : Instruction {
