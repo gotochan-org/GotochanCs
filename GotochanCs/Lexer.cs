@@ -5,7 +5,7 @@ namespace GotochanCs;
 
 public static class Lexer {
     public static ReadOnlySpan<char> NewlineChars => ['\n', '\r', '\u2028', '\u2029'];
-    public static ReadOnlySpan<char> ReservedChars => ['+', '-', '*', '/', '%', '^', '=', '!', '>', '<', '\\', ';', '~'];
+    public static ReadOnlySpan<char> ReservedChars => ['+', '-', '*', '/', '%', '^', '=', '!', '>', '<', '\\', ';', '~', '#'];
 
     public static Result<LexResult> Lex(string Source) {
         List<Token> CurrentTokens = [];
@@ -31,6 +31,13 @@ public static class Lexer {
                 // Invalid escape
                 else {
                     return new Error($"{SourceLocation.GetLine(Source, Index)}: invalid escape sequence");
+                }
+            }
+            // Comment
+            else if (Next is '#') {
+                // Lex comment
+                if (LexComment(Source, ref Index).TryGetError(out Error CommentError, out string? _)) {
+                    return CommentError;
                 }
             }
             // End of instruction
@@ -299,6 +306,27 @@ public static class Lexer {
 
         // Finish
         return IdentifierBuilder.ToString();
+    }
+    private static Result<string> LexComment(string Source, ref int Index) {
+        using ValueStringBuilder CommentBuilder = new(stackalloc char[64]);
+
+        // Build comment
+        for (; Index < Source.Length; Index++) {
+            char Next = Source[Index];
+
+            // Newline
+            if (NewlineChars.Contains(Next)) {
+                Index--;
+                break;
+            }
+            // Character
+            else {
+                CommentBuilder.Append(Next);
+            }
+        }
+
+        // Finish
+        return CommentBuilder.ToString();
     }
 }
 

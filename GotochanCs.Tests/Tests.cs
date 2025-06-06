@@ -6,7 +6,7 @@ public class Tests {
     [Fact]
     public void BasicTest() {
         string Source = """
-            counter = 10
+            counter = 10 # the value
             what = ~value:~
             what += counter
             goto say
