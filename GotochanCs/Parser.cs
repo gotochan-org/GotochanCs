@@ -34,6 +34,14 @@ public static class Parser {
                 // Get span of tokens in instruction
                 ReadOnlySpan<Token> InstructionTokens = TokensSpan[CurrentInstructionIndex..Index];
 
+                // Trim end of instruction tokens
+                while (!InstructionTokens.IsEmpty && InstructionTokens[0].Type is TokenType.EndOfInstruction) {
+                    InstructionTokens = InstructionTokens[1..];
+                }
+                while (!InstructionTokens.IsEmpty && InstructionTokens[^1].Type is TokenType.EndOfInstruction) {
+                    InstructionTokens = InstructionTokens[..^1];
+                }
+
                 // Ensure any tokens
                 if (!InstructionTokens.IsEmpty) {
                     // Parse tokens as instruction
@@ -42,9 +50,6 @@ public static class Parser {
                     }
                     int InstructionIndex = Instructions.Count;
                     Instructions.Add(Instruction);
-
-                    // Start instruction at next token
-                    CurrentInstructionIndex = Index + 1;
 
                     // Track line indexes
                     LineIndexes.TryAdd(Instruction.Location.Line, InstructionIndex);
@@ -56,6 +61,9 @@ public static class Parser {
                         }
                     }
                 }
+
+                // Start instruction at next token
+                CurrentInstructionIndex = Index + 1;
             }
         }
 
