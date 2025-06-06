@@ -56,7 +56,7 @@ public static class Parser {
 
                     // Track label indexes
                     if (Instruction is LabelInstruction LabelInstruction) {
-                        if (!LabelIndexes.TryAdd(LabelInstruction.Name, InstructionIndex)) {
+                        if (!LabelIndexes.TryAdd(LabelInstruction.Label, InstructionIndex)) {
                             return new Error($"{LabelInstruction.Location.Line}: duplicate label");
                         }
                     }
@@ -169,7 +169,7 @@ public static class Parser {
                 return new LabelInstruction() {
                     Location = Tokens[0].Location,
                     Condition = Condition,
-                    Name = Tokens[1].Value,
+                    Label = Tokens[1].Value,
                 };
             }
             // Invalid
@@ -451,7 +451,7 @@ public static class Parser {
 
                         // Goto label
                         if (Instruction2 is GotoLabelInstruction GotoLabelInstruction) {
-                            if (GotoLabelInstruction.TargetLabel == LabelInstruction.Name) {
+                            if (GotoLabelInstruction.TargetLabel == LabelInstruction.Label) {
                                 FoundGotoLabel = true;
                                 break;
                             }
@@ -487,33 +487,25 @@ public static class Parser {
                     continue;
                 }
             }
-            // Replace goto line with goto index
-            if (Optimizations.HasFlag(ParseOptimizations.ReplaceGotoLineWithGotoIndex)) {
+            // Calculate goto line index
+            if (Optimizations.HasFlag(ParseOptimizations.CalculateGotoLineIndex)) {
                 // Goto line
                 if (Instruction is GotoLineInstruction GotoLineInstruction) {
                     // Get index of first instruction on line
                     if (ParseResult.LineIndexes.TryGetValue(GotoLineInstruction.TargetLine, out int TargetIndex)) {
                         // Replace with goto index
-                        ParseResult.Instructions[Index] = new GotoIndexInstruction() {
-                            Location = GotoLineInstruction.Location,
-                            TargetIndex = TargetIndex,
-                            Condition = GotoLineInstruction.Condition,
-                        };
+                        ParseResult.Instructions[Index] = GotoLineInstruction with { TargetIndex = TargetIndex };
                     }
                 }
             }
-            // Replace goto label with goto index
-            if (Optimizations.HasFlag(ParseOptimizations.ReplaceGotoLabelWithGotoIndex)) {
+            // Calculate goto label index
+            if (Optimizations.HasFlag(ParseOptimizations.CalculateGotoLabelIndex)) {
                 // Goto label
                 if (Instruction is GotoLabelInstruction GotoLabelInstruction) {
                     // Get index of label
                     if (ParseResult.LabelIndexes.TryGetValue(GotoLabelInstruction.TargetLabel, out int TargetIndex)) {
                         // Replace with goto index
-                        ParseResult.Instructions[Index] = new GotoIndexInstruction() {
-                            Location = GotoLabelInstruction.Location,
-                            TargetIndex = TargetIndex,
-                            Condition = GotoLabelInstruction.Condition,
-                        };
+                        ParseResult.Instructions[Index] = GotoLabelInstruction with { TargetIndex = TargetIndex };
                     }
                 }
             }
@@ -569,8 +561,8 @@ public enum ParseAnalyses : long {
 [Flags]
 public enum ParseOptimizations : long {
     RemoveLabels = 1,
-    ReplaceGotoLineWithGotoIndex = 2,
-    ReplaceGotoLabelWithGotoIndex = 4,
+    CalculateGotoLineIndex = 2,
+    CalculateGotoLabelIndex = 4,
     RemoveConstantConditions = 8,
 
     None = 0,

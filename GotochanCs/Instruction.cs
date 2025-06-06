@@ -11,19 +11,17 @@ public record SetVariableInstruction : Instruction {
 }
 
 public record LabelInstruction : Instruction {
-    public required string Name { get; init; }
-}
-
-public record GotoIndexInstruction : Instruction {
-    public required int TargetIndex { get; init; }
+    public required string Label { get; init; }
 }
 
 public record GotoLineInstruction : Instruction {
     public required int TargetLine { get; init; }
+    public int? TargetIndex { get; init; }
 }
 
 public record GotoLabelInstruction : Instruction {
     public required string TargetLabel { get; init; }
+    public int? TargetIndex { get; init; }
 }
 
 public record GotoGotoLabelInstruction : Instruction {
