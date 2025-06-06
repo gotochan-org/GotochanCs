@@ -490,31 +490,6 @@ public static class Parser {
 
         return Results;
     }
-    public static void Optimize(ParseResult ParseResult, ParseOptimizations Optimizations = ParseOptimizations.All) {
-        // Note: Optimizations must not remove or add instructions
-
-        for (int Index = 0; Index < ParseResult.Instructions.Count; Index++) {
-            Instruction Instruction = ParseResult.Instructions[Index];
-
-            // Remove constant conditions
-            if (Optimizations.HasFlag(ParseOptimizations.RemoveConstantConditions)) {
-                // Condition
-                if (Instruction.Condition is not null) {
-                    // Constant condition
-                    if (Instruction.Condition is ConstantExpression ConstantCondition) {
-                        // Constant flag condition
-                        if (ConstantCondition.Value.Type is ThingieType.Flag) {
-                            // Constant true condition
-                            if (ConstantCondition.Value.CastFlag()) {
-                                // Remove condition
-                                ParseResult.Instructions[Index] = Instruction with { Condition = null };
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
 }
 
 public class ParseResult {
@@ -534,14 +509,6 @@ public readonly record struct ParseAnalyzeResult {
 [Flags]
 public enum ParseAnalyses : long {
     UnusedLabel = 1,
-
-    None = 0,
-    All = long.MaxValue,
-}
-
-[Flags]
-public enum ParseOptimizations : long {
-    RemoveConstantConditions = 1,
 
     None = 0,
     All = long.MaxValue,
