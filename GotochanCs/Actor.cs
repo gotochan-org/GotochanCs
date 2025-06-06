@@ -112,7 +112,6 @@ public class Actor {
                     }
                     // Go to index
                     Index = TargetIndex;
-                    Index--;
                 }
                 // Invalid
                 else {
