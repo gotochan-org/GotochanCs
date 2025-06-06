@@ -8,7 +8,7 @@ public static class Program {
 
         ParseResult ParseResult = Parser.Parse(Source).Value;
 
-        Actor Actor = new([new ConsoleAppPackage()]);
+        Actor Actor = new([new ConsoleAppPack()]);
         Result Result = Actor.Interpret(ParseResult);
 
         Console.WriteLine(new string('-', 10));
