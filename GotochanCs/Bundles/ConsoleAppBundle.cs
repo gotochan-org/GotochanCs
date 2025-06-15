@@ -40,7 +40,7 @@ public class ConsoleAppBundle : Bundle {
         ["peekkey"] = Actor => {
             Actor.SetVariable("result", Console.KeyAvailable);
         },
-        ["thinkofrandomnumber"] = Actor => {
+        ["roll"] = Actor => {
             double Lowest = Actor.GetVariable("lowest").CastNumber();
             double Highest = Actor.GetVariable("highest").CastNumber();
 
