@@ -79,6 +79,9 @@ label gameloop
 
   goto endofinput if hasnoinput
   goto lastinput
+    what = result
+    goto casedown
+    
     inputisnotfeed = result != ~a
     goto +3 if inputisnotfeed
     redraw = yes

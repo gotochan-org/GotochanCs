@@ -61,6 +61,16 @@ public class ConsoleAppBundle : Bundle {
 
             Actor.SetVariable("result", What.Length);
         },
+        ["caseup"] = Actor => {
+            string What = Actor.GetVariable("what").CastString();
+
+            Actor.SetVariable("result", What.ToUpperInvariant());
+        },
+        ["casedown"] = Actor => {
+            string What = Actor.GetVariable("what").CastString();
+
+            Actor.SetVariable("result", What.ToLowerInvariant());
+        },
         ["truncate"] = Actor => {
             double What = Actor.GetVariable("what").CastNumber();
 
