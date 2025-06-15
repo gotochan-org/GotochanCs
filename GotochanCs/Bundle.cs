@@ -2,12 +2,14 @@ namespace GotochanCs;
 
 public abstract class Bundle {
     public string Name { get; }
-    public Dictionary<string, Thingie> Options { get; }
-    public Dictionary<string, Action<Actor>> ExternalLabels { get; }
+    public IDictionary<string, Thingie> Options { get; set; }
+    public IList<Bundle> Dependencies { get; set; }
+    public IDictionary<string, Action<Actor>> ExternalLabels { get; set; }
 
     public Bundle() {
         Name = GetName();
-        Options = [];
+        Options = GetOptions();
+        Dependencies = GetDependencies();
         ExternalLabels = GetExternalLabels();
     }
 
@@ -17,13 +19,9 @@ public abstract class Bundle {
     public void SetOption(string Key, Thingie Value) {
         Options[Key] = Value;
     }
-    public void IncludeBundle(Bundle Bundle) {
-        // Add external labels
-        foreach (KeyValuePair<string, Action<Actor>> ExternalLabel in Bundle.ExternalLabels) {
-            ExternalLabels[ExternalLabel.Key] = ExternalLabel.Value;
-        }
-    }
 
     protected abstract string GetName();
-    protected abstract Dictionary<string, Action<Actor>> GetExternalLabels();
+    protected virtual IDictionary<string, Thingie> GetOptions() => new Dictionary<string, Thingie>();
+    protected virtual IList<Bundle> GetDependencies() => [];
+    protected virtual IDictionary<string, Action<Actor>> GetExternalLabels() => new Dictionary<string, Action<Actor>>();
 }

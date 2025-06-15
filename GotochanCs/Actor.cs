@@ -18,7 +18,7 @@ public class Actor {
 
     public Actor() {
     }
-    public Actor(IEnumerable<Bundle> Bundles)
+    public Actor(params IEnumerable<Bundle> Bundles)
         : this() {
         foreach (Bundle Bundle in Bundles) {
             IncludeBundle(Bundle);
@@ -360,9 +360,24 @@ public class Actor {
         }
     }
     public void IncludeBundle(Bundle Bundle) {
-        // Add external labels
-        foreach (KeyValuePair<string, Action<Actor>> ExternalLabel in Bundle.ExternalLabels) {
-            ExternalLabels[ExternalLabel.Key] = ExternalLabel.Value;
+        HashSet<Bundle> IncludedBundles = [];
+        Queue<Bundle> PendingBundles = [];
+
+        PendingBundles.Enqueue(Bundle);
+
+        while (PendingBundles.TryDequeue(out Bundle? CurrentBundle)) {
+            // Skip cyclic dependencies
+            if (!IncludedBundles.Add(CurrentBundle)) {
+                continue;
+            }
+            // Add external labels
+            foreach (KeyValuePair<string, Action<Actor>> ExternalLabel in CurrentBundle.ExternalLabels) {
+                ExternalLabels[ExternalLabel.Key] = ExternalLabel.Value;
+            }
+            // Add dependencies
+            foreach (Bundle Dependency in CurrentBundle.Dependencies) {
+                PendingBundles.Enqueue(Dependency);
+            }
         }
     }
 }

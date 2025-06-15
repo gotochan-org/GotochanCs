@@ -20,8 +20,7 @@ public class Tests {
 
         Parser.Optimize(ParseResult);
 
-        Actor Actor = new();
-        Actor.IncludeBundle(new ConsoleAppBundle());
+        Actor Actor = new(new ConsoleAppBundle());
         Actor.Interpret(ParseResult).ShouldBe(Result.Success);
         Actor.GetVariable("what").ShouldBe("value: 10");
     }
@@ -50,8 +49,7 @@ public class Tests {
 
         Parser.Optimize(ParseResult);
 
-        Actor Actor = new();
-        Actor.IncludeBundle(new ConsoleAppBundle());
+        Actor Actor = new(new ConsoleAppBundle());
         Actor.Interpret(ParseResult).ShouldBe(Result.Success);
     }
     [Fact]
@@ -70,8 +68,7 @@ public class Tests {
 
         Parser.Optimize(ParseResult);
 
-        Actor Actor = new();
-        Actor.IncludeBundle(new ConsoleAppBundle());
+        Actor Actor = new(new ConsoleAppBundle());
         Actor.Interpret(ParseResult).ShouldBe(Result.Success);
         Actor.GetVariable("counter").ShouldBe(4);
     }

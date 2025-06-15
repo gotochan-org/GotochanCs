@@ -10,7 +10,7 @@ public static class Program {
         ParseResult ParseResult = Parser.Parse(Source).Value;
         Parser.Optimize(ParseResult);
 
-        Actor Actor = new([new ConsoleAppBundle()]);
+        Actor Actor = new(new ConsoleAppBundle());
         Result Result = Actor.Interpret(ParseResult);
 
         Console.WriteLine(new string('-', 10));
