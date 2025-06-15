@@ -60,17 +60,22 @@ public class Actor {
                 }
                 // Label
                 else if (Instruction is LabelInstruction LabelInstruction) {
-                    // Set label index
-                    ParseResult.LabelIndexes[LabelInstruction.Label] = Index;
+                    // Pass
                 }
                 // Goto line
                 else if (Instruction is GotoLineInstruction GotoLineInstruction) {
+                    // Get target index
+                    int TargetIndex;
+                    // Use precalculated index
+                    if (GotoLineInstruction.TargetIndex is not null) {
+                        TargetIndex = GotoLineInstruction.TargetIndex.Value;
+                    }
                     // Check for goto end of program
-                    if (GotoLineInstruction.TargetLine > ParseResult.MaximumLine) {
+                    else if (GotoLineInstruction.TargetLine > ParseResult.MaximumLine) {
                         break;
                     }
                     // Get index of first instruction on line
-                    if (!ParseResult.LineIndexes.TryGetValue(GotoLineInstruction.TargetLine, out int TargetIndex)) {
+                    else if (!ParseResult.LineIndexes.TryGetValue(GotoLineInstruction.TargetLine, out TargetIndex)) {
                         return new Error($"{Instruction.Location.Line}: invalid line");
                     }
                     // Go to index
@@ -79,8 +84,14 @@ public class Actor {
                 }
                 // Goto label
                 else if (Instruction is GotoLabelInstruction GotoLabelInstruction) {
+                    // Get target index
+                    int TargetIndex;
+                    // Use precalculated index
+                    if (GotoLabelInstruction.TargetIndex is not null) {
+                        TargetIndex = GotoLabelInstruction.TargetIndex.Value;
+                    }
                     // Get index of label
-                    if (!ParseResult.LabelIndexes.TryGetValue(GotoLabelInstruction.TargetLabel, out int TargetIndex)) {
+                    else if (!ParseResult.LabelIndexes.TryGetValue(GotoLabelInstruction.TargetLabel, out TargetIndex)) {
                         // Get external label
                         if (ExternalLabels.TryGetValue(GotoLabelInstruction.TargetLabel, out Action<Actor>? ExternalLabel)) {
                             // Call external label
