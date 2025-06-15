@@ -15,12 +15,12 @@ public readonly struct Thingie : IEquatable<Thingie> {
     }
 
     public static Thingie Nothing() => new(ThingieType.Nothing);
-    public static Thingie Flag(bool Value) => new(ThingieType.Flag, NumberData: Value ? 1 : 0);
-    public static Thingie Number(double Value) => new(ThingieType.Number, NumberData: Value);
+    public static Thingie Flag(bool? Value) => Value is null ? Nothing() : new(ThingieType.Flag, NumberData: Value.Value ? 1 : 0);
+    public static Thingie Number(double? Value) => Value is null ? Nothing() : new(ThingieType.Number, NumberData: Value.Value);
     public static Thingie String(string? Value) => Value is null ? Nothing() : new(ThingieType.String, StringData: Value);
 
-    public static implicit operator Thingie(bool Value) => Flag(Value);
-    public static implicit operator Thingie(double Value) => Number(Value);
+    public static implicit operator Thingie(bool? Value) => Flag(Value);
+    public static implicit operator Thingie(double? Value) => Number(Value);
     public static implicit operator Thingie(string? Value) => String(Value);
 
     public object? CastNothing() => Type is ThingieType.Nothing ? null : throw new InvalidCastException("thingie is not nothing");
