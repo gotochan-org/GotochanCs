@@ -1,7 +1,7 @@
 namespace GotochanCs.Bundles;
 
-public class ConsoleAppBundle : Bundle {
-    protected override string GetName() => "consoleapp";
+public class ConsoleBundle : Bundle {
+    protected override string GetName() => "console";
     protected override List<Bundle> GetDependencies() => [
         new StringSageBundle(),
         new NumberSageBundle(),
