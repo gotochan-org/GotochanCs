@@ -12,6 +12,32 @@ public class ConsoleAppBundle : Bundle {
 
             Console.Write(What);
         },
+        ["complain"] = Actor => {
+            string What = Actor.GetVariable("what").ToString();
+            double Intensity = Actor.GetVariable("intensity").CastNumber();
+
+            if (Intensity % 1 != 0) {
+                throw new ArgumentException("complain intensity must be whole");
+            }
+
+            ConsoleColor ComplainColor = Intensity switch {
+                1 => ConsoleColor.Yellow,
+                2 => ConsoleColor.DarkYellow,
+                3 => ConsoleColor.Red,
+                4 => ConsoleColor.DarkRed,
+                _ => throw new ArgumentOutOfRangeException("complain intensity must be 1 to 4")
+            };
+
+            ConsoleColor OriginalColor = Console.ForegroundColor;
+            Console.ForegroundColor = ComplainColor;
+            Console.Write(What);
+            Console.ForegroundColor = OriginalColor;
+        },
+        ["fail"] = Actor => {
+            string Failure = Actor.GetVariable("failure").ToString();
+
+            throw new Exception(Failure);
+        },
         ["clear"] = Actor => {
             Console.Clear();
         },
@@ -42,11 +68,6 @@ public class ConsoleAppBundle : Bundle {
             double Highest = Actor.GetVariable("highest").CastNumber();
 
             Actor.SetVariable("result", Random.Shared.NextDouble() * (Highest - Lowest) + Lowest);
-        },
-        ["fail"] = Actor => {
-            string Failure = Actor.GetVariable("failure").ToString();
-
-            throw new Exception(Failure);
         },
         ["describe"] = Actor => {
             Thingie What = Actor.GetVariable("what");

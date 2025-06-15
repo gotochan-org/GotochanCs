@@ -1,6 +1,18 @@
 # gotogotchi v2.0
 # by Joyless
 
+what = ~uh~oh\n\n
+intensity = 1
+goto complain
+intensity = 2
+goto complain
+intensity = 3
+goto complain
+intensity = 4
+goto complain
+seconds = 100
+goto wait
+
 # config
 screenwidth = 15 # should be odd
 screenheight = 10
