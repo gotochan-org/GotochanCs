@@ -11,10 +11,9 @@ public class Actor {
     public static Actor Default { get; } = new();
 
     public Lock Lock { get; } = new();
-
-    private readonly Dictionary<string, Thingie> Variables = [];
-    private readonly Dictionary<string, int> GotoLabelIndexes = [];
-    private readonly Dictionary<string, Action<Actor>> ExternalLabels = [];
+    public Dictionary<string, Thingie> Variables { get; } = [];
+    public Dictionary<string, int> GotoLabelIndexes { get; } = [];
+    public Dictionary<string, Action<Actor>> ExternalLabels { get; } = [];
 
     public Actor() {
     }

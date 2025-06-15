@@ -97,4 +97,25 @@ public class Tests {
 
         UnusedLabelSuccess.ShouldBeTrue();
     }
+    [Fact]
+    public void CompileTest() {
+        string Source = """
+            counter = 1
+            label loop
+            counter += 1
+            goto loop if counter <= 3
+            """;
+
+        LexResult LexResult = Lexer.Lex(Source).Value;
+
+        ParseResult ParseResult = Parser.Parse(LexResult).Value;
+        ParseResult.Instructions.Count.ShouldBe(4);
+
+        Parser.Optimize(ParseResult);
+
+        CompileResult CompileResult = Compiler.Compile(ParseResult).Value;
+
+        Actor Actor = new(new ConsoleBundle());
+        CompileResult.Delegate.Invoke(Actor).ShouldBe(Result.Success);
+    }
 }
