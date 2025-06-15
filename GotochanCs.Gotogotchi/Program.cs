@@ -8,6 +8,7 @@ public static class Program {
         string Source = File.ReadAllText("gotogotchi.gotochan");
 
         ParseResult ParseResult = Parser.Parse(Source).Value;
+        Parser.Optimize(ParseResult);
 
         Actor Actor = new([new ConsoleAppBundle()]);
         Result Result = Actor.Interpret(ParseResult);
