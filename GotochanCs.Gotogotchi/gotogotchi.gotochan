@@ -22,7 +22,7 @@ pet = ~
 pettwo = ~
 
 dialogue = ~welcome.
-dialoguetwo = ~v1.0.0
+dialoguetwo = ~v2.0
 goto displaytutorialmessage
 
 dialogue = ~take~care~of
@@ -51,22 +51,22 @@ pettwo = ~(>.<)
 dialogue = ~
 dialoguetwo = ~~A~~B~~C~
 
-goto gettime
-timelastreducedstats = result
+goto stamptime
+timelastreducedstats = timestamp
 redraw = yes
 label gameloop
   goto clear if redraw
   goto drawgrid if redraw
   
-  what = 0.15
+  seconds = 0.15
   goto wait
   
   redraw = no
   
-  goto gettime
-  currenttime = result
-  result -= timelastreducedstats
-  nottimetoreducestats = result < 5
+  goto stamptime
+  currenttime = timestamp
+  timestamp -= timelastreducedstats
+  nottimetoreducestats = timestamp < 5
   goto +6 if nottimetoreducestats
   timelastreducedstats = currenttime
   redraw = yes
@@ -74,7 +74,7 @@ label gameloop
   thirst -= 3
   fun -= 1
   
-  goto hasinput
+  goto peekkey
   hasnoinput = result == no
 
   goto endofinput if hasnoinput
@@ -165,7 +165,7 @@ goto goto drawgrid
 label centertext
   texttocenter = what
   numberofhashtags = screenwidth
-  goto length
+  goto measure
   lengthoftext = result
   numberofhashtags -= lengthoftext
   numberofhashtags /= 2
@@ -189,7 +189,7 @@ label centertext
 goto goto centertext
 
 label leftaligntext
-  goto length
+  goto measure
   lengthoftext = result
   goto say
   numberofhashtags = screenwidth
@@ -259,9 +259,9 @@ label death
 goto goto death
 
 label lastinput
-  goto input
+  goto eatkey
   lastinputresult = result
-  goto hasinput
+  goto peekkey
   goto -3 if result
   result = lastinputresult
 goto goto lastinput
@@ -309,7 +309,7 @@ goto goto displaytitle
 label displaytutorialmessage
   goto clear
   goto drawgrid
-  goto input
-  inputisnotenter = result != ~\n
-  goto -2 if inputisnotenter
+  goto eatkey
+  keyisnotenter = result != ~\n
+  goto -2 if keyisnotenter
 goto goto displaytutorialmessage

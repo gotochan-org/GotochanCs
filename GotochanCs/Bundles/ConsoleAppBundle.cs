@@ -24,18 +24,21 @@ public class ConsoleAppBundle : Bundle {
         ["wait"] = Actor => {
             Thread.Sleep(TimeSpan.FromSeconds(Actor.GetVariable("seconds").CastNumber()));
         },
-        ["listen"] = Actor => {
+        ["eatkey"] = Actor => {
             while (true) {
                 ConsoleKeyInfo KeyPressed = Console.ReadKey(true);
                 if (KeyPressed.Key is ConsoleKey.Enter) {
-                    Actor.SetVariable("heard", Environment.NewLine);
+                    Actor.SetVariable("result", "\n");
                     break;
                 }
                 else {
-                    Actor.SetVariable("heard", KeyPressed.KeyChar.ToString());
+                    Actor.SetVariable("result", KeyPressed.KeyChar.ToString());
                     break;
                 }
             }
+        },
+        ["peekkey"] = Actor => {
+            Actor.SetVariable("result", Console.KeyAvailable);
         },
         ["thinkofrandomnumber"] = Actor => {
             double Lowest = Actor.GetVariable("lowest").CastNumber();
