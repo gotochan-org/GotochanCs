@@ -51,7 +51,7 @@ public class ConsoleAppBundle : Bundle {
 
             throw new Exception(Failure);
         },
-        ["examine"] = Actor => {
+        ["describe"] = Actor => {
             Thingie What = Actor.GetVariable("what");
 
             Actor.SetVariable("result", What.Type.ToString().ToLowerInvariant());
