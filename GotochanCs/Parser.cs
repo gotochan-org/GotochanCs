@@ -490,6 +490,103 @@ public static class Parser {
 
         return Results;
     }
+    public static void Optimize(ParseResult ParseResult, ParseOptimizations Optimizations = ParseOptimizations.All) {
+        for (int Index = 0; Index < ParseResult.Instructions.Count; Index++) {
+            Instruction Instruction = ParseResult.Instructions[Index];
+
+            // Remove labels
+            if (Optimizations.HasFlag(ParseOptimizations.RemoveLabels)) {
+                // Label
+                if (Instruction is LabelInstruction) {
+                    // Remove instruction
+                    RemoveInstruction(ParseResult, Index);
+                    Index--;
+                    continue;
+                }
+            }
+            // Calculate goto line index
+            if (Optimizations.HasFlag(ParseOptimizations.PrecalculateGotoLineIndexes)) {
+                // Goto line
+                if (Instruction is GotoLineInstruction GotoLineInstruction) {
+                    // Get index of first instruction on line
+                    if (ParseResult.LineIndexes.TryGetValue(GotoLineInstruction.TargetLine, out int TargetIndex)) {
+                        // Replace with goto index
+                        ParseResult.Instructions[Index] = GotoLineInstruction with { TargetIndex = TargetIndex };
+                    }
+                }
+            }
+            // Calculate goto label index
+            if (Optimizations.HasFlag(ParseOptimizations.PrecalculateGotoLabelIndexes)) {
+                // Goto label
+                if (Instruction is GotoLabelInstruction GotoLabelInstruction) {
+                    // Get index of label
+                    if (ParseResult.LabelIndexes.TryGetValue(GotoLabelInstruction.TargetLabel, out int TargetIndex)) {
+                        // Replace with goto index
+                        ParseResult.Instructions[Index] = GotoLabelInstruction with { TargetIndex = TargetIndex };
+                    }
+                }
+            }
+            // Remove constant conditions
+            if (Optimizations.HasFlag(ParseOptimizations.RemoveConstantConditions)) {
+                // Condition
+                if (Instruction.Condition is not null) {
+                    // Constant condition
+                    if (Instruction.Condition is ConstantExpression ConstantCondition) {
+                        // Constant flag condition
+                        if (ConstantCondition.Value.Type is ThingieType.Flag) {
+                            // Constant true condition
+                            if (ConstantCondition.Value.CastFlag()) {
+                                // Remove condition
+                                ParseResult.Instructions[Index] = Instruction with { Condition = null };
+                            }
+                            // Constant false condition
+                            else {
+                                // Remove instruction
+                                RemoveInstruction(ParseResult, Index);
+                                Index--;
+                                continue;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private static void RemoveInstruction(ParseResult ParseResult, int TargetIndex) {
+        // Remove instruction at index
+        ParseResult.Instructions.RemoveAt(TargetIndex);
+
+        // Shift instruction indexes
+        for (int Index = 0; Index < ParseResult.Instructions.Count; Index++) {
+            Instruction Instruction = ParseResult.Instructions[Index];
+
+            if (Instruction is GotoLineInstruction GotoLineInstruction) {
+                if (GotoLineInstruction.TargetIndex is not null && GotoLineInstruction.TargetIndex > TargetIndex) {
+                    ParseResult.Instructions[Index] = GotoLineInstruction with { TargetIndex = GotoLineInstruction.TargetIndex - 1 };
+                }
+            }
+            else if (Instruction is GotoLabelInstruction GotoLabelInstruction) {
+                if (GotoLabelInstruction.TargetIndex is not null && GotoLabelInstruction.TargetIndex > TargetIndex) {
+                    ParseResult.Instructions[Index] = GotoLabelInstruction with { TargetIndex = GotoLabelInstruction.TargetIndex - 1 };
+                }
+            }
+        }
+
+        // Shift line indexes
+        foreach (KeyValuePair<int, int> LineIndex in ParseResult.LineIndexes.ToList()) {
+            if (LineIndex.Value > TargetIndex) {
+                ParseResult.LineIndexes[LineIndex.Key] = LineIndex.Value - 1;
+            }
+        }
+
+        // Shift label indexes
+        foreach (KeyValuePair<string, int> LabelIndex in ParseResult.LabelIndexes.ToList()) {
+            if (LabelIndex.Value > TargetIndex) {
+                ParseResult.LabelIndexes[LabelIndex.Key] = LabelIndex.Value - 1;
+            }
+        }
+    }
 }
 
 public class ParseResult {
@@ -509,6 +606,17 @@ public readonly record struct ParseAnalyzeResult {
 [Flags]
 public enum ParseAnalyses : long {
     UnusedLabel = 1,
+
+    None = 0,
+    All = long.MaxValue,
+}
+
+[Flags]
+public enum ParseOptimizations : long {
+    RemoveLabels = 1,
+    PrecalculateGotoLineIndexes = 2,
+    PrecalculateGotoLabelIndexes = 4,
+    RemoveConstantConditions = 8,
 
     None = 0,
     All = long.MaxValue,

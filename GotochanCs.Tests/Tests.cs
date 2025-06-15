@@ -18,6 +18,8 @@ public class Tests {
         ParseResult ParseResult = Parser.Parse(LexResult).Value;
         ParseResult.Instructions.Count.ShouldBe(4);
 
+        Parser.Optimize(ParseResult);
+
         Actor Actor = new();
         Actor.IncludeBundle(new ConsoleAppBundle());
         Actor.Interpret(ParseResult).ShouldBe(Result.Success);
@@ -46,6 +48,8 @@ public class Tests {
         ParseResult ParseResult = Parser.Parse(LexResult).Value;
         ParseResult.Instructions.Count.ShouldBe(13);
 
+        Parser.Optimize(ParseResult);
+
         Actor Actor = new();
         Actor.IncludeBundle(new ConsoleAppBundle());
         Actor.Interpret(ParseResult).ShouldBe(Result.Success);
@@ -63,6 +67,8 @@ public class Tests {
 
         ParseResult ParseResult = Parser.Parse(LexResult).Value;
         ParseResult.Instructions.Count.ShouldBe(4);
+
+        Parser.Optimize(ParseResult);
 
         Actor Actor = new();
         Actor.IncludeBundle(new ConsoleAppBundle());
