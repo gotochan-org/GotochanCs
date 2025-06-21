@@ -1,15 +1,155 @@
 using ResultZero;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
-using SLE = System.Linq.Expressions;
+using System.Text;
 
 namespace GotochanCs;
 
 public static class Compiler {
-    internal const string DelegateCreationRequiresDynamicCode = "Delegate creation requires dynamic code generation.";
+    private static string IdentifyLine(int Identifier) => $"Line{Identifier}";
+    private static string IdentifyLabel(int Identifier) => $"Label{Identifier}";
+    private static string IdentifyVariable(int Identifier) => $"Variable{Identifier}";
+    private static string IdentifyGotoLabelLines() => "GotoLabelLines";
+    private static string IdentifyGotoGotoLabelIdentifier() => "GotoGotoLabelIdentifier";
+    private static string IdentifyGotoGotoLabel() => "GotoGotoLabel";
 
-    [RequiresDynamicCode(DelegateCreationRequiresDynamicCode)]
     public static Result<CompileResult> Compile(ParseResult ParseResult) {
+        string Output = "";
+
+        // Create compiler state
+        CompilerState CompilerState = new();
+
+        // Add labels
+        foreach ((string LabelName, int LabelIndex) in ParseResult.LabelIndexes) {
+            int LabelIdentifier = CompilerState.Labels.Count;
+            CompilerState.Labels[LabelName] = LabelIdentifier;
+        }
+
+        // Output goto label lines
+        Output += $"Dictionary<int, int> {IdentifyGotoLabelLines()} = [];" + "\n";
+        Output += $"int {IdentifyGotoGotoLabelIdentifier()} = \"\";" + "\n";
+
+        // Get instructions as span
+        ReadOnlySpan<Instruction> InstructionsSpan = CollectionsMarshal.AsSpan(ParseResult.Instructions);
+
+        // Compile instructions
+        StringBuilder InstructionsBuilder = new();
+        for (int Index = 0; Index < InstructionsSpan.Length; Index++) {
+            Instruction Instruction = InstructionsSpan[Index];
+
+            // Line
+            foreach ((int LineNumber, int LineIndex) in ParseResult.LineIndexes) {
+                if (LineIndex == Index) {
+                    // Get line identifier
+                    string LineIdentifier = IdentifyLine(LineNumber);
+                    // Output label
+                    InstructionsBuilder.Append($"{LineIdentifier}: ");
+                    break;
+                }
+            }
+            // Label
+            foreach ((string LabelName, int LabelIndex) in ParseResult.LabelIndexes) {
+                if (LabelIndex == Index) {
+                    // Get label identifier
+                    string LabelIdentifier = IdentifyLabel(CompilerState.Labels[LabelName]);
+                    // Output label
+                    InstructionsBuilder.Append($"{LabelIdentifier}: ");
+                    break;
+                }
+            }
+
+            // Compile instruction
+            if (CompileInstruction(Instruction, ref CompilerState).TryGetError(out Error InstructionError, out string? InstructionOutput)) {
+                return InstructionError;
+            }
+            // Output instruction
+            InstructionsBuilder.Append(InstructionOutput + "\n");
+        }
+        // Append instructions to output
+        Output += InstructionsBuilder.ToString() + "\n";
+
+        // Compile goto goto label switch
+        StringBuilder GotoGotoLabelSwitchBuilder = new();
+        GotoGotoLabelSwitchBuilder.Append($"{IdentifyGotoGotoLabel()}: ");
+        GotoGotoLabelSwitchBuilder.Append($"if (!{IdentifyGotoLabelLines()}.TryGetValue({IdentifyGotoGotoLabelIdentifier()}, out int LabelIdentifier)) {{" + "\n");
+        GotoGotoLabelSwitchBuilder.Append($"return new {nameof(Error)}(\"no entry for goto label\");" + "\n");
+        GotoGotoLabelSwitchBuilder.Append("}" + "\n");
+        GotoGotoLabelSwitchBuilder.Append("switch (LabelIdentifier) {" + "\n");
+        foreach ((string LabelName, int LabelIdentifier) in CompilerState.Labels) {
+            GotoGotoLabelSwitchBuilder.Append($"case \"{IdentifyLabel(LabelIdentifier)}\":" + "\n");
+            GotoGotoLabelSwitchBuilder.Append($"goto {LabelIdentifier};" + "\n");
+        }
+        GotoGotoLabelSwitchBuilder.Append("}" + "\n");
+
+        // Compile variables
+        StringBuilder VariablesBuilder = new();
+        foreach ((string VariableName, int VariableIdentifier) in CompilerState.Variables) {
+            // Add variable declaration
+            VariablesBuilder.Append($"{nameof(Thingie)} {IdentifyVariable(VariableIdentifier)} = {nameof(Thingie)}.{nameof(Thingie.Nothing)}();" + "\n");
+        }
+        // Prepend variables to output
+        Output = VariablesBuilder.ToString() + "\n" + Output;
+
+        // Compile set variables in actor
+        // TODO
+
+        // Finish
+        return new CompileResult() {
+            Source = ParseResult.Source,
+            Output = Output,
+        };
+    }
+    private static Result<string> CompileInstruction(Instruction Instruction, ref CompilerState CompilerState) {
+        // Set variable
+        if (Instruction is SetVariableInstruction SetVariableInstruction) {
+            // Get or add variable
+            if (!CompilerState.Variables.TryGetValue(SetVariableInstruction.VariableName, out int VariableIdentifier)) {
+                VariableIdentifier = CompilerState.Variables.Count;
+                CompilerState.Variables[SetVariableInstruction.VariableName] = VariableIdentifier;
+            }
+            // Compile value
+            if (CompileExpression(SetVariableInstruction.Value, ref CompilerState).TryGetError(out Error ValueError, out string? ValueOutput)) {
+                return ValueError;
+            }
+            // Output assign
+            return $"{VariableIdentifier} = {ValueOutput};";
+        }
+        // Label
+        else if (Instruction is LabelInstruction) {
+            // Pass
+            return ";";
+        }
+        // Goto line
+        else if (Instruction is GotoLineInstruction GotoLineInstruction) {
+            // Get line identifier
+            string LineIdentifier = IdentifyLine(GotoLineInstruction.LineNumber);
+            // Output goto
+            return $"goto {LineIdentifier};";
+        }
+        // Goto label
+        else if (Instruction is GotoLabelInstruction GotoLabelInstruction) {
+            // Get label identifier
+            string LabelIdentifier = IdentifyLabel(CompilerState.Labels[GotoLabelInstruction.LabelName]);
+            // Output goto
+            return $"goto {LabelIdentifier};";
+        }
+        // Goto goto label
+        else if (Instruction is GotoGotoLabelInstruction GotoGotoLabelInstruction) {
+            // Get label identifier
+            string LabelIdentifier = IdentifyLabel(CompilerState.Labels[GotoGotoLabelInstruction.LabelName]);
+            // Output goto
+            return $"{IdentifyGotoGotoLabelIdentifier()} = {LabelIdentifier};" + "\n" +
+                $"goto {IdentifyGotoGotoLabel()};";
+        }
+        // Not implemented
+        else {
+            return new Error($"unhandled instruction: '{Instruction.GetType()}'");
+        }
+    }
+    private static Result<string> CompileExpression(Expression Expression, ref CompilerState CompilerState) {
+        
+    }
+
+    /*public static Result<CompileResult> Compile(ParseResult ParseResult) {
         List<SLE.Expression> Sles = [];
         Dictionary<string, SLE.ParameterExpression> VariableSles = [];
 
@@ -218,14 +358,14 @@ public static class Compiler {
                 //SLE.Expression.PropertyOrField(ValueTempSle, nameof(Thingie.Type));
                 //SLE.TypeBinaryExpression IsNumberSle = SLE.Expression.TypeIs(ValueTempSle,);
 
-                /*// Number
+                // Number
                 if (Value.Type is ThingieType.Number) {
                     return Thingie.Number(+Value.CastNumber());
                 }
                 // Invalid
                 else {
                     return new Error($"{Expression.Location.Line}: invalid type for '{UnaryExpression.Operator}': '{Value.Type}'");
-                }*/
+                }
             }
             // Minus
             else if (UnaryExpression.Operator is UnaryOperator.Minus) {
@@ -259,152 +399,157 @@ public static class Compiler {
                 SLE.ParameterExpression Temp1 = SLE.Expression.Variable(typeof(Thingie));
                 SLE.ParameterExpression Temp2 = SLE.Expression.Variable(typeof(Thingie));
                 //
-                SLE.Expression.PropertyOrField(BinaryExpression.Expression1, );
+                SLE.Expression.PropertyOrField(BinaryExpression.Expression1, );*/
 
-                /*// Number, Number
-                if (Value1.Type is ThingieType.Number && Value2.Type is ThingieType.Number) {
-                    return Thingie.Number(Value1.CastNumber() + Value2.CastNumber());
-                }
-                // String, Thingie
-                else if (Value1.Type is ThingieType.String) {
-                    return Thingie.String(Value1.CastString() + Value2.ToString());
-                }
-                // Invalid
-                else {
-                    return new Error($"{Expression.Location.Line}: invalid types for '{BinaryExpression.Operator}': '{Value1.Type}', '{Value2.Type}'");
-                }*/
-            }
-            // Subtract
-            else if (BinaryExpression.Operator is BinaryOperator.Subtract) {
-                // Number, Number
-                if (Value1Sle.Type is ThingieType.Number && Value2Sle.Type is ThingieType.Number) {
-                    return Thingie.Number(Value1Sle.CastNumber() - Value2Sle.CastNumber());
-                }
-                // Invalid
-                else {
-                    return new Error($"{Expression.Location.Line}: invalid types for '{BinaryExpression.Operator}': '{Value1Sle.Type}', '{Value2Sle.Type}'");
-                }
-            }
-            // Multiply
-            else if (BinaryExpression.Operator is BinaryOperator.Multiply) {
-                // Number, Number
-                if (Value1Sle.Type is ThingieType.Number && Value2Sle.Type is ThingieType.Number) {
-                    return Thingie.Number(Value1Sle.CastNumber() * Value2Sle.CastNumber());
-                }
-                // String, Number
-                else if (Value1Sle.Type is ThingieType.String && Value2Sle.Type is ThingieType.Number) {
-                    double Number2 = Value2Sle.CastNumber();
-                    int Int2 = (int)Number2;
-                    if (Int2 < 0 || Number2 != Int2) {
-                        return new Error($"{Expression.Location.Line}: number must be positive integer to multiply string");
-                    }
-                    return Thingie.String(string.Concat(Enumerable.Repeat(Value1Sle.CastString(), Int2)));
-                }
-                // Invalid
-                else {
-                    return new Error($"{Expression.Location.Line}: invalid types for '{BinaryExpression.Operator}': '{Value1Sle.Type}', '{Value2Sle.Type}'");
-                }
-            }
-            // Divide
-            else if (BinaryExpression.Operator is BinaryOperator.Divide) {
-                // Number, Number
-                if (Value1Sle.Type is ThingieType.Number && Value2Sle.Type is ThingieType.Number) {
-                    return Thingie.Number(Value1Sle.CastNumber() / Value2Sle.CastNumber());
-                }
-                // Invalid
-                else {
-                    return new Error($"{Expression.Location.Line}: invalid types for '{BinaryExpression.Operator}': '{Value1Sle.Type}', '{Value2Sle.Type}'");
-                }
-            }
-            // Modulo
-            else if (BinaryExpression.Operator is BinaryOperator.Modulo) {
-                // Number, Number
-                if (Value1Sle.Type is ThingieType.Number && Value2Sle.Type is ThingieType.Number) {
-                    return Thingie.Number(Value1Sle.CastNumber() % Value2Sle.CastNumber());
-                }
-                // Invalid
-                else {
-                    return new Error($"{Expression.Location.Line}: invalid types for '{BinaryExpression.Operator}': '{Value1Sle.Type}', '{Value2Sle.Type}'");
-                }
-            }
-            // Exponentiate
-            else if (BinaryExpression.Operator is BinaryOperator.Exponentiate) {
-                // Number, Number
-                if (Value1Sle.Type is ThingieType.Number && Value2Sle.Type is ThingieType.Number) {
-                    return Thingie.Number(double.Pow(Value1Sle.CastNumber(), Value2Sle.CastNumber()));
-                }
-                // Invalid
-                else {
-                    return new Error($"{Expression.Location.Line}: invalid types for '{BinaryExpression.Operator}': '{Value1Sle.Type}', '{Value2Sle.Type}'");
-                }
-            }
-            // Equals
-            else if (BinaryExpression.Operator is BinaryOperator.Equals) {
-                // Thingie, Thingie
-                return Thingie.Flag(Value1Sle == Value2Sle);
-            }
-            // Not equals
-            else if (BinaryExpression.Operator is BinaryOperator.NotEquals) {
-                // Thingie, Thingie
-                return Thingie.Flag(Value1Sle != Value2Sle);
-            }
-            // Greater than
-            else if (BinaryExpression.Operator is BinaryOperator.GreaterThan) {
-                // Number, Number
-                if (Value1Sle.Type is ThingieType.Number && Value2Sle.Type is ThingieType.Number) {
-                    return Thingie.Flag(Value1Sle.CastNumber() > Value2Sle.CastNumber());
-                }
-                // Invalid
-                else {
-                    return new Error($"{Expression.Location.Line}: invalid types for '{BinaryExpression.Operator}': '{Value1Sle.Type}', '{Value2Sle.Type}'");
-                }
-            }
-            // Less than
-            else if (BinaryExpression.Operator is BinaryOperator.LessThan) {
-                // Number, Number
-                if (Value1Sle.Type is ThingieType.Number && Value2Sle.Type is ThingieType.Number) {
-                    return Thingie.Flag(Value1Sle.CastNumber() < Value2Sle.CastNumber());
-                }
-                // Invalid
-                else {
-                    return new Error($"{Expression.Location.Line}: invalid types for '{BinaryExpression.Operator}': '{Value1Sle.Type}', '{Value2Sle.Type}'");
-                }
-            }
-            // Greater than or equal to
-            else if (BinaryExpression.Operator is BinaryOperator.GreaterThanOrEqualTo) {
-                // Number, Number
-                if (Value1Sle.Type is ThingieType.Number && Value2Sle.Type is ThingieType.Number) {
-                    return Thingie.Flag(Value1Sle.CastNumber() >= Value2Sle.CastNumber());
-                }
-                // Invalid
-                else {
-                    return new Error($"{Expression.Location.Line}: invalid types for '{BinaryExpression.Operator}': '{Value1Sle.Type}', '{Value2Sle.Type}'");
-                }
-            }
-            // Less than or equal to
-            else if (BinaryExpression.Operator is BinaryOperator.LessThanOrEqualTo) {
-                // Number, Number
-                if (Value1Sle.Type is ThingieType.Number && Value2Sle.Type is ThingieType.Number) {
-                    return Thingie.Flag(Value1Sle.CastNumber() <= Value2Sle.CastNumber());
-                }
-                // Invalid
-                else {
-                    return new Error($"{Expression.Location.Line}: invalid types for '{BinaryExpression.Operator}': '{Value1Sle.Type}', '{Value2Sle.Type}'");
-                }
-            }
-            // Invalid
-            else {
-                return new Error($"{Expression.Location.Line}: invalid binary operator: '{BinaryExpression.Operator}'");
-            }
+    /*// Number, Number
+    if (Value1.Type is ThingieType.Number && Value2.Type is ThingieType.Number) {
+        return Thingie.Number(Value1.CastNumber() + Value2.CastNumber());
+    }
+    // String, Thingie
+    else if (Value1.Type is ThingieType.String) {
+        return Thingie.String(Value1.CastString() + Value2.ToString());
+    }
+    // Invalid
+    else {
+        return new Error($"{Expression.Location.Line}: invalid types for '{BinaryExpression.Operator}': '{Value1.Type}', '{Value2.Type}'");
+    }*/
+    /*}
+    // Subtract
+    else if (BinaryExpression.Operator is BinaryOperator.Subtract) {
+        // Number, Number
+        if (Value1Sle.Type is ThingieType.Number && Value2Sle.Type is ThingieType.Number) {
+            return Thingie.Number(Value1Sle.CastNumber() - Value2Sle.CastNumber());
         }
         // Invalid
         else {
-            return new Error($"{Expression.Location.Line}: invalid expression: '{Expression}'");
+            return new Error($"{Expression.Location.Line}: invalid types for '{BinaryExpression.Operator}': '{Value1Sle.Type}', '{Value2Sle.Type}'");
         }
+    }
+    // Multiply
+    else if (BinaryExpression.Operator is BinaryOperator.Multiply) {
+        // Number, Number
+        if (Value1Sle.Type is ThingieType.Number && Value2Sle.Type is ThingieType.Number) {
+            return Thingie.Number(Value1Sle.CastNumber() * Value2Sle.CastNumber());
+        }
+        // String, Number
+        else if (Value1Sle.Type is ThingieType.String && Value2Sle.Type is ThingieType.Number) {
+            double Number2 = Value2Sle.CastNumber();
+            int Int2 = (int)Number2;
+            if (Int2 < 0 || Number2 != Int2) {
+                return new Error($"{Expression.Location.Line}: number must be positive integer to multiply string");
+            }
+            return Thingie.String(string.Concat(Enumerable.Repeat(Value1Sle.CastString(), Int2)));
+        }
+        // Invalid
+        else {
+            return new Error($"{Expression.Location.Line}: invalid types for '{BinaryExpression.Operator}': '{Value1Sle.Type}', '{Value2Sle.Type}'");
+        }
+    }
+    // Divide
+    else if (BinaryExpression.Operator is BinaryOperator.Divide) {
+        // Number, Number
+        if (Value1Sle.Type is ThingieType.Number && Value2Sle.Type is ThingieType.Number) {
+            return Thingie.Number(Value1Sle.CastNumber() / Value2Sle.CastNumber());
+        }
+        // Invalid
+        else {
+            return new Error($"{Expression.Location.Line}: invalid types for '{BinaryExpression.Operator}': '{Value1Sle.Type}', '{Value2Sle.Type}'");
+        }
+    }
+    // Modulo
+    else if (BinaryExpression.Operator is BinaryOperator.Modulo) {
+        // Number, Number
+        if (Value1Sle.Type is ThingieType.Number && Value2Sle.Type is ThingieType.Number) {
+            return Thingie.Number(Value1Sle.CastNumber() % Value2Sle.CastNumber());
+        }
+        // Invalid
+        else {
+            return new Error($"{Expression.Location.Line}: invalid types for '{BinaryExpression.Operator}': '{Value1Sle.Type}', '{Value2Sle.Type}'");
+        }
+    }
+    // Exponentiate
+    else if (BinaryExpression.Operator is BinaryOperator.Exponentiate) {
+        // Number, Number
+        if (Value1Sle.Type is ThingieType.Number && Value2Sle.Type is ThingieType.Number) {
+            return Thingie.Number(double.Pow(Value1Sle.CastNumber(), Value2Sle.CastNumber()));
+        }
+        // Invalid
+        else {
+            return new Error($"{Expression.Location.Line}: invalid types for '{BinaryExpression.Operator}': '{Value1Sle.Type}', '{Value2Sle.Type}'");
+        }
+    }
+    // Equals
+    else if (BinaryExpression.Operator is BinaryOperator.Equals) {
+        // Thingie, Thingie
+        return Thingie.Flag(Value1Sle == Value2Sle);
+    }
+    // Not equals
+    else if (BinaryExpression.Operator is BinaryOperator.NotEquals) {
+        // Thingie, Thingie
+        return Thingie.Flag(Value1Sle != Value2Sle);
+    }
+    // Greater than
+    else if (BinaryExpression.Operator is BinaryOperator.GreaterThan) {
+        // Number, Number
+        if (Value1Sle.Type is ThingieType.Number && Value2Sle.Type is ThingieType.Number) {
+            return Thingie.Flag(Value1Sle.CastNumber() > Value2Sle.CastNumber());
+        }
+        // Invalid
+        else {
+            return new Error($"{Expression.Location.Line}: invalid types for '{BinaryExpression.Operator}': '{Value1Sle.Type}', '{Value2Sle.Type}'");
+        }
+    }
+    // Less than
+    else if (BinaryExpression.Operator is BinaryOperator.LessThan) {
+        // Number, Number
+        if (Value1Sle.Type is ThingieType.Number && Value2Sle.Type is ThingieType.Number) {
+            return Thingie.Flag(Value1Sle.CastNumber() < Value2Sle.CastNumber());
+        }
+        // Invalid
+        else {
+            return new Error($"{Expression.Location.Line}: invalid types for '{BinaryExpression.Operator}': '{Value1Sle.Type}', '{Value2Sle.Type}'");
+        }
+    }
+    // Greater than or equal to
+    else if (BinaryExpression.Operator is BinaryOperator.GreaterThanOrEqualTo) {
+        // Number, Number
+        if (Value1Sle.Type is ThingieType.Number && Value2Sle.Type is ThingieType.Number) {
+            return Thingie.Flag(Value1Sle.CastNumber() >= Value2Sle.CastNumber());
+        }
+        // Invalid
+        else {
+            return new Error($"{Expression.Location.Line}: invalid types for '{BinaryExpression.Operator}': '{Value1Sle.Type}', '{Value2Sle.Type}'");
+        }
+    }
+    // Less than or equal to
+    else if (BinaryExpression.Operator is BinaryOperator.LessThanOrEqualTo) {
+        // Number, Number
+        if (Value1Sle.Type is ThingieType.Number && Value2Sle.Type is ThingieType.Number) {
+            return Thingie.Flag(Value1Sle.CastNumber() <= Value2Sle.CastNumber());
+        }
+        // Invalid
+        else {
+            return new Error($"{Expression.Location.Line}: invalid types for '{BinaryExpression.Operator}': '{Value1Sle.Type}', '{Value2Sle.Type}'");
+        }
+    }
+    // Invalid
+    else {
+        return new Error($"{Expression.Location.Line}: invalid binary operator: '{BinaryExpression.Operator}'");
+    }
+}
+// Invalid
+else {
+    return new Error($"{Expression.Location.Line}: invalid expression: '{Expression}'");
+}
+}*/
+
+    private struct CompilerState() {
+        public Dictionary<string, int> Variables { get; set; } = [];
+        public Dictionary<string, int> Labels { get; set; } = [];
     }
 }
 
 public class CompileResult {
     public required string Source { get; init; }
-    public required Func<Actor, Result> Delegate { get; init; }
+    public required string Output { get; init; }
 }

@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <PackageReference Include="LinkDotNet.StringBuilder" Version="2.4.1" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.14.0" />
     <PackageReference Include="ResultZero" Version="3.0.0" />
     <PackageReference Include="PolySharp" Version="1.15.0" PrivateAssets="all" />
   </ItemGroup>

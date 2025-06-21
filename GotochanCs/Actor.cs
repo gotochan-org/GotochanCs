@@ -51,14 +51,14 @@ public class Actor {
                 // Set variable
                 if (Instruction is SetVariableInstruction SetVariableInstruction) {
                     // Evaluate value
-                    if (InterpretExpression(SetVariableInstruction.Expression).TryGetError(out Error ValueError, out Thingie Value)) {
+                    if (InterpretExpression(SetVariableInstruction.Value).TryGetError(out Error ValueError, out Thingie Value)) {
                         return ValueError;
                     }
                     // Set variable to value
-                    Variables[SetVariableInstruction.TargetVariable] = Value;
+                    Variables[SetVariableInstruction.VariableName] = Value;
                 }
                 // Label
-                else if (Instruction is LabelInstruction LabelInstruction) {
+                else if (Instruction is LabelInstruction) {
                     // Pass
                 }
                 // Goto line
@@ -66,15 +66,15 @@ public class Actor {
                     // Get target index
                     int TargetIndex;
                     // Use precalculated index
-                    if (GotoLineInstruction.TargetIndex is not null) {
-                        TargetIndex = GotoLineInstruction.TargetIndex.Value;
+                    if (GotoLineInstruction.InstructionIndex is not null) {
+                        TargetIndex = GotoLineInstruction.InstructionIndex.Value;
                     }
                     // Check for goto end of program
-                    else if (GotoLineInstruction.TargetLine > ParseResult.MaximumLine) {
+                    else if (GotoLineInstruction.LineNumber > ParseResult.MaximumLine) {
                         break;
                     }
                     // Get index of first instruction on line
-                    else if (!ParseResult.LineIndexes.TryGetValue(GotoLineInstruction.TargetLine, out TargetIndex)) {
+                    else if (!ParseResult.LineIndexes.TryGetValue(GotoLineInstruction.LineNumber, out TargetIndex)) {
                         return new Error($"{Instruction.Location.Line}: invalid line");
                     }
                     // Go to index
@@ -86,13 +86,13 @@ public class Actor {
                     // Get target index
                     int TargetIndex;
                     // Use precalculated index
-                    if (GotoLabelInstruction.TargetIndex is not null) {
-                        TargetIndex = GotoLabelInstruction.TargetIndex.Value;
+                    if (GotoLabelInstruction.InstructionIndex is not null) {
+                        TargetIndex = GotoLabelInstruction.InstructionIndex.Value;
                     }
                     // Get index of label
-                    else if (!ParseResult.LabelIndexes.TryGetValue(GotoLabelInstruction.TargetLabel, out TargetIndex)) {
+                    else if (!ParseResult.LabelIndexes.TryGetValue(GotoLabelInstruction.LabelName, out TargetIndex)) {
                         // Get external label
-                        if (ExternalLabels.TryGetValue(GotoLabelInstruction.TargetLabel, out Action<Actor>? ExternalLabel)) {
+                        if (ExternalLabels.TryGetValue(GotoLabelInstruction.LabelName, out Action<Actor>? ExternalLabel)) {
                             // Call external label
                             try {
                                 ExternalLabel(this);
@@ -109,7 +109,7 @@ public class Actor {
                         }
                     }
                     // Set index of goto label
-                    GotoLabelIndexes[GotoLabelInstruction.TargetLabel] = Index;
+                    GotoLabelIndexes[GotoLabelInstruction.LabelName] = Index;
                     // Go to index
                     Index = TargetIndex;
                     Index--;
@@ -117,7 +117,7 @@ public class Actor {
                 // Goto goto
                 else if (Instruction is GotoGotoLabelInstruction GotoGotoLabelInstruction) {
                     // Get index of goto label
-                    if (!GotoLabelIndexes.TryGetValue(GotoGotoLabelInstruction.TargetLabel, out int TargetIndex)) {
+                    if (!GotoLabelIndexes.TryGetValue(GotoGotoLabelInstruction.LabelName, out int TargetIndex)) {
                         return new Error($"{Instruction.Location.Line}: no entry for goto label");
                     }
                     // Go to index
