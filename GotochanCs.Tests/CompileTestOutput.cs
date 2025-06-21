@@ -7,10 +7,10 @@ namespace GotochanCs.Tests;
 
 public static partial class CompileOutput {
     public static Result Execute(Actor Actor) {
-        Dictionary<int, int> GotoLabelLines = [];
-        int GotoGotoLabelIdentifier = -1;
-        SourceLocation GotoGotoLabelLocation = default;
-        string GotoGotoLabelName = "";
+        int GotoLabelSwitchIdentifier = -1;
+
+        int GotoLabelIndex1 = -1;
+        int GotoLabelIndex2 = -1;
 
         Thingie Variable1 = Thingie.Nothing();
         Thingie Variable2 = Thingie.Nothing();
@@ -38,6 +38,7 @@ public static partial class CompileOutput {
 
     Index3:
         {
+            GotoLabelIndex2 = 2;
             goto Label2;
         }
 
@@ -56,6 +57,7 @@ public static partial class CompileOutput {
                 return new Error($"5: condition must be flag, not '{Temporary1.Value.Type}'");
             }
             if (Temporary1.Value.CastFlag()) {
+                GotoLabelIndex1 = 3;
                 goto Label1;
             }
         }
@@ -81,25 +83,34 @@ public static partial class CompileOutput {
 
     Index8:
         {
-            GotoGotoLabelIdentifier = 2;
-            GotoGotoLabelLocation = new SourceLocation(12, 1);
-            GotoGotoLabelName = @"saycounter";
-            goto GotoGotoLabel;
+            if (GotoLabelIndex2 < 0) {
+                return new Error($"12: no entry for goto label: 'saycounter'");
+            }
+            GotoLabelSwitchIdentifier = GotoLabelIndex2;
+            goto GotoLabelSwitch;
         }
 
 
-    GotoGotoLabel: if (!GotoLabelLines.TryGetValue(GotoGotoLabelIdentifier, out int LabelIdentifier)) {
-            return new Error($"{GotoGotoLabelLocation.Line}: no entry for goto label: '{GotoGotoLabelName}'");
-        }
-        switch (LabelIdentifier) {
+    GotoLabelSwitch: switch (GotoLabelSwitchIdentifier) {
             case 1:
-                goto Label1;
+                goto Index1;
             case 2:
-                goto Label2;
+                goto Index2;
+            case 3:
+                goto Index3;
+            case 4:
+                goto Index4;
+            case 5:
+                goto Index5;
+            case 6:
+                goto Index6;
+            case 7:
+                goto Index7;
+            case 8:
+                goto Index8;
+            default:
+                throw new InvalidProgramException();
         }
-        GotoGotoLabelIdentifier = -1;
-        GotoGotoLabelLocation = default;
-        GotoGotoLabelName = "";
 
     EndLabel:;
 

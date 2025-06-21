@@ -91,9 +91,11 @@ public class Actor {
                     }
                     // Get index of label
                     else if (!ParseResult.LabelIndexes.TryGetValue(GotoLabelInstruction.LabelName, out TargetIndex)) {
+                        // Go to external label
                         if (GotoExternalLabel(GotoLabelInstruction.Location, GotoLabelInstruction.LabelName).TryGetError(out Error GotoExternalLabelError)) {
                             return GotoExternalLabelError;
                         }
+                        // Next instruction
                         continue;
                     }
                     // Set index of goto label
