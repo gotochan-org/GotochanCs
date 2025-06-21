@@ -16,52 +16,12 @@ public static partial class CompileOutput {
     public static Result Execute(Actor Actor) {
         int GotoLabelSwitchIdentifier;
 
-        int GotoLabelIndex1 = -1;
-        int GotoLabelIndex2 = -1;
-
-        Thingie Variable1 = Thingie.Nothing();
-        Thingie Variable2 = Thingie.Nothing();
-
-        bool GotoLabelIndexDirty1 = false;
-        bool GotoLabelIndexDirty2 = false;
-
-        bool VariableDirty1 = false;
-        bool VariableDirty2 = false;
-
-        void LoadActor() {
-            GotoLabelIndex1 = Actor.GetGotoLabelIndex(@"loop");
-            GotoLabelIndex2 = Actor.GetGotoLabelIndex(@"saycounter");
-            Variable1 = Actor.GetVariable(@"counter");
-            Variable2 = Actor.GetVariable(@"what");
-        }
-
-        void SaveActor() {
-            if (GotoLabelIndexDirty1) {
-                GotoLabelIndexDirty1 = false;
-                Actor.SetGotoLabelIndex(@"loop", GotoLabelIndex1);
-            }
-            if (GotoLabelIndexDirty2) {
-                GotoLabelIndexDirty2 = false;
-                Actor.SetGotoLabelIndex(@"saycounter", GotoLabelIndex2);
-            }
-            if (VariableDirty1) {
-                VariableDirty1 = false;
-                Actor.SetVariable(@"counter", Variable1);
-            }
-            if (VariableDirty2) {
-                VariableDirty2 = false;
-                Actor.SetVariable(@"what", Variable2);
-            }
-        }
-
         lock (Actor.Lock) {
-            LoadActor();
         Index1:
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.Number(1);
-                VariableDirty1 = true;
-                Variable1 = Temporary1.Value;
+                Actor.SetVariable(@"counter", Temporary1.Value);
             }
 
         Index2:
@@ -70,20 +30,18 @@ public static partial class CompileOutput {
                 Result<Thingie> Temporary1;
                 Result<Thingie> Temporary2;
                 Result<Thingie> Temporary3;
-                Temporary2 = Variable1;
+                Temporary2 = Actor.GetVariable(@"counter");
                 Temporary3 = Thingie.Number(1);
                 Temporary1 = Thingie.Add(new SourceLocation(3, 12), Temporary2.Value, Temporary3.Value);
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
-                VariableDirty1 = true;
-                Variable1 = Temporary1.Value;
+                Actor.SetVariable(@"counter", Temporary1.Value);
             }
 
         Index3:
             {
-                GotoLabelIndexDirty2 = true;
-                GotoLabelIndex2 = 4;
+                Actor.SetGotoLabelIndex(@"saycounter", 2);
                 goto Label2;
             }
 
@@ -92,7 +50,7 @@ public static partial class CompileOutput {
                 Result<Thingie> Temporary1;
                 Result<Thingie> Temporary2;
                 Result<Thingie> Temporary3;
-                Temporary2 = Variable1;
+                Temporary2 = Actor.GetVariable(@"counter");
                 Temporary3 = Thingie.Number(3);
                 Temporary1 = Thingie.LessThanOrEqualTo(new SourceLocation(5, 14), Temporary2.Value, Temporary3.Value);
                 if (Temporary1.IsError) {
@@ -102,8 +60,7 @@ public static partial class CompileOutput {
                     return new Error($"5: condition must be flag, not '{Temporary1.Value.Type}'");
                 }
                 if (Temporary1.Value.CastFlag()) {
-                    GotoLabelIndexDirty1 = true;
-                    GotoLabelIndex1 = 5;
+                    Actor.SetGotoLabelIndex(@"loop", 3);
                     goto Label1;
                 }
             }
@@ -117,27 +74,27 @@ public static partial class CompileOutput {
         Label2:
             {
                 Result<Thingie> Temporary1;
-                Temporary1 = Variable1;
-                VariableDirty2 = true;
-                Variable2 = Temporary1.Value;
+                Temporary1 = Actor.GetVariable(@"counter");
+                Actor.SetVariable(@"what", Temporary1.Value);
             }
 
         Index7:
             {
-                SaveActor();
-                Result GotoExternalLabelResult = Actor.GotoExternalLabel(new SourceLocation(11, 1), @"say");
-                LoadActor();
-                if (GotoExternalLabelResult.IsError) {
-                    return GotoExternalLabelResult.Error;
+                Result Temporary1;
+                Temporary1 = Actor.GotoExternalLabel(new SourceLocation(11, 1), @"say");
+                if (Temporary1.IsError) {
+                    return Temporary1.Error;
                 }
             }
 
         Index8:
             {
-                if (GotoLabelIndex2 < 0) {
-                    return new Error("12: no entry for goto label: 'saycounter'");
+                int Temporary1;
+                Temporary1 = Actor.GetGotoLabelIndex(@"saycounter");
+                if (Temporary1 < 0) {
+                    return new Error(@"12: no entry for goto label: 'saycounter'");
                 }
-                GotoLabelSwitchIdentifier = GotoLabelIndex2;
+                GotoLabelSwitchIdentifier = Temporary1 + 1 + 1;
                 goto GotoLabelSwitch;
             }
 
@@ -167,7 +124,6 @@ public static partial class CompileOutput {
 
         EndLabel:
             ;
-            SaveActor();
         }
 
         return Result.Success;

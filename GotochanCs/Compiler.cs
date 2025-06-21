@@ -8,17 +8,10 @@ public static class Compiler {
     private static string IdentifyActor() => "Actor";
     private static string IdentifyIndex(int Identifier) => $"Index{Identifier}";
     private static string IdentifyLabel(int Identifier) => $"Label{Identifier}";
-    private static string IdentifyVariable(int Identifier) => $"Variable{Identifier}";
-    private static string IdentifyGotoLabelIndex(int Identifier) => $"GotoLabelIndex{Identifier}";
     private static string IdentifyGotoLabelSwitchIdentifier() => "GotoLabelSwitchIdentifier";
     private static string IdentifyGotoLabelSwitch() => "GotoLabelSwitch";
-    private static string IdentifyVariableDirty(int Identifier) => $"VariableDirty{Identifier}";
-    private static string IdentifyGotoLabelIndexDirty(int Identifier) => $"GotoLabelIndexDirty{Identifier}";
     private static string IdentifyTemporary(int Identifier) => $"Temporary{Identifier}";
-    private static string IdentifyGotoExternalLabelResult() => "GotoExternalLabelResult";
     private static string IdentifyEndLabel() => "EndLabel";
-    private static string IdentifyLoadActor() => "LoadActor";
-    private static string IdentifySaveActor() => "SaveActor";
 
     public static Result<CompileResult> Compile(ParseResult ParseResult, CompileOptions CompileOptions) {
         string Output = "";
@@ -44,10 +37,6 @@ public static class Compiler {
         Output += Indent(CompilerState.Depth);
         Output += $"lock ({IdentifyActor()}.{nameof(Actor.Lock)}) {{" + "\n";
         CompilerState.Depth++;
-
-        // Output load actor
-        Output += Indent(CompilerState.Depth);
-        Output += $"{IdentifyLoadActor()}();" + "\n";
 
         // Compile instructions
         StringBuilder InstructionsBuilder = new();
@@ -95,64 +84,10 @@ public static class Compiler {
         Output += Indent(CompilerState.Depth);
         Output += ";" + "\n";
 
-        // Output set variables in actor
-        Output += Indent(CompilerState.Depth);
-        Output += $"{IdentifySaveActor()}();" + "\n";
-
         // Output end lock actor
         CompilerState.Depth--;
         Output += Indent(CompilerState.Depth);
         Output += "}" + "\n";
-
-        // Compile save actor
-        string SaveActor = CompileSaveActor(ref CompilerState);
-        // Prepend save actor to output
-        Output = SaveActor + "\n" + Output;
-
-        // Compile load actor
-        string LoadActor = CompileLoadActor(ref CompilerState);
-        // Prepend load actor to output
-        Output = LoadActor + "\n" + Output;
-
-        // Compile variable dirties
-        StringBuilder VariableDirtiesBuilder = new();
-        foreach ((string VariableName, int VariableIdentifier) in CompilerState.Variables) {
-            // Add variable dirty declaration
-            VariableDirtiesBuilder.Append(Indent(CompilerState.Depth));
-            VariableDirtiesBuilder.Append($"bool {IdentifyVariableDirty(VariableIdentifier)} = false;" + "\n");
-        }
-        // Prepend variable dirties to output
-        Output = VariableDirtiesBuilder.ToString() + "\n" + Output;
-
-        // Compile goto label index dirties
-        StringBuilder GotoLabelIndexDirtiesBuilder = new();
-        foreach ((string LabelName, int LabelIdentifier) in CompilerState.Labels) {
-            // Add goto label index dirty declaration
-            GotoLabelIndexDirtiesBuilder.Append(Indent(CompilerState.Depth));
-            GotoLabelIndexDirtiesBuilder.Append($"bool {IdentifyGotoLabelIndexDirty(LabelIdentifier)} = false;" + "\n");
-        }
-        // Prepend goto label index dirties to output
-        Output = GotoLabelIndexDirtiesBuilder.ToString() + "\n" + Output;
-
-        // Compile variables
-        StringBuilder VariablesBuilder = new();
-        foreach ((string VariableName, int VariableIdentifier) in CompilerState.Variables) {
-            // Add variable declaration
-            VariablesBuilder.Append(Indent(CompilerState.Depth));
-            VariablesBuilder.Append($"{nameof(Thingie)} {IdentifyVariable(VariableIdentifier)} = {CompileNothing()};" + "\n");
-        }
-        // Prepend variables to output
-        Output = VariablesBuilder.ToString() + "\n" + Output;
-
-        // Compile goto label indexes
-        StringBuilder GotoLabelIndexesBuilder = new();
-        foreach ((string LabelName, int LabelIdentifier) in CompilerState.Labels) {
-            // Add goto label index declaration
-            GotoLabelIndexesBuilder.Append(Indent(CompilerState.Depth));
-            GotoLabelIndexesBuilder.Append($"int {IdentifyGotoLabelIndex(LabelIdentifier)} = -1;" + "\n");
-        }
-        // Prepend goto label indexes to output
-        Output = GotoLabelIndexesBuilder.ToString() + "\n" + Output;
 
         // Output goto label switch parameters
         string GotoLabelSwitchParametersOutput = "";
@@ -207,11 +142,6 @@ public static class Compiler {
 
         // Set variable
         if (Instruction is SetVariableInstruction SetVariableInstruction) {
-            // Get or add variable
-            if (!CompilerState.Variables.TryGetValue(SetVariableInstruction.VariableName, out int VariableIdentifier)) {
-                VariableIdentifier = CompilerState.Variables.Count + 1;
-                CompilerState.Variables[SetVariableInstruction.VariableName] = VariableIdentifier;
-            }
             // Create temporary for value
             Output += CompileTemporary(ref CompilerState, out int ValueTemporaryIdentifier);
             // Compile value
@@ -220,12 +150,9 @@ public static class Compiler {
             }
             // Output value
             Output += ValueOutput;
-            // Output set variable dirty
-            Output += Indent(CompilerState.Depth);
-            Output += $"{IdentifyVariableDirty(VariableIdentifier)} = true;" + "\n";
             // Output set variable
             Output += Indent(CompilerState.Depth);
-            Output += $"{IdentifyVariable(VariableIdentifier)} = {IdentifyTemporary(ValueTemporaryIdentifier)}.{nameof(Result<Thingie>.Value)};" + "\n";
+            Output += $"{IdentifyActor()}.{nameof(Actor.SetVariable)}({CompileStringLiteral(SetVariableInstruction.VariableName)}, {IdentifyTemporary(ValueTemporaryIdentifier)}.{nameof(Result<Thingie>.Value)});" + "\n";
         }
         // Label
         else if (Instruction is LabelInstruction) {
@@ -236,7 +163,7 @@ public static class Compiler {
         // Goto line
         else if (Instruction is GotoLineInstruction GotoLineInstruction) {
             // Check if line exists
-            if (!CompilerState.ParseResult.LineIndexes.TryGetValue(GotoLineInstruction.LineNumber, out int IndexIdentifier)) {
+            if (!CompilerState.ParseResult.LineIndexes.TryGetValue(GotoLineInstruction.LineNumber, out int LineIndex)) {
                 // Output goto end
                 Output += Indent(CompilerState.Depth);
                 Output += $"goto {IdentifyEndLabel()};" + "\n";
@@ -244,39 +171,32 @@ public static class Compiler {
             else {
                 // Output goto
                 Output += Indent(CompilerState.Depth);
-                Output += $"goto {IdentifyIndex(IndexIdentifier + 1)};" + "\n";
+                Output += $"goto {IdentifyIndex(LineIndex + 1)};" + "\n";
             }
         }
         // Goto label
         else if (Instruction is GotoLabelInstruction GotoLabelInstruction) {
             // Get label identifier
             if (!CompilerState.Labels.TryGetValue(GotoLabelInstruction.LabelName, out int LabelIdentifier)) {
-                // Output save actor
-                Output += Indent(CompilerState.Depth);
-                Output += $"{IdentifySaveActor()}();" + "\n";
+                // Create temporary for goto external label
+                Output += CompileTemporary(ref CompilerState, out int GotoExternalLabelTemporaryIdentifier, Type: $"{nameof(Result)}");
                 // Output goto external label
                 Output += Indent(CompilerState.Depth);
-                Output += $"{nameof(Result)} {IdentifyGotoExternalLabelResult()} = {IdentifyActor()}.{nameof(Actor.GotoExternalLabel)}({CompileLocationLiteral(GotoLabelInstruction.Location)}, {CompileStringLiteral(GotoLabelInstruction.LabelName)});" + "\n";
-                // Output load actor
-                Output += Indent(CompilerState.Depth);
-                Output += $"{IdentifyLoadActor()}();" + "\n";
+                Output += $"{IdentifyTemporary(GotoExternalLabelTemporaryIdentifier)} = {IdentifyActor()}.{nameof(Actor.GotoExternalLabel)}({CompileLocationLiteral(GotoLabelInstruction.Location)}, {CompileStringLiteral(GotoLabelInstruction.LabelName)});" + "\n";
                 // Output check no error
                 Output += Indent(CompilerState.Depth);
-                Output += $"if ({IdentifyGotoExternalLabelResult()}.{nameof(Result.IsError)}) {{" + "\n";
+                Output += $"if ({IdentifyTemporary(GotoExternalLabelTemporaryIdentifier)}.{nameof(Result.IsError)}) {{" + "\n";
                 Output += Indent(CompilerState.Depth + 1);
-                Output += $"return {IdentifyGotoExternalLabelResult()}.{nameof(Result.Error)};" + "\n";
+                Output += $"return {IdentifyTemporary(GotoExternalLabelTemporaryIdentifier)}.{nameof(Result.Error)};" + "\n";
                 Output += Indent(CompilerState.Depth);
                 Output += "}" + "\n";
             }
             else {
-                // Get index identifier
-                int IndexIdentifier = CompilerState.ParseResult.LineIndexes[GotoLabelInstruction.Location.Line] + 1;
-                // Output set goto label index dirty
-                Output += Indent(CompilerState.Depth);
-                Output += $"{IdentifyGotoLabelIndexDirty(LabelIdentifier)} = true;" + "\n";
+                // Get line index
+                int LineIndex = CompilerState.ParseResult.LineIndexes[GotoLabelInstruction.Location.Line] + 1;
                 // Output set goto label index
                 Output += Indent(CompilerState.Depth);
-                Output += $"{IdentifyGotoLabelIndex(LabelIdentifier)} = {IndexIdentifier + 1};" + "\n";
+                Output += $"{IdentifyActor()}.{nameof(Actor.SetGotoLabelIndex)}({CompileStringLiteral(GotoLabelInstruction.LabelName)}, {LineIndex - 1});" + "\n";
                 // Output goto
                 Output += Indent(CompilerState.Depth);
                 Output += $"goto {IdentifyLabel(LabelIdentifier)};" + "\n";
@@ -286,16 +206,20 @@ public static class Compiler {
         else if (Instruction is GotoGotoLabelInstruction GotoGotoLabelInstruction) {
             // Get label identifier
             int LabelIdentifier = CompilerState.Labels[GotoGotoLabelInstruction.LabelName];
+            // Create temporary for get goto label index
+            Output += CompileTemporary(ref CompilerState, out int GetGotoLabelIndexTemporaryIdentifier, Type: "int");
             // Output check goto label index exists
             Output += Indent(CompilerState.Depth);
-            Output += $"if ({IdentifyGotoLabelIndex(LabelIdentifier)} < 0) {{" + "\n";
+            Output += $"{IdentifyTemporary(GetGotoLabelIndexTemporaryIdentifier)} = {IdentifyActor()}.{nameof(Actor.GetGotoLabelIndex)}({CompileStringLiteral(GotoGotoLabelInstruction.LabelName)});" + "\n";
+            Output += Indent(CompilerState.Depth);
+            Output += $"if ({IdentifyTemporary(GetGotoLabelIndexTemporaryIdentifier)} < 0) {{" + "\n";
             Output += Indent(CompilerState.Depth + 1);
-            Output += $"return new {nameof(Error)}(\"{GotoGotoLabelInstruction.Location.Line}: no entry for goto label: '{GotoGotoLabelInstruction.LabelName}'\");" + "\n";
+            Output += $"return new {nameof(Error)}(@\"{GotoGotoLabelInstruction.Location.Line}: no entry for goto label: '{GotoGotoLabelInstruction.LabelName}'\");" + "\n";
             Output += Indent(CompilerState.Depth);
             Output += "}" + "\n";
             // Output set goto goto parameters
             Output += Indent(CompilerState.Depth);
-            Output += $"{IdentifyGotoLabelSwitchIdentifier()} = {IdentifyGotoLabelIndex(LabelIdentifier)};" + "\n";
+            Output += $"{IdentifyGotoLabelSwitchIdentifier()} = {IdentifyTemporary(GetGotoLabelIndexTemporaryIdentifier)} + 1 + 1;" + "\n";
             // Output goto goto
             Output += Indent(CompilerState.Depth);
             Output += $"goto {IdentifyGotoLabelSwitch()};" + "\n";
@@ -346,7 +270,7 @@ public static class Compiler {
             }
             // Output variable
             Output += Indent(CompilerState.Depth);
-            Output += $"{IdentifyTemporary(TemporaryIdentifier)} = {IdentifyVariable(VariableIdentifier)};" + "\n";
+            Output += $"{IdentifyTemporary(TemporaryIdentifier)} = {IdentifyActor()}.{nameof(Actor.GetVariable)}({CompileStringLiteral(GetVariableExpression.VariableName)});" + "\n";
         }
         // Unary
         else if (Expression is UnaryExpression UnaryExpression) {
@@ -479,14 +403,14 @@ public static class Compiler {
         // Finish
         return Output;
     }
-    private static string CompileTemporary(ref CompilerState CompilerState, out int TemporaryIdentifier, Thingie? DefaultValue = null) {
+    private static string CompileTemporary(ref CompilerState CompilerState, out int TemporaryIdentifier, string Type = $"{nameof(Result<Thingie>)}<{nameof(Thingie)}>", Thingie? DefaultValue = null) {
         // Increment temporary variable identifier
         CompilerState.TemporaryCounter++;
         TemporaryIdentifier = CompilerState.TemporaryCounter;
 
         // Output declare temporary variable
         return Indent(CompilerState.Depth)
-            + $"{nameof(Result<Thingie>)}<{nameof(Thingie)}> {IdentifyTemporary(TemporaryIdentifier)}{(DefaultValue is not null ? $" = {CompileNothing()}" : "")};" + "\n";
+            + $"{Type} {IdentifyTemporary(TemporaryIdentifier)}{(DefaultValue is not null ? $" = {CompileNothing()}" : "")};" + "\n";
     }
     private static string CompileStringLiteral(string String) {
         return $"@\"{String.Replace("\"", "\"\"")}\"";
@@ -547,84 +471,6 @@ public static class Compiler {
         Output += $"throw new {nameof(InvalidProgramException)}();" + "\n";
 
         // Output end goto label switch
-        CompilerState.Depth--;
-        Output += Indent(CompilerState.Depth);
-        Output += "}" + "\n";
-
-        // Finish
-        return Output;
-    }
-    private static string CompileLoadActor(ref CompilerState CompilerState) {
-        string Output = "";
-
-        // Output method
-        Output += Indent(CompilerState.Depth);
-        Output += $"void {IdentifyLoadActor()}() {{" + "\n";
-        CompilerState.Depth++;
-
-        // Load goto label indexes
-        foreach ((string LabelName, int LabelIdentifier) in CompilerState.Labels) {
-            // Output set goto label index
-            Output += Indent(CompilerState.Depth);
-            Output += $"{IdentifyGotoLabelIndex(LabelIdentifier)} = {nameof(Actor)}.{nameof(Actor.GetGotoLabelIndex)}({CompileStringLiteral(LabelName)});" + "\n";
-        }
-
-        // Load variables
-        foreach ((string VariableName, int VariableIdentifier) in CompilerState.Variables) {
-            // Output set variable
-            Output += Indent(CompilerState.Depth);
-            Output += $"{IdentifyVariable(VariableIdentifier)} = {nameof(Actor)}.{nameof(Actor.GetVariable)}({CompileStringLiteral(VariableName)});" + "\n";
-        }
-
-        // Output end method
-        CompilerState.Depth--;
-        Output += Indent(CompilerState.Depth);
-        Output += "}" + "\n";
-
-        // Finish
-        return Output;
-    }
-    private static string CompileSaveActor(ref CompilerState CompilerState) {
-        string Output = "";
-
-        // Output method
-        Output += Indent(CompilerState.Depth);
-        Output += $"void {IdentifySaveActor()}() {{" + "\n";
-        CompilerState.Depth++;
-
-        // Save goto label indexes
-        foreach ((string LabelName, int LabelIdentifier) in CompilerState.Labels) {
-            // Output check goto label index dirty
-            Output += Indent(CompilerState.Depth);
-            Output += $"if ({IdentifyGotoLabelIndexDirty(LabelIdentifier)}) {{" + "\n";
-            // Output unset goto label index dirty
-            Output += Indent(CompilerState.Depth + 1);
-            Output += $"{IdentifyGotoLabelIndexDirty(LabelIdentifier)} = false;" + "\n";
-            // Output set actor goto label index
-            Output += Indent(CompilerState.Depth + 1);
-            Output += $"{nameof(Actor)}.{nameof(Actor.SetGotoLabelIndex)}({CompileStringLiteral(LabelName)}, {IdentifyGotoLabelIndex(LabelIdentifier)});" + "\n";
-            // Output end check goto label index dirty
-            Output += Indent(CompilerState.Depth);
-            Output += "}" + "\n";
-        }
-
-        // Save variables
-        foreach ((string VariableName, int VariableIdentifier) in CompilerState.Variables) {
-            // Output check variable dirty
-            Output += Indent(CompilerState.Depth);
-            Output += $"if ({IdentifyVariableDirty(VariableIdentifier)}) {{" + "\n";
-            // Output unset variable dirty
-            Output += Indent(CompilerState.Depth + 1);
-            Output += $"{IdentifyVariableDirty(VariableIdentifier)} = false;" + "\n";
-            // Output set actor variable
-            Output += Indent(CompilerState.Depth + 1);
-            Output += $"{nameof(Actor)}.{nameof(Actor.SetVariable)}({CompileStringLiteral(VariableName)}, {IdentifyVariable(VariableIdentifier)});" + "\n";
-            // Output end check variable dirty
-            Output += Indent(CompilerState.Depth);
-            Output += "}" + "\n";
-        }
-
-        // Output end method
         CompilerState.Depth--;
         Output += Indent(CompilerState.Depth);
         Output += "}" + "\n";
