@@ -7,7 +7,7 @@ namespace GotochanCs.Tests;
 
 public static partial class CompileOutput {
     public static Result Execute(Actor Actor) {
-        int GotoLabelSwitchIdentifier = -1;
+        int GotoLabelSwitchIdentifier;
 
         int GotoLabelIndex1 = -1;
         int GotoLabelIndex2 = -1;

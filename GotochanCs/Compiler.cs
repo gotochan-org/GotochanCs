@@ -134,7 +134,7 @@ public static class Compiler {
 
         // Output goto label switch parameters
         string GotoLabelSwitchParametersOutput = "";
-        GotoLabelSwitchParametersOutput += $"int {IdentifyGotoLabelSwitchIdentifier()} = -1;" + "\n";
+        GotoLabelSwitchParametersOutput += $"int {IdentifyGotoLabelSwitchIdentifier()};" + "\n";
         // Prepend goto label switch parameters to output
         Output = GotoLabelSwitchParametersOutput + "\n" + Output;
 
