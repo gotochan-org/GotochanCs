@@ -310,7 +310,7 @@ public static class Compiler {
             OmitErrorCheck = true;
             // Get or add variable
             if (!CompilerState.Variables.TryGetValue(GetVariableExpression.VariableName, out int VariableIdentifier)) {
-                VariableIdentifier = CompilerState.Variables.Count;
+                VariableIdentifier = CompilerState.Variables.Count + 1;
                 CompilerState.Variables[GetVariableExpression.VariableName] = VariableIdentifier;
             }
             // Output variable
