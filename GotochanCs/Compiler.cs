@@ -120,7 +120,7 @@ public static class Compiler {
             Output += $"return new {nameof(Error)}($\"{Instruction.Condition.Location.Line}: condition must be flag, not '{{{IdentifyTemporary(ConditionTemporaryIdentifier)}.{nameof(Thingie.Type)}}}'\");" + "\n";
             Output += "}" + "\n";
             // Output check condition
-            Output += $"if ({IdentifyTemporary(ConditionTemporaryIdentifier)}) {{" + "\n";
+            Output += $"if ({IdentifyTemporary(ConditionTemporaryIdentifier)}.{nameof(Thingie.CastFlag)}()) {{" + "\n";
         }
 
         // Set variable
