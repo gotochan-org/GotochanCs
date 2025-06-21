@@ -139,7 +139,7 @@ public class Actor {
             }
             // Get variable
             else if (Expression is GetVariableExpression GetVariableExpression) {
-                return Variables.GetValueOrDefault(GetVariableExpression.TargetVariable);
+                return Variables.GetValueOrDefault(GetVariableExpression.VariableName);
             }
             // Unary
             else if (Expression is UnaryExpression UnaryExpression) {
@@ -150,25 +150,11 @@ public class Actor {
 
                 // Plus
                 if (UnaryExpression.Operator is UnaryOperator.Plus) {
-                    // Number
-                    if (Value.Type is ThingieType.Number) {
-                        return Thingie.Number(+Value.CastNumber());
-                    }
-                    // Invalid
-                    else {
-                        return new Error($"{Expression.Location.Line}: invalid type for '{UnaryExpression.Operator}': '{Value.Type}'");
-                    }
+                    return Thingie.Plus(UnaryExpression.Location, Value);
                 }
                 // Minus
                 else if (UnaryExpression.Operator is UnaryOperator.Minus) {
-                    // Number
-                    if (Value.Type is ThingieType.Number) {
-                        return Thingie.Number(-Value.CastNumber());
-                    }
-                    // Invalid
-                    else {
-                        return new Error($"{Expression.Location.Line}: invalid type for '{UnaryExpression.Operator}': '{Value.Type}'");
-                    }
+                    return Thingie.Minus(UnaryExpression.Location, Value);
                 }
                 // Invalid
                 else {
@@ -187,136 +173,51 @@ public class Actor {
 
                 // Add
                 if (BinaryExpression.Operator is BinaryOperator.Add) {
-                    // Number, Number
-                    if (Value1.Type is ThingieType.Number && Value2.Type is ThingieType.Number) {
-                        return Thingie.Number(Value1.CastNumber() + Value2.CastNumber());
-                    }
-                    // String, Thingie
-                    else if (Value1.Type is ThingieType.String) {
-                        return Thingie.String(Value1.CastString() + Value2.ToString());
-                    }
-                    // Invalid
-                    else {
-                        return new Error($"{Expression.Location.Line}: invalid types for '{BinaryExpression.Operator}': '{Value1.Type}', '{Value2.Type}'");
-                    }
+                    return Thingie.Add(BinaryExpression.Location, Value1, Value2);
                 }
                 // Subtract
                 else if (BinaryExpression.Operator is BinaryOperator.Subtract) {
-                    // Number, Number
-                    if (Value1.Type is ThingieType.Number && Value2.Type is ThingieType.Number) {
-                        return Thingie.Number(Value1.CastNumber() - Value2.CastNumber());
-                    }
-                    // Invalid
-                    else {
-                        return new Error($"{Expression.Location.Line}: invalid types for '{BinaryExpression.Operator}': '{Value1.Type}', '{Value2.Type}'");
-                    }
+                    return Thingie.Subtract(BinaryExpression.Location, Value1, Value2);
                 }
                 // Multiply
                 else if (BinaryExpression.Operator is BinaryOperator.Multiply) {
-                    // Number, Number
-                    if (Value1.Type is ThingieType.Number && Value2.Type is ThingieType.Number) {
-                        return Thingie.Number(Value1.CastNumber() * Value2.CastNumber());
-                    }
-                    // String, Number
-                    else if (Value1.Type is ThingieType.String && Value2.Type is ThingieType.Number) {
-                        double Number2 = Value2.CastNumber();
-                        int Int2 = (int)Number2;
-                        if (Int2 < 0 || Number2 != Int2) {
-                            return new Error($"{Expression.Location.Line}: number must be positive integer to multiply string");
-                        }
-                        return Thingie.String(string.Concat(Enumerable.Repeat(Value1.CastString(), Int2)));
-                    }
-                    // Invalid
-                    else {
-                        return new Error($"{Expression.Location.Line}: invalid types for '{BinaryExpression.Operator}': '{Value1.Type}', '{Value2.Type}'");
-                    }
+                    return Thingie.Multiply(BinaryExpression.Location, Value1, Value2);
                 }
                 // Divide
                 else if (BinaryExpression.Operator is BinaryOperator.Divide) {
-                    // Number, Number
-                    if (Value1.Type is ThingieType.Number && Value2.Type is ThingieType.Number) {
-                        return Thingie.Number(Value1.CastNumber() / Value2.CastNumber());
-                    }
-                    // Invalid
-                    else {
-                        return new Error($"{Expression.Location.Line}: invalid types for '{BinaryExpression.Operator}': '{Value1.Type}', '{Value2.Type}'");
-                    }
+                    return Thingie.Divide(BinaryExpression.Location, Value1, Value2);
                 }
                 // Modulo
                 else if (BinaryExpression.Operator is BinaryOperator.Modulo) {
-                    // Number, Number
-                    if (Value1.Type is ThingieType.Number && Value2.Type is ThingieType.Number) {
-                        return Thingie.Number(Value1.CastNumber() % Value2.CastNumber());
-                    }
-                    // Invalid
-                    else {
-                        return new Error($"{Expression.Location.Line}: invalid types for '{BinaryExpression.Operator}': '{Value1.Type}', '{Value2.Type}'");
-                    }
+                    return Thingie.Modulo(BinaryExpression.Location, Value1, Value2);
                 }
                 // Exponentiate
                 else if (BinaryExpression.Operator is BinaryOperator.Exponentiate) {
-                    // Number, Number
-                    if (Value1.Type is ThingieType.Number && Value2.Type is ThingieType.Number) {
-                        return Thingie.Number(double.Pow(Value1.CastNumber(), Value2.CastNumber()));
-                    }
-                    // Invalid
-                    else {
-                        return new Error($"{Expression.Location.Line}: invalid types for '{BinaryExpression.Operator}': '{Value1.Type}', '{Value2.Type}'");
-                    }
+                    return Thingie.Exponentiate(BinaryExpression.Location, Value1, Value2);
                 }
                 // Equals
                 else if (BinaryExpression.Operator is BinaryOperator.Equals) {
-                    // Thingie, Thingie
-                    return Thingie.Flag(Value1 == Value2);
+                    return Thingie.Equals(BinaryExpression.Location, Value1, Value2);
                 }
                 // Not equals
                 else if (BinaryExpression.Operator is BinaryOperator.NotEquals) {
-                    // Thingie, Thingie
-                    return Thingie.Flag(Value1 != Value2);
+                    return Thingie.NotEquals(BinaryExpression.Location, Value1, Value2);
                 }
                 // Greater than
                 else if (BinaryExpression.Operator is BinaryOperator.GreaterThan) {
-                    // Number, Number
-                    if (Value1.Type is ThingieType.Number && Value2.Type is ThingieType.Number) {
-                        return Thingie.Flag(Value1.CastNumber() > Value2.CastNumber());
-                    }
-                    // Invalid
-                    else {
-                        return new Error($"{Expression.Location.Line}: invalid types for '{BinaryExpression.Operator}': '{Value1.Type}', '{Value2.Type}'");
-                    }
+                    return Thingie.GreaterThan(BinaryExpression.Location, Value1, Value2);
                 }
                 // Less than
                 else if (BinaryExpression.Operator is BinaryOperator.LessThan) {
-                    // Number, Number
-                    if (Value1.Type is ThingieType.Number && Value2.Type is ThingieType.Number) {
-                        return Thingie.Flag(Value1.CastNumber() < Value2.CastNumber());
-                    }
-                    // Invalid
-                    else {
-                        return new Error($"{Expression.Location.Line}: invalid types for '{BinaryExpression.Operator}': '{Value1.Type}', '{Value2.Type}'");
-                    }
+                    return Thingie.LessThan(BinaryExpression.Location, Value1, Value2);
                 }
                 // Greater than or equal to
                 else if (BinaryExpression.Operator is BinaryOperator.GreaterThanOrEqualTo) {
-                    // Number, Number
-                    if (Value1.Type is ThingieType.Number && Value2.Type is ThingieType.Number) {
-                        return Thingie.Flag(Value1.CastNumber() >= Value2.CastNumber());
-                    }
-                    // Invalid
-                    else {
-                        return new Error($"{Expression.Location.Line}: invalid types for '{BinaryExpression.Operator}': '{Value1.Type}', '{Value2.Type}'");
-                    }
+                    return Thingie.GreaterThanOrEqualTo(BinaryExpression.Location, Value1, Value2);
                 }
                 // Less than or equal to
                 else if (BinaryExpression.Operator is BinaryOperator.LessThanOrEqualTo) {
-                    // Number, Number
-                    if (Value1.Type is ThingieType.Number && Value2.Type is ThingieType.Number) {
-                        return Thingie.Flag(Value1.CastNumber() <= Value2.CastNumber());
-                    }
-                    // Invalid
-                    else {
-                        return new Error($"{Expression.Location.Line}: invalid types for '{BinaryExpression.Operator}': '{Value1.Type}', '{Value2.Type}'");
-                    }
+                    return Thingie.LessThanOrEqualTo(BinaryExpression.Location, Value1, Value2);
                 }
                 // Invalid
                 else {

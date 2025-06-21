@@ -154,7 +154,7 @@ public static class Parser {
                         Operator = CompoundOperator,
                         Expression1 = new GetVariableExpression() {
                             Location = Tokens[0].Location,
-                            TargetVariable = Tokens[0].Value,
+                            VariableName = Tokens[0].Value,
                         },
                         Expression2 = Value,
                     };
@@ -405,7 +405,7 @@ public static class Parser {
                 else if (Tokens[0].Type is TokenType.Identifier) {
                     return new GetVariableExpression() {
                         Location = Tokens[0].Location,
-                        TargetVariable = Tokens[0].Value,
+                        VariableName = Tokens[0].Value,
                     };
                 }
                 // Invalid

@@ -73,6 +73,148 @@ public readonly struct Thingie : IEquatable<Thingie> {
 
     public static bool operator ==(Thingie A, Thingie B) => A.Equals(B);
     public static bool operator !=(Thingie A, Thingie B) => !A.Equals(B);
+
+    public static Result<Thingie> Plus(SourceLocation Location, Thingie Value) {
+        // Number
+        if (Value.Type is ThingieType.Number) {
+            return Number(+Value.CastNumber());
+        }
+        // Invalid
+        else {
+            return new Error($"{Location.Line}: invalid type for '+': '{Value.Type}'");
+        }
+    }
+    public static Result<Thingie> Minus(SourceLocation Location, Thingie Value) {
+        // Number
+        if (Value.Type is ThingieType.Number) {
+            return Number(-Value.CastNumber());
+        }
+        // Invalid
+        else {
+            return new Error($"{Location.Line}: invalid type for '-': '{Value.Type}'");
+        }
+    }
+    public static Result<Thingie> Add(SourceLocation Location, Thingie Value1, Thingie Value2) {
+        // Number, Number
+        if (Value1.Type is ThingieType.Number && Value2.Type is ThingieType.Number) {
+            return Number(Value1.CastNumber() + Value2.CastNumber());
+        }
+        // String, Thingie
+        else if (Value1.Type is ThingieType.String) {
+            return String(Value1.CastString() + Value2.ToString());
+        }
+        // Invalid
+        else {
+            return new Error($"{Location.Line}: invalid types for '+': '{Value1.Type}', '{Value2.Type}'");
+        }
+    }
+    public static Result<Thingie> Subtract(SourceLocation Location, Thingie Value1, Thingie Value2) {
+        // Number, Number
+        if (Value1.Type is ThingieType.Number && Value2.Type is ThingieType.Number) {
+            return Number(Value1.CastNumber() - Value2.CastNumber());
+        }
+        // Invalid
+        else {
+            return new Error($"{Location.Line}: invalid types for '-': '{Value1.Type}', '{Value2.Type}'");
+        }
+    }
+    public static Result<Thingie> Multiply(SourceLocation Location, Thingie Value1, Thingie Value2) {
+        // Number, Number
+        if (Value1.Type is ThingieType.Number && Value2.Type is ThingieType.Number) {
+            return Number(Value1.CastNumber() * Value2.CastNumber());
+        }
+        // String, Number
+        else if (Value1.Type is ThingieType.String && Value2.Type is ThingieType.Number) {
+            double Number2 = Value2.CastNumber();
+            int Int2 = (int)Number2;
+            if (Int2 < 0 || Number2 != Int2) {
+                return new Error($"{Location.Line}: number must be positive integer to multiply string");
+            }
+            return String(string.Concat(Enumerable.Repeat(Value1.CastString(), Int2)));
+        }
+        // Invalid
+        else {
+            return new Error($"{Location.Line}: invalid types for '*': '{Value1.Type}', '{Value2.Type}'");
+        }
+    }
+    public static Result<Thingie> Divide(SourceLocation Location, Thingie Value1, Thingie Value2) {
+        // Number, Number
+        if (Value1.Type is ThingieType.Number && Value2.Type is ThingieType.Number) {
+            return Number(Value1.CastNumber() / Value2.CastNumber());
+        }
+        // Invalid
+        else {
+            return new Error($"{Location.Line}: invalid types for '/': '{Value1.Type}', '{Value2.Type}'");
+        }
+    }
+    public static Result<Thingie> Modulo(SourceLocation Location, Thingie Value1, Thingie Value2) {
+        // Number, Number
+        if (Value1.Type is ThingieType.Number && Value2.Type is ThingieType.Number) {
+            return Number(Value1.CastNumber() % Value2.CastNumber());
+        }
+        // Invalid
+        else {
+            return new Error($"{Location.Line}: invalid types for '%': '{Value1.Type}', '{Value2.Type}'");
+        }
+    }
+    public static Result<Thingie> Exponentiate(SourceLocation Location, Thingie Value1, Thingie Value2) {
+        // Number, Number
+        if (Value1.Type is ThingieType.Number && Value2.Type is ThingieType.Number) {
+            return Number(double.Pow(Value1.CastNumber(), Value2.CastNumber()));
+        }
+        // Invalid
+        else {
+            return new Error($"{Location.Line}: invalid types for '^': '{Value1.Type}', '{Value2.Type}'");
+        }
+    }
+    public static Result<Thingie> Equals(SourceLocation Location, Thingie Value1, Thingie Value2) {
+        // Thingie, Thingie
+        return Flag(Value1 == Value2);
+    }
+    public static Result<Thingie> NotEquals(SourceLocation Location, Thingie Value1, Thingie Value2) {
+        // Thingie, Thingie
+        return Flag(Value1 != Value2);
+    }
+    public static Result<Thingie> GreaterThan(SourceLocation Location, Thingie Value1, Thingie Value2) {
+        // Number, Number
+        if (Value1.Type is ThingieType.Number && Value2.Type is ThingieType.Number) {
+            return Flag(Value1.CastNumber() > Value2.CastNumber());
+        }
+        // Invalid
+        else {
+            return new Error($"{Location.Line}: invalid types for '>': '{Value1.Type}', '{Value2.Type}'");
+        }
+    }
+    public static Result<Thingie> LessThan(SourceLocation Location, Thingie Value1, Thingie Value2) {
+        // Number, Number
+        if (Value1.Type is ThingieType.Number && Value2.Type is ThingieType.Number) {
+            return Flag(Value1.CastNumber() < Value2.CastNumber());
+        }
+        // Invalid
+        else {
+            return new Error($"{Location.Line}: invalid types for '<': '{Value1.Type}', '{Value2.Type}'");
+        }
+    }
+    public static Result<Thingie> GreaterThanOrEqualTo(SourceLocation Location, Thingie Value1, Thingie Value2) {
+        // Number, Number
+        if (Value1.Type is ThingieType.Number && Value2.Type is ThingieType.Number) {
+            return Flag(Value1.CastNumber() >= Value2.CastNumber());
+        }
+        // Invalid
+        else {
+            return new Error($"{Location.Line}: invalid types for '>=': '{Value1.Type}', '{Value2.Type}'");
+        }
+    }
+    public static Result<Thingie> LessThanOrEqualTo(SourceLocation Location, Thingie Value1, Thingie Value2) {
+        // Number, Number
+        if (Value1.Type is ThingieType.Number && Value2.Type is ThingieType.Number) {
+            return Flag(Value1.CastNumber() <= Value2.CastNumber());
+        }
+        // Invalid
+        else {
+            return new Error($"{Location.Line}: invalid types for '<=': '{Value1.Type}', '{Value2.Type}'");
+        }
+    }
 }
 
 public enum ThingieType {

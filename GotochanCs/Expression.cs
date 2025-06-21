@@ -9,7 +9,7 @@ public record ConstantExpression : Expression {
 }
 
 public record GetVariableExpression : Expression {
-    public required string TargetVariable { get; init; }
+    public required string VariableName { get; init; }
 }
 
 public record UnaryExpression : Expression {
