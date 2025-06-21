@@ -1,5 +1,5 @@
-using System.Text;
 using System.Runtime.InteropServices;
+using LinkDotNet.StringBuilder;
 using ResultZero;
 
 namespace GotochanCs;
@@ -39,7 +39,7 @@ public static class Compiler {
         CompilerState.Depth++;
 
         // Compile instructions
-        StringBuilder InstructionsBuilder = new();
+        using ValueStringBuilder InstructionsBuilder = new(stackalloc char[64]);
         for (int Index = 0; Index < InstructionsSpan.Length; Index++) {
             Instruction Instruction = InstructionsSpan[Index];
 
