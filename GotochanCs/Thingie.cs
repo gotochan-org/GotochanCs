@@ -34,7 +34,9 @@ public readonly struct Thingie : IEquatable<Thingie> {
     public Result<string> AsString() => Type is ThingieType.String ? CastString() : new Error("thingie is not string");
 
     public static explicit operator bool(Thingie Thingie) => Thingie.CastFlag();
+    public static explicit operator bool?(Thingie Thingie) => Thingie.Type is ThingieType.Nothing ? null : Thingie.CastFlag();
     public static explicit operator double(Thingie Thingie) => Thingie.CastNumber();
+    public static explicit operator double?(Thingie Thingie) => Thingie.Type is ThingieType.Nothing ? null : Thingie.CastNumber();
     public static explicit operator string?(Thingie Thingie) => Thingie.Type is ThingieType.Nothing ? null : Thingie.CastString();
 
     public object? AsObject => Type switch {

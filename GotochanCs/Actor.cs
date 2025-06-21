@@ -40,7 +40,7 @@ public class Actor {
                     }
                     // Ensure condition is flag
                     if (ConditionResult.Type is not ThingieType.Flag) {
-                        return new Error($"{Instruction.Location}: condition must be flag, not '{ConditionResult.Type}'");
+                        return new Error($"{Instruction.Condition.Location}: condition must be flag, not '{ConditionResult.Type}'");
                     }
                     // Skip instruction if not condition
                     if (!ConditionResult.CastFlag()) {

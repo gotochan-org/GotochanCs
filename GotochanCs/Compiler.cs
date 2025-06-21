@@ -21,13 +21,9 @@ public static class Compiler {
 
         // Add labels
         foreach ((string LabelName, int LabelIndex) in ParseResult.LabelIndexes) {
-            int LabelIdentifier = CompilerState.Labels.Count;
+            int LabelIdentifier = CompilerState.Labels.Count + 1;
             CompilerState.Labels[LabelName] = LabelIdentifier;
         }
-
-        // Output goto label lines
-        Output += $"Dictionary<int, int> {IdentifyGotoLabelLines()} = [];" + "\n";
-        Output += $"int {IdentifyGotoGotoLabelIdentifier()} = \"\";" + "\n";
 
         // Get instructions as span
         ReadOnlySpan<Instruction> InstructionsSpan = CollectionsMarshal.AsSpan(ParseResult.Instructions);
@@ -38,14 +34,11 @@ public static class Compiler {
             Instruction Instruction = InstructionsSpan[Index];
 
             // Line
-            foreach ((int LineNumber, int LineIndex) in ParseResult.LineIndexes) {
-                if (LineIndex == Index) {
-                    // Get line identifier
-                    string LineIdentifier = IdentifyLine(LineNumber);
-                    // Output label
-                    InstructionsBuilder.Append($"{LineIdentifier}: ");
-                    break;
-                }
+            {
+                // Get line identifier
+                string LineIdentifier = IdentifyLine(Instruction.Location.Line);
+                // Output label
+                InstructionsBuilder.Append($"{LineIdentifier}: ");
             }
             // Label
             foreach ((string LabelName, int LabelIndex) in ParseResult.LabelIndexes) {
@@ -85,10 +78,17 @@ public static class Compiler {
         StringBuilder VariablesBuilder = new();
         foreach ((string VariableName, int VariableIdentifier) in CompilerState.Variables) {
             // Add variable declaration
-            VariablesBuilder.Append($"{nameof(Thingie)} {IdentifyVariable(VariableIdentifier)} = {OutputNothing()};" + "\n");
+            VariablesBuilder.Append($"{nameof(Thingie)} {IdentifyVariable(VariableIdentifier)} = {CompileNothing()};" + "\n");
         }
         // Prepend variables to output
         Output = VariablesBuilder.ToString() + "\n" + Output;
+
+        // Output goto label lines
+        string GotoLabelLinesOutput = "";
+        GotoLabelLinesOutput += $"Dictionary<int, int> {IdentifyGotoLabelLines()} = [];" + "\n";
+        GotoLabelLinesOutput += $"int {IdentifyGotoGotoLabelIdentifier()} = -1;" + "\n";
+        // Prepend goto label lines to output
+        Output = GotoLabelLinesOutput + "\n" + Output;
 
         // Compile set variables in actor
         // TODO
@@ -107,31 +107,38 @@ public static class Compiler {
 
         // Condition
         if (Instruction.Condition is not null) {
-            // Output temporary variable
-            Output += $"{nameof(Thingie)} {IdentifyTemporary(0)} = {OutputNothing()};" + "\n";
-
+            // Create temporary for condition
+            Output += CompileTemporary(ref CompilerState, out int ConditionTemporaryIdentifier);
             // Compile condition
-            if (CompileExpression(Instruction.Condition, ref CompilerState, 0).TryGetError(out Error ConditionError, out string? ConditionOutput)) {
+            if (CompileExpression(Instruction.Condition, ref CompilerState, ConditionTemporaryIdentifier).TryGetError(out Error ConditionError, out string? ConditionOutput)) {
                 return ConditionError;
             }
             // Output condition
-            Output += ConditionOutput + "\n";
-            Output += $"if ({IdentifyTemporary(0)}) {{" + "\n";
+            Output += ConditionOutput;
+            // Output check condition is flag
+            Output += $"if ({IdentifyTemporary(ConditionTemporaryIdentifier)}.{nameof(Thingie.Type)} is not {nameof(ThingieType)}.{nameof(ThingieType.Flag)}) ";
+            Output += $"return new {nameof(Error)}($\"{Instruction.Condition.Location.Line}: condition must be flag, not '{{{IdentifyTemporary(ConditionTemporaryIdentifier)}.{nameof(Thingie.Type)}}}'\");" + "\n";
+            // Output check condition
+            Output += $"if ({IdentifyTemporary(ConditionTemporaryIdentifier)}) {{" + "\n";
         }
 
         // Set variable
         if (Instruction is SetVariableInstruction SetVariableInstruction) {
             // Get or add variable
             if (!CompilerState.Variables.TryGetValue(SetVariableInstruction.VariableName, out int VariableIdentifier)) {
-                VariableIdentifier = CompilerState.Variables.Count;
+                VariableIdentifier = CompilerState.Variables.Count + 1;
                 CompilerState.Variables[SetVariableInstruction.VariableName] = VariableIdentifier;
             }
+            // Create temporary for value
+            Output += CompileTemporary(ref CompilerState, out int ValueTemporaryIdentifier);
             // Compile value
-            if (CompileExpression(SetVariableInstruction.Value, ref CompilerState, 0).TryGetError(out Error ValueError, out string? ValueOutput)) {
+            if (CompileExpression(SetVariableInstruction.Value, ref CompilerState, ValueTemporaryIdentifier).TryGetError(out Error ValueError, out string? ValueOutput)) {
                 return ValueError;
             }
+            // Output value
+            Output += ValueOutput;
             // Output assign
-            Output += $"{VariableIdentifier} = {ValueOutput};" + "\n";
+            Output += $"{IdentifyVariable(VariableIdentifier)} = {IdentifyTemporary(ValueTemporaryIdentifier)};" + "\n";
         }
         // Label
         else if (Instruction is LabelInstruction) {
@@ -156,9 +163,10 @@ public static class Compiler {
         else if (Instruction is GotoGotoLabelInstruction GotoGotoLabelInstruction) {
             // Get label identifier
             string LabelIdentifier = IdentifyLabel(CompilerState.Labels[GotoGotoLabelInstruction.LabelName]);
-            // Output goto
-            Output += $"{IdentifyGotoGotoLabelIdentifier()} = {LabelIdentifier};" + "\n" +
-                $"goto {IdentifyGotoGotoLabel()};" + "\n";
+            // Output goto goto parameter
+            Output += $"{IdentifyGotoGotoLabelIdentifier()} = {LabelIdentifier};" + "\n";
+            // Output goto goto
+            Output += $"goto {IdentifyGotoGotoLabel()};" + "\n";
         }
         // Not implemented
         else {
@@ -167,12 +175,14 @@ public static class Compiler {
 
         // Condition
         if (Instruction.Condition is not null) {
-            // Output end condition
+            // Output end check condition
             Output += "}" + "\n";
         }
 
         // Output end scope
         Output += "}" + "\n";
+        // Reset temporary counter
+        CompilerState.TemporaryCounter = 0;
 
         // Finish
         return Output;
@@ -183,13 +193,7 @@ public static class Compiler {
         // Constant
         if (Expression is ConstantExpression ConstantExpression) {
             // Output constant
-            return ConstantExpression.Value.Type switch {
-                ThingieType.Nothing => OutputNothing(),
-                ThingieType.Flag => OutputFlag(ConstantExpression.Value.CastFlag()),
-                ThingieType.Number => OutputNumber(ConstantExpression.Value.CastNumber()),
-                ThingieType.String => OutputString(ConstantExpression.Value.CastString()),
-                _ => throw new NotImplementedException($"{ConstantExpression.Location.Line}: unhandled {nameof(ThingieType)}: '{ConstantExpression.Value.Type}'")
-            };
+            Output += $"{IdentifyTemporary(TemporaryIdentifier)} = {CompileThingie(ConstantExpression.Value)};" + "\n";
         }
         // Get variable
         else if (Expression is GetVariableExpression GetVariableExpression) {
@@ -199,50 +203,52 @@ public static class Compiler {
                 CompilerState.Variables[GetVariableExpression.VariableName] = VariableIdentifier;
             }
             // Output variable
-            return IdentifyVariable(VariableIdentifier);
+            Output += $"{IdentifyTemporary(TemporaryIdentifier)} = {IdentifyVariable(VariableIdentifier)};" + "\n";
         }
         // Unary
         else if (Expression is UnaryExpression UnaryExpression) {
             // Create temporary for expression
-            int ExpressionTemporaryIdentifier = CompilerState.TemporaryCounter++;
-            Output += $"{nameof(Thingie)} {IdentifyTemporary(ExpressionTemporaryIdentifier)} = {OutputNothing()};" + "\n";
+            Output += CompileTemporary(ref CompilerState, out int ExpressionTemporaryIdentifier);
             // Compile expression
             if (CompileExpression(UnaryExpression.Expression, ref CompilerState, ExpressionTemporaryIdentifier).TryGetError(out Error ExpressionError, out string? ExpressionOutput)) {
                 return ExpressionError;
             }
             // Output expression
-            Output += ExpressionOutput + "\n";
+            Output += ExpressionOutput;
 
             // Plus
             if (UnaryExpression.Operator is UnaryOperator.Plus) {
                 // Output unary plus
-                Output += $"{IdentifyTemporary(TemporaryIdentifier)} = {nameof(Thingie)}.{nameof(Thingie.Plus)}({OutputLocationLiteral(UnaryExpression.Location)}, {IdentifyTemporary(0)})";
+                Output += $"{IdentifyTemporary(TemporaryIdentifier)} = {nameof(Thingie)}.{nameof(Thingie.Plus)}({CompileLocationLiteral(UnaryExpression.Location)}, {IdentifyTemporary(0)});" + "\n";
             }
             // Minus
             else if (UnaryExpression.Operator is UnaryOperator.Minus) {
                 // Output unary minus
-                Output += $"{IdentifyTemporary(TemporaryIdentifier)} = {nameof(Thingie)}.{nameof(Thingie.Minus)}({OutputLocationLiteral(UnaryExpression.Location)}, {IdentifyTemporary(0)})" + "\n";
+                Output += $"{IdentifyTemporary(TemporaryIdentifier)} = {nameof(Thingie)}.{nameof(Thingie.Minus)}({CompileLocationLiteral(UnaryExpression.Location)}, {IdentifyTemporary(0)});" + "\n";
             }
             // Invalid
             else {
                 return new Error($"{Expression.Location.Line}: invalid unary operator: '{UnaryExpression.Operator}'");
             }
 
-            // Output error check
+            // Output check no error
             Output += $"if ({IdentifyTemporary(TemporaryIdentifier)}.{nameof(Result.IsError)} return {IdentifyTemporary(TemporaryIdentifier)};" + "\n";
         }
         // Binary
         else if (Expression is BinaryExpression BinaryExpression) {
+            // Create temporaries for expressions
+            Output += CompileTemporary(ref CompilerState, out int Expression1TemporaryIdentifier);
+            Output += CompileTemporary(ref CompilerState, out int Expression2TemporaryIdentifier);
             // Compile expressions
-            if (CompileExpression(BinaryExpression.Expression1, ref CompilerState, 0).TryGetError(out Error Expression1Error, out string? Expression1Output)) {
+            if (CompileExpression(BinaryExpression.Expression1, ref CompilerState, Expression1TemporaryIdentifier).TryGetError(out Error Expression1Error, out string? Expression1Output)) {
                 return Expression1Error;
             }
-            if (CompileExpression(BinaryExpression.Expression2, ref CompilerState, 1).TryGetError(out Error Expression2Error, out string? Expression2Output)) {
+            if (CompileExpression(BinaryExpression.Expression2, ref CompilerState, Expression2TemporaryIdentifier).TryGetError(out Error Expression2Error, out string? Expression2Output)) {
                 return Expression2Error;
             }
             // Output expressions
-            Output += Expression1Output + "\n";
-            Output += Expression2Output + "\n";
+            Output += Expression1Output;
+            Output += Expression2Output;
 
             // Add
             if (BinaryExpression.Operator is BinaryOperator.Add) {
@@ -305,23 +311,37 @@ public static class Compiler {
         // Finish
         return Output;
     }
-    private static string OutputStringLiteral(string String) {
+    private static string CompileTemporary(ref CompilerState CompilerState, out int TemporaryIdentifier, Thingie? DefaultValue = null) {
+        CompilerState.TemporaryCounter++;
+        TemporaryIdentifier = CompilerState.TemporaryCounter;
+        return $"{nameof(Thingie)} {IdentifyTemporary(TemporaryIdentifier)}{(DefaultValue is not null ? $" = {CompileNothing()}" : "")};" + "\n";
+    }
+    private static string CompileStringLiteral(string String) {
         return $"@\"{String.Replace("\"", "\"\"")}\"";
     }
-    private static string OutputLocationLiteral(SourceLocation Location) {
-        return $"new {nameof(SourceLocation)}({OutputStringLiteral(Location.Source)}, {Location.Index}, {Location.Line})";
+    private static string CompileLocationLiteral(SourceLocation Location) {
+        return $"new {nameof(SourceLocation)}({CompileStringLiteral(Location.Source)}, {Location.Index}, {Location.Line})";
     }
-    private static string OutputNothing() {
+    private static string CompileThingie(Thingie Thingie) {
+        return Thingie.Type switch {
+            ThingieType.Nothing => CompileNothing(),
+            ThingieType.Flag => CompileFlag(Thingie.CastFlag()),
+            ThingieType.Number => CompileNumber(Thingie.CastNumber()),
+            ThingieType.String => CompileString(Thingie.CastString()),
+            _ => throw new NotImplementedException($"unhandled {nameof(ThingieType)}: '{Thingie.Type}'")
+        };
+    }
+    private static string CompileNothing() {
         return $"{nameof(Thingie)}.{nameof(Thingie.Nothing)}()";
     }
-    private static string OutputFlag(bool Flag) {
+    private static string CompileFlag(bool Flag) {
         return $"{nameof(Thingie)}.{nameof(Thingie.Flag)}({(Flag ? "true" : "false")})";
     }
-    private static string OutputNumber(double Number) {
+    private static string CompileNumber(double Number) {
         return $"{nameof(Thingie)}.{nameof(Thingie.Number)}({Number})";
     }
-    private static string OutputString(string String) {
-        return $"{nameof(Thingie)}.{nameof(Thingie.String)}({OutputStringLiteral(String)})";
+    private static string CompileString(string String) {
+        return $"{nameof(Thingie)}.{nameof(Thingie.String)}({CompileStringLiteral(String)})";
     }
 
     private struct CompilerState() {
