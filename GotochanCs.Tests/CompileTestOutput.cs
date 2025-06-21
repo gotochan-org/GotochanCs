@@ -15,13 +15,21 @@ public static partial class CompileOutput {
         Thingie Variable1 = Thingie.Nothing();
         Thingie Variable2 = Thingie.Nothing();
 
-        void SynchronizeActor() {
-            Actor.SetVariable(@"counter", Variable1);
-            Actor.SetVariable(@"what", Variable2);
-            Actor.SetGotoLabelIndex(@"loop", GotoLabelIndex1);
-            Actor.SetGotoLabelIndex(@"saycounter", GotoLabelIndex2);
+        void LoadActor() {
+            GotoLabelIndex1 = Actor.GetGotoLabelIndex(@"loop");
+            GotoLabelIndex2 = Actor.GetGotoLabelIndex(@"saycounter");
+            Variable1 = Actor.GetVariable(@"counter");
+            Variable2 = Actor.GetVariable(@"what");
         }
 
+        void SaveActor() {
+            Actor.SetGotoLabelIndex(@"loop", GotoLabelIndex1);
+            Actor.SetGotoLabelIndex(@"saycounter", GotoLabelIndex2);
+            Actor.SetVariable(@"counter", Variable1);
+            Actor.SetVariable(@"what", Variable2);
+        }
+
+        LoadActor();
     Index1:
         {
             Result<Thingie> Temporary1;
@@ -85,7 +93,7 @@ public static partial class CompileOutput {
 
     Index7:
         {
-            SynchronizeActor();
+            SaveActor();
             Result GotoExternalLabelResult = Actor.GotoExternalLabel(new SourceLocation(11, 1), @"say");
             if (GotoExternalLabelResult.IsError) {
                 return GotoExternalLabelResult.Error;

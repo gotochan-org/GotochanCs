@@ -15,7 +15,8 @@ public static class Compiler {
     private static string IdentifyTemporary(int Identifier) => $"Temporary{Identifier}";
     private static string IdentifyGotoExternalLabelResult() => "GotoExternalLabelResult";
     private static string IdentifyEndLabel() => "EndLabel";
-    private static string IdentifySynchronizeActor() => "SynchronizeActor";
+    private static string IdentifyLoadActor() => "LoadActor";
+    private static string IdentifySaveActor() => "SaveActor";
 
     public static Result<CompileResult> Compile(ParseResult ParseResult, CompileOptions CompileOptions) {
         string Output = "";
@@ -33,6 +34,9 @@ public static class Compiler {
 
         // Get instructions as span
         ReadOnlySpan<Instruction> InstructionsSpan = CollectionsMarshal.AsSpan(ParseResult.Instructions);
+
+        // Output load actor
+        Output += $"{IdentifyLoadActor()}();" + "\n";
 
         // Compile instructions
         StringBuilder InstructionsBuilder = new();
@@ -72,10 +76,15 @@ public static class Compiler {
         // Append goto label switch to output
         Output += GotoLabelSwitch + "\n";
 
-        // Compile synchronize actor
-        string SynchronizeActor = CompileSynchronizeActor(ref CompilerState);
-        // Prepend synchronize actor to output
-        Output = SynchronizeActor + "\n" + Output;
+        // Compile save actor
+        string SaveActor = CompileSaveActor(ref CompilerState);
+        // Prepend save actor to output
+        Output = SaveActor + "\n" + Output;
+
+        // Compile load actor
+        string LoadActor = CompileLoadActor(ref CompilerState);
+        // Prepend load actor to output
+        Output = LoadActor + "\n" + Output;
 
         // Output end label
         Output += $"{IdentifyEndLabel()}:" + "\n";
@@ -183,8 +192,8 @@ public static class Compiler {
         else if (Instruction is GotoLabelInstruction GotoLabelInstruction) {
             // Get label identifier
             if (!CompilerState.Labels.TryGetValue(GotoLabelInstruction.LabelName, out int LabelIdentifier)) {
-                // Output synchronize actor
-                Output += $"{IdentifySynchronizeActor()}();" + "\n";
+                // Output save actor
+                Output += $"{IdentifySaveActor()}();" + "\n";
                 // Output goto external label
                 Output += $"{nameof(Result)} {IdentifyGotoExternalLabelResult()} = {IdentifyActor()}.{nameof(Actor.GotoExternalLabel)}({CompileLocationLiteral(GotoLabelInstruction.Location)}, {CompileStringLiteral(GotoLabelInstruction.LabelName)});" + "\n";
                 // Output check no error
@@ -431,22 +440,46 @@ public static class Compiler {
         // Finish
         return Output;
     }
-    private static string CompileSynchronizeActor(ref CompilerState CompilerState) {
+    private static string CompileLoadActor(ref CompilerState CompilerState) {
         string Output = "";
 
         // Output method
-        Output += $"void {IdentifySynchronizeActor()}() {{" + "\n";
+        Output += $"void {IdentifyLoadActor()}() {{" + "\n";
 
-        // Synchronize variables
-        foreach ((string VariableName, int VariableIdentifier) in CompilerState.Variables) {
-            // Output set actor variable
-            Output += $"{nameof(Actor)}.{nameof(Actor.SetVariable)}({CompileStringLiteral(VariableName)}, {IdentifyVariable(VariableIdentifier)});" + "\n";
+        // Load goto label indexes
+        foreach ((string LabelName, int LabelIdentifier) in CompilerState.Labels) {
+            // Output set goto label index
+            Output += $"{IdentifyGotoLabelIndex(LabelIdentifier)} = {nameof(Actor)}.{nameof(Actor.GetGotoLabelIndex)}({CompileStringLiteral(LabelName)});" + "\n";
         }
 
-        // Synchronize goto label indexes
+        // Load variables
+        foreach ((string VariableName, int VariableIdentifier) in CompilerState.Variables) {
+            // Output set variable
+            Output += $"{IdentifyVariable(VariableIdentifier)} = {nameof(Actor)}.{nameof(Actor.GetVariable)}({CompileStringLiteral(VariableName)});" + "\n";
+        }
+
+        // Output end method
+        Output += "}" + "\n";
+
+        // Finish
+        return Output;
+    }
+    private static string CompileSaveActor(ref CompilerState CompilerState) {
+        string Output = "";
+
+        // Output method
+        Output += $"void {IdentifySaveActor()}() {{" + "\n";
+
+        // Save goto label indexes
         foreach ((string LabelName, int LabelIdentifier) in CompilerState.Labels) {
             // Output set actor goto label index
             Output += $"{nameof(Actor)}.{nameof(Actor.SetGotoLabelIndex)}({CompileStringLiteral(LabelName)}, {IdentifyGotoLabelIndex(LabelIdentifier)});" + "\n";
+        }
+
+        // Save variables
+        foreach ((string VariableName, int VariableIdentifier) in CompilerState.Variables) {
+            // Output set actor variable
+            Output += $"{nameof(Actor)}.{nameof(Actor.SetVariable)}({CompileStringLiteral(VariableName)}, {IdentifyVariable(VariableIdentifier)});" + "\n";
         }
 
         // Output end method

@@ -11,8 +11,8 @@ public class Actor {
     public static Actor Default { get; } = new();
 
     public Lock Lock { get; } = new();
-    public Dictionary<string, Thingie> Variables { get; } = [];
     public Dictionary<string, int> GotoLabelIndexes { get; } = [];
+    public Dictionary<string, Thingie> Variables { get; } = [];
     public Dictionary<string, Action<Actor>> ExternalLabels { get; } = [];
 
     public Actor() {
