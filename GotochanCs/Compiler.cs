@@ -255,51 +255,63 @@ public static class Compiler {
 
             // Add
             if (BinaryExpression.Operator is BinaryOperator.Add) {
-
+                // Output binary add
+                Output += $"{IdentifyTemporary(TemporaryIdentifier)} = {nameof(Thingie)}.{nameof(Thingie.Add)}({CompileLocationLiteral(BinaryExpression.Location)}, {IdentifyTemporary(Expression1TemporaryIdentifier)}, {IdentifyTemporary(Expression2TemporaryIdentifier)});" + "\n";
             }
             // Subtract
             else if (BinaryExpression.Operator is BinaryOperator.Subtract) {
-
+                // Output binary subtract
+                Output += $"{IdentifyTemporary(TemporaryIdentifier)} = {nameof(Thingie)}.{nameof(Thingie.Subtract)}({CompileLocationLiteral(BinaryExpression.Location)}, {IdentifyTemporary(Expression1TemporaryIdentifier)}, {IdentifyTemporary(Expression2TemporaryIdentifier)});" + "\n";
             }
             // Multiply
             else if (BinaryExpression.Operator is BinaryOperator.Multiply) {
-
+                // Output binary multiply
+                Output += $"{IdentifyTemporary(TemporaryIdentifier)} = {nameof(Thingie)}.{nameof(Thingie.Multiply)}({CompileLocationLiteral(BinaryExpression.Location)}, {IdentifyTemporary(Expression1TemporaryIdentifier)}, {IdentifyTemporary(Expression2TemporaryIdentifier)});" + "\n";
             }
             // Divide
             else if (BinaryExpression.Operator is BinaryOperator.Divide) {
-
+                // Output binary divide
+                Output += $"{IdentifyTemporary(TemporaryIdentifier)} = {nameof(Thingie)}.{nameof(Thingie.Divide)}({CompileLocationLiteral(BinaryExpression.Location)}, {IdentifyTemporary(Expression1TemporaryIdentifier)}, {IdentifyTemporary(Expression2TemporaryIdentifier)});" + "\n";
             }
             // Modulo
             else if (BinaryExpression.Operator is BinaryOperator.Modulo) {
-
+                // Output binary modulo
+                Output += $"{IdentifyTemporary(TemporaryIdentifier)} = {nameof(Thingie)}.{nameof(Thingie.Modulo)}({CompileLocationLiteral(BinaryExpression.Location)}, {IdentifyTemporary(Expression1TemporaryIdentifier)}, {IdentifyTemporary(Expression2TemporaryIdentifier)});" + "\n";
             }
             // Exponentiate
             else if (BinaryExpression.Operator is BinaryOperator.Exponentiate) {
-
+                // Output binary exponentiate
+                Output += $"{IdentifyTemporary(TemporaryIdentifier)} = {nameof(Thingie)}.{nameof(Thingie.Exponentiate)}({CompileLocationLiteral(BinaryExpression.Location)}, {IdentifyTemporary(Expression1TemporaryIdentifier)}, {IdentifyTemporary(Expression2TemporaryIdentifier)});" + "\n";
             }
             // Equals
             else if (BinaryExpression.Operator is BinaryOperator.Equals) {
-
+                // Output binary equals
+                Output += $"{IdentifyTemporary(TemporaryIdentifier)} = {nameof(Thingie)}.{nameof(Thingie.Equals)}({CompileLocationLiteral(BinaryExpression.Location)}, {IdentifyTemporary(Expression1TemporaryIdentifier)}, {IdentifyTemporary(Expression2TemporaryIdentifier)});" + "\n";
             }
             // Not equals
             else if (BinaryExpression.Operator is BinaryOperator.NotEquals) {
-
+                // Output binary not equals
+                Output += $"{IdentifyTemporary(TemporaryIdentifier)} = {nameof(Thingie)}.{nameof(Thingie.NotEquals)}({CompileLocationLiteral(BinaryExpression.Location)}, {IdentifyTemporary(Expression1TemporaryIdentifier)}, {IdentifyTemporary(Expression2TemporaryIdentifier)});" + "\n";
             }
             // Greater than
             else if (BinaryExpression.Operator is BinaryOperator.GreaterThan) {
-
+                // Output binary greater than
+                Output += $"{IdentifyTemporary(TemporaryIdentifier)} = {nameof(Thingie)}.{nameof(Thingie.GreaterThan)}({CompileLocationLiteral(BinaryExpression.Location)}, {IdentifyTemporary(Expression1TemporaryIdentifier)}, {IdentifyTemporary(Expression2TemporaryIdentifier)});" + "\n";
             }
             // Less than
             else if (BinaryExpression.Operator is BinaryOperator.LessThan) {
-
+                // Output binary less than
+                Output += $"{IdentifyTemporary(TemporaryIdentifier)} = {nameof(Thingie)}.{nameof(Thingie.LessThan)}({CompileLocationLiteral(BinaryExpression.Location)}, {IdentifyTemporary(Expression1TemporaryIdentifier)}, {IdentifyTemporary(Expression2TemporaryIdentifier)});" + "\n";
             }
             // Greater than or equal to
             else if (BinaryExpression.Operator is BinaryOperator.GreaterThanOrEqualTo) {
-
+                // Output binary greater than or equal to
+                Output += $"{IdentifyTemporary(TemporaryIdentifier)} = {nameof(Thingie)}.{nameof(Thingie.GreaterThanOrEqualTo)}({CompileLocationLiteral(BinaryExpression.Location)}, {IdentifyTemporary(Expression1TemporaryIdentifier)}, {IdentifyTemporary(Expression2TemporaryIdentifier)});" + "\n";
             }
             // Less than or equal to
             else if (BinaryExpression.Operator is BinaryOperator.LessThanOrEqualTo) {
-
+                // Output binary less than or equal to
+                Output += $"{IdentifyTemporary(TemporaryIdentifier)} = {nameof(Thingie)}.{nameof(Thingie.LessThanOrEqualTo)}({CompileLocationLiteral(BinaryExpression.Location)}, {IdentifyTemporary(Expression1TemporaryIdentifier)}, {IdentifyTemporary(Expression2TemporaryIdentifier)});" + "\n";
             }
             // Invalid
             else {
@@ -323,7 +335,7 @@ public static class Compiler {
         return $"@\"{String.Replace("\"", "\"\"")}\"";
     }
     private static string CompileLocationLiteral(SourceLocation Location) {
-        return $"new {nameof(SourceLocation)}({CompileStringLiteral(Location.Source)}, {Location.Index}, {Location.Line})";
+        return $"new {nameof(SourceLocation)}({Location.Line}, {Location.Column})";
     }
     private static string CompileThingie(Thingie Thingie) {
         return Thingie.Type switch {

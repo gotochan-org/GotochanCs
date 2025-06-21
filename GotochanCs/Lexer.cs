@@ -13,7 +13,9 @@ public static class Lexer {
         // Build tokens
         for (int Index = 0; Index < Source.Length; Index++) {
             char Next = Source[Index];
+            int NextIndex = Index;
             char? NextNext = Index + 1 < Source.Length ? Source[Index + 1] : null;
+            int NextNextIndex = Index + 1;
 
             // Escape
             if (Next is '\\') {
@@ -43,7 +45,7 @@ public static class Lexer {
             // End of instruction
             else if (Next is ';' || NewlineChars.Contains(Next)) {
                 // Create token
-                CurrentTokens.Add(new Token(Source, Index, TokenType.EndOfInstruction, $"{Next}"));
+                CurrentTokens.Add(new Token(Source, NextIndex, TokenType.EndOfInstruction, $"{Next}"));
             }
             // String
             else if (Next is '~') {
@@ -52,7 +54,7 @@ public static class Lexer {
                     return StringError;
                 }
                 // Create token
-                CurrentTokens.Add(new Token(Source, Index, TokenType.String, String));
+                CurrentTokens.Add(new Token(Source, NextIndex, TokenType.String, String));
             }
             // Number
             else if (Next is >= '0' and <= '9') {
@@ -61,7 +63,7 @@ public static class Lexer {
                     return NumberError;
                 }
                 // Create token
-                CurrentTokens.Add(new Token(Source, Index, TokenType.Number, Number));
+                CurrentTokens.Add(new Token(Source, NextIndex, TokenType.Number, Number));
             }
             // Arithmetic operator
             else if (Next is '+' or '-' or '*' or '/' or '%' or '^') {
@@ -69,11 +71,11 @@ public static class Lexer {
                     // Move forward
                     Index++;
                     // Create token
-                    CurrentTokens.Add(new Token(Source, Index, TokenType.SetOperator, $"{Next}="));
+                    CurrentTokens.Add(new Token(Source, NextIndex, TokenType.SetOperator, $"{Next}="));
                 }
                 else {
                     // Create token
-                    CurrentTokens.Add(new Token(Source, Index, TokenType.Operator, $"{Next}"));
+                    CurrentTokens.Add(new Token(Source, NextIndex, TokenType.Operator, $"{Next}"));
                 }
             }
             // Equals
@@ -82,11 +84,11 @@ public static class Lexer {
                     // Move forward
                     Index++;
                     // Create token
-                    CurrentTokens.Add(new Token(Source, Index, TokenType.Operator, "=="));
+                    CurrentTokens.Add(new Token(Source, NextIndex, TokenType.Operator, "=="));
                 }
                 else {
                     // Create token
-                    CurrentTokens.Add(new Token(Source, Index, TokenType.SetOperator, "="));
+                    CurrentTokens.Add(new Token(Source, NextIndex, TokenType.SetOperator, "="));
                 }
             }
             // Not equals
@@ -95,7 +97,7 @@ public static class Lexer {
                     // Move forward
                     Index++;
                     // Create token
-                    CurrentTokens.Add(new Token(Source, Index, TokenType.Operator, "!="));
+                    CurrentTokens.Add(new Token(Source, NextIndex, TokenType.Operator, "!="));
                 }
                 else {
                     // Invalid
@@ -108,11 +110,11 @@ public static class Lexer {
                     // Move forward
                     Index++;
                     // Create token
-                    CurrentTokens.Add(new Token(Source, Index, TokenType.Operator, $"{Next}="));
+                    CurrentTokens.Add(new Token(Source, NextIndex, TokenType.Operator, $"{Next}="));
                 }
                 else {
                     // Create token
-                    CurrentTokens.Add(new Token(Source, Index, TokenType.Operator, $"{Next}"));
+                    CurrentTokens.Add(new Token(Source, NextIndex, TokenType.Operator, $"{Next}"));
                 }
             }
             // Whitespace
@@ -128,25 +130,25 @@ public static class Lexer {
 
                 // Keyword
                 if (Identifier is "goto") {
-                    CurrentTokens.Add(new Token(Source, Index, TokenType.Goto, Identifier));
+                    CurrentTokens.Add(new Token(Source, NextIndex, TokenType.Goto, Identifier));
                 }
                 else if (Identifier is "label") {
-                    CurrentTokens.Add(new Token(Source, Index, TokenType.Label, Identifier));
+                    CurrentTokens.Add(new Token(Source, NextIndex, TokenType.Label, Identifier));
                 }
                 else if (Identifier is "if") {
-                    CurrentTokens.Add(new Token(Source, Index, TokenType.If, Identifier));
+                    CurrentTokens.Add(new Token(Source, NextIndex, TokenType.If, Identifier));
                 }
                 // Nothing
                 else if (Identifier is "nothing") {
-                    CurrentTokens.Add(new Token(Source, Index, TokenType.Nothing, Identifier));
+                    CurrentTokens.Add(new Token(Source, NextIndex, TokenType.Nothing, Identifier));
                 }
                 // Flag
                 else if (Identifier is "yes" or "no") {
-                    CurrentTokens.Add(new Token(Source, Index, TokenType.Flag, Identifier));
+                    CurrentTokens.Add(new Token(Source, NextIndex, TokenType.Flag, Identifier));
                 }
                 // Identifier
                 else {
-                    CurrentTokens.Add(new Token(Source, Index, TokenType.Identifier, Identifier));
+                    CurrentTokens.Add(new Token(Source, NextIndex, TokenType.Identifier, Identifier));
                 }
             }
         }
