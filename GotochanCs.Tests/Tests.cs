@@ -120,11 +120,18 @@ public class Tests {
 
         Parser.Optimize(ParseResult);
 
-        CompileResult CompileResult = Compiler.Compile(ParseResult).Value;
-
-        //Actor Actor = new(new ConsoleBundle());
-        //CompileResult.Delegate.Invoke(Actor).ShouldBe(Result.Success);
+        CompileResult CompileResult = Compiler.Compile(ParseResult, new CompileOptions() {
+            NamespaceName = "GotochanCs.Tests",
+            ClassName = "CompileOutput",
+            MethodName = "Execute",
+        }).Value;
 
         _ = CompileResult.Output;
+    }
+    [Fact]
+    public void CompileTestOutputTest() {
+        Actor Actor = new(new ConsoleBundle());
+
+        CompileOutput.Execute(Actor).ShouldBe(Result.Success);
     }
 }

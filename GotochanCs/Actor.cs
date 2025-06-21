@@ -106,7 +106,7 @@ public class Actor {
                 else if (Instruction is GotoGotoLabelInstruction GotoGotoLabelInstruction) {
                     // Get index of goto label
                     if (!GotoLabelIndexes.TryGetValue(GotoGotoLabelInstruction.LabelName, out int TargetIndex)) {
-                        return new Error($"{Instruction.Location.Line}: no entry for goto label");
+                        return new Error($"{Instruction.Location.Line}: no entry for goto label: '{GotoGotoLabelInstruction.LabelName}'");
                     }
                     // Go to index
                     Index = TargetIndex;

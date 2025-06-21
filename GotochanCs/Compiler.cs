@@ -11,6 +11,8 @@ public static class Compiler {
     private static string IdentifyVariable(int Identifier) => $"Variable{Identifier}";
     private static string IdentifyGotoLabelLines() => "GotoLabelLines";
     private static string IdentifyGotoGotoLabelIdentifier() => "GotoGotoLabelIdentifier";
+    private static string IdentifyGotoGotoLabelLocation() => "GotoGotoLabelLocation";
+    private static string IdentifyGotoGotoLabelName() => "GotoGotoLabelName";
     private static string IdentifyGotoGotoLabel() => "GotoGotoLabel";
     private static string IdentifyTemporary(int Identifier) => $"Temporary{Identifier}";
     private static string IdentifyGotoExternalLabelError() => "GotoExternalLabelError";
@@ -69,16 +71,24 @@ public static class Compiler {
 
         // Compile goto goto label switch
         StringBuilder GotoGotoLabelSwitchBuilder = new();
-        GotoGotoLabelSwitchBuilder.Append($"{IdentifyGotoGotoLabel()}: ");
-        GotoGotoLabelSwitchBuilder.Append($"if (!{IdentifyGotoLabelLines()}.TryGetValue({IdentifyGotoGotoLabelIdentifier()}, out int {IdentifyLabelIdentifier()})) {{" + "\n");
-        GotoGotoLabelSwitchBuilder.Append($"return new {nameof(Error)}(\"no entry for goto label\");" + "\n");
-        GotoGotoLabelSwitchBuilder.Append("}" + "\n");
-        GotoGotoLabelSwitchBuilder.Append($"switch ({IdentifyLabelIdentifier()}) {{" + "\n");
-        foreach ((string LabelName, int LabelIdentifier) in CompilerState.Labels) {
-            GotoGotoLabelSwitchBuilder.Append($"case {LabelIdentifier}:" + "\n");
-            GotoGotoLabelSwitchBuilder.Append($"goto {IdentifyLabel(LabelIdentifier)};" + "\n");
+        {
+            GotoGotoLabelSwitchBuilder.Append($"{IdentifyGotoGotoLabel()}: ");
+            GotoGotoLabelSwitchBuilder.Append($"if (!{IdentifyGotoLabelLines()}.TryGetValue({IdentifyGotoGotoLabelIdentifier()}, out int {IdentifyLabelIdentifier()})) {{" + "\n");
+            GotoGotoLabelSwitchBuilder.Append($"return new {nameof(Error)}($\"{{{IdentifyGotoGotoLabelLocation()}.{nameof(SourceLocation.Line)}}}: no entry for goto label: '{{{IdentifyGotoGotoLabelName()}}}'\");" + "\n");
+            GotoGotoLabelSwitchBuilder.Append("}" + "\n");
+            GotoGotoLabelSwitchBuilder.Append($"switch ({IdentifyLabelIdentifier()}) {{" + "\n");
+            foreach ((string LabelName, int LabelIdentifier) in CompilerState.Labels) {
+                // Add case for label
+                GotoGotoLabelSwitchBuilder.Append($"case {LabelIdentifier}:" + "\n");
+                GotoGotoLabelSwitchBuilder.Append($"goto {IdentifyLabel(LabelIdentifier)};" + "\n");
+            }
+            GotoGotoLabelSwitchBuilder.Append("}" + "\n");
+
+            // Output reset goto goto label parameters
+            GotoGotoLabelSwitchBuilder.Append($"{IdentifyGotoGotoLabelIdentifier()} = -1;" + "\n");
+            GotoGotoLabelSwitchBuilder.Append($"{IdentifyGotoGotoLabelLocation()} = default;" + "\n");
+            GotoGotoLabelSwitchBuilder.Append($"{IdentifyGotoGotoLabelName()} = \"\";" + "\n");
         }
-        GotoGotoLabelSwitchBuilder.Append("}" + "\n");
         // Append goto goto label switch to output
         Output += GotoGotoLabelSwitchBuilder.ToString() + "\n";
 
@@ -98,6 +108,8 @@ public static class Compiler {
         string GotoLabelLinesOutput = "";
         GotoLabelLinesOutput += $"Dictionary<int, int> {IdentifyGotoLabelLines()} = [];" + "\n";
         GotoLabelLinesOutput += $"int {IdentifyGotoGotoLabelIdentifier()} = -1;" + "\n";
+        GotoLabelLinesOutput += $"{nameof(SourceLocation)} {IdentifyGotoGotoLabelLocation()} = default;" + "\n";
+        GotoLabelLinesOutput += $"string {IdentifyGotoGotoLabelName()} = \"\";" + "\n";
         // Prepend goto label lines to output
         Output = GotoLabelLinesOutput + "\n" + Output;
 
@@ -193,8 +205,10 @@ public static class Compiler {
         else if (Instruction is GotoGotoLabelInstruction GotoGotoLabelInstruction) {
             // Get label identifier
             int LabelIdentifier = CompilerState.Labels[GotoGotoLabelInstruction.LabelName];
-            // Output goto goto parameter
+            // Output goto goto parameters
             Output += $"{IdentifyGotoGotoLabelIdentifier()} = {LabelIdentifier};" + "\n";
+            Output += $"{IdentifyGotoGotoLabelLocation()} = {CompileLocationLiteral(GotoGotoLabelInstruction.Location)};" + "\n";
+            Output += $"{IdentifyGotoGotoLabelName()} = {CompileStringLiteral(GotoGotoLabelInstruction.LabelName)};" + "\n";
             // Output goto goto
             Output += $"goto {IdentifyGotoGotoLabel()};" + "\n";
         }
@@ -442,6 +456,6 @@ public readonly record struct CompileResult {
 
 public readonly record struct CompileOptions() {
     public string? NamespaceName { get; init; } = null;
-    public string ClassName { get; init; } = "CompileResult";
+    public string ClassName { get; init; } = "CompileOutput";
     public string MethodName { get; init; } = "Execute";
 }
