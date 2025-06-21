@@ -43,7 +43,7 @@ public static class Compiler {
                 // Get index identifier
                 int IndexIdentifier = ParseResult.LineIndexes[Instruction.Location.Line] + 1;
                 // Output label
-                InstructionsBuilder.Append($"{IdentifyIndex(IndexIdentifier)}: ");
+                InstructionsBuilder.Append($"{IdentifyIndex(IndexIdentifier)}:" + "\n");
             }
             // Label
             foreach ((string LabelName, int LabelIndex) in ParseResult.LabelIndexes) {
@@ -51,7 +51,7 @@ public static class Compiler {
                     // Get label identifier
                     int LabelIdentifier = CompilerState.Labels[LabelName];
                     // Output label
-                    InstructionsBuilder.Append($"{IdentifyLabel(LabelIdentifier)}: ");
+                    InstructionsBuilder.Append($"{IdentifyLabel(LabelIdentifier)}:" + "\n");
                     break;
                 }
             }
@@ -69,7 +69,7 @@ public static class Compiler {
         // Compile goto label switch
         StringBuilder GotoLabelSwitchBuilder = new();
         {
-            GotoLabelSwitchBuilder.Append($"{IdentifyGotoLabelSwitch()}: ");
+            GotoLabelSwitchBuilder.Append($"{IdentifyGotoLabelSwitch()}:" + "\n");
             GotoLabelSwitchBuilder.Append($"switch ({IdentifyGotoLabelSwitchIdentifier()}) {{" + "\n");
             foreach (int LineIndex in ParseResult.LineIndexes.Values.Distinct()) {
                 // Get index identifier
@@ -86,7 +86,8 @@ public static class Compiler {
         Output += GotoLabelSwitchBuilder.ToString() + "\n";
 
         // Output end variable
-        Output += $"{IdentifyEndLabel()}: ;" + "\n";
+        Output += $"{IdentifyEndLabel()}:" + "\n";
+        Output += ";" + "\n";
 
         // Compile variables
         StringBuilder VariablesBuilder = new();

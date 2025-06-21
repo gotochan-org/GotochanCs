@@ -22,7 +22,8 @@ public static partial class CompileOutput {
             Variable1 = Temporary1.Value;
         }
 
-    Index2: Label1:
+    Index2:
+    Label1:
         {
             Result<Thingie> Temporary1;
             Result<Thingie> Temporary2;
@@ -67,7 +68,8 @@ public static partial class CompileOutput {
             goto EndLabel;
         }
 
-    Index6: Label2:
+    Index6:
+    Label2:
         {
             Result<Thingie> Temporary1;
             Temporary1 = Variable1;
@@ -91,7 +93,8 @@ public static partial class CompileOutput {
         }
 
 
-    GotoLabelSwitch: switch (GotoLabelSwitchIdentifier) {
+    GotoLabelSwitch:
+        switch (GotoLabelSwitchIdentifier) {
             case 1:
                 goto Index1;
             case 2:
@@ -112,7 +115,8 @@ public static partial class CompileOutput {
                 throw new InvalidProgramException();
         }
 
-    EndLabel:;
+    EndLabel:
+        ;
 
 
         return Result.Success;
