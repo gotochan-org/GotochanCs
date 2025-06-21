@@ -1,6 +1,6 @@
-using ResultZero;
-using System.Runtime.InteropServices;
 using System.Text;
+using System.Runtime.InteropServices;
+using ResultZero;
 
 namespace GotochanCs;
 
@@ -13,7 +13,7 @@ public static class Compiler {
     private static string IdentifyGotoGotoLabel() => "GotoGotoLabel";
     private static string IdentifyTemporary(int Identifier) => $"Temporary{Identifier}";
 
-    public static Result<CompileResult> Compile(ParseResult ParseResult) {
+    public static Result<CompileResult> Compile(ParseResult ParseResult, CompileOptions CompileOptions) {
         string Output = "";
 
         // Create compiler state
@@ -93,11 +93,17 @@ public static class Compiler {
         // Compile set variables in actor
         // TODO
 
+        // Create source file
+        string SourceFile = CreateSourceFile(Output, CompileOptions.NamespaceName, CompileOptions.ClassName, CompileOptions.MethodName);
+
         // Finish
         return new CompileResult() {
             Source = ParseResult.Source,
-            Output = Output,
+            Output = SourceFile,
         };
+    }
+    public static Result<CompileResult> Compile(ParseResult ParseResult) {
+        return Compile(ParseResult, new CompileOptions());
     }
     private static Result<string> CompileInstruction(Instruction Instruction, ref CompilerState CompilerState) {
         string Output = "";
@@ -358,15 +364,51 @@ public static class Compiler {
     private static string CompileString(string String) {
         return $"{nameof(Thingie)}.{nameof(Thingie.String)}({CompileStringLiteral(String)})";
     }
+    private static string CreateSourceFile(string Output, string? NamespaceName, string ClassName, string MethodName) {
+        List<string> Components = [];
 
-    private struct CompilerState() {
+        // Add usings
+        Components.Add("""
+            using System;
+            using System.Collections.Generic;
+            using GotochanCs;
+            using ResultZero;
+            """);
+
+        // Add namespace
+        if (NamespaceName is not null) {
+            Components.Add($"""
+                namespace {NamespaceName};
+                """);
+        }
+
+        // Add class and method
+        Components.Add($$"""
+            public static partial class {{ClassName}} {
+                public static void {{MethodName}}({{nameof(Actor)}} Actor) {
+                    {{Output}}
+                }
+            }
+            """);
+
+        // Finish
+        return string.Join("\n\n", Components);
+    }
+
+    private record struct CompilerState() {
         public Dictionary<string, int> Variables { get; set; } = [];
         public Dictionary<string, int> Labels { get; set; } = [];
         public int TemporaryCounter { get; set; } = 0;
     }
 }
 
-public class CompileResult {
+public readonly record struct CompileResult {
     public required string Source { get; init; }
     public required string Output { get; init; }
+}
+
+public readonly record struct CompileOptions() {
+    public string? NamespaceName { get; init; } = null;
+    public string ClassName { get; init; } = "CompileResult";
+    public string MethodName { get; init; } = "Execute";
 }

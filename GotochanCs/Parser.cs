@@ -5,7 +5,7 @@ namespace GotochanCs;
 
 public static class Parser {
     public static Result<ParseResult> Parse(string Source) {
-        if (Lexer.Lex(Source).TryGetError(out Error LexError, out LexResult? LexResult)) {
+        if (Lexer.Lex(Source).TryGetError(out Error LexError, out LexResult LexResult)) {
             return LexError;
         }
         return Parse(LexResult);
@@ -589,7 +589,7 @@ public static class Parser {
     }
 }
 
-public class ParseResult {
+public readonly record struct ParseResult {
     public required string Source { get; init; }
     public required List<Instruction> Instructions { get; init; }
     public required Dictionary<int, int> LineIndexes { get; init; }

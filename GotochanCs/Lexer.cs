@@ -332,7 +332,7 @@ public static class Lexer {
     }
 }
 
-public class LexResult {
+public readonly record struct LexResult {
     public required string Source { get; init; }
     public required List<Token> Tokens { get; init; }
 }
