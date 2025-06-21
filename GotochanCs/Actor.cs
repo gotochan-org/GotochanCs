@@ -220,19 +220,9 @@ public class Actor {
             }
         }
     }
-    public Thingie GetVariable(string TargetVariable) {
+    public Thingie GetVariable(string VariableName) {
         lock (Lock) {
-            return Variables.GetValueOrDefault(TargetVariable);
-        }
-    }
-    public void SetVariable(string TargetVariable, Thingie Value) {
-        lock (Lock) {
-            if (Value.Type is ThingieType.Nothing) {
-                Variables.Remove(TargetVariable);
-            }
-            else {
-                Variables[TargetVariable] = Value;
-            }
+            return Variables.GetValueOrDefault(VariableName);
         }
     }
     public Dictionary<string, Thingie> GetVariables() {
@@ -240,24 +230,54 @@ public class Actor {
             return Variables.ToDictionary();
         }
     }
-    public Delegate? GetExternalLabel(string TargetLabel) {
+    public void SetVariable(string VariableName, Thingie Value) {
         lock (Lock) {
-            return ExternalLabels.GetValueOrDefault(TargetLabel);
-        }
-    }
-    public void SetExternalLabel(string TargetLabel, Action<Actor>? Value) {
-        lock (Lock) {
-            if (Value is null) {
-                ExternalLabels.Remove(TargetLabel);
+            if (Value.Type is ThingieType.Nothing) {
+                Variables.Remove(VariableName);
             }
             else {
-                ExternalLabels[TargetLabel] = Value;
+                Variables[VariableName] = Value;
             }
+        }
+    }
+    public int GetGotoLabelIndex(string LabelName) {
+        lock (Lock) {
+            return GotoLabelIndexes.GetValueOrDefault(LabelName);
+        }
+    }
+    public Dictionary<string, int> GetGotoLabelIndexes() {
+        lock (Lock) {
+            return GotoLabelIndexes.ToDictionary();
+        }
+    }
+    public void SetGotoLabelIndex(string LabelName, int Value) {
+        lock (Lock) {
+            if (Value < 0) {
+                GotoLabelIndexes.Remove(LabelName);
+            }
+            else {
+                GotoLabelIndexes[LabelName] = Value;
+            }
+        }
+    }
+    public Delegate? GetExternalLabel(string LabelName) {
+        lock (Lock) {
+            return ExternalLabels.GetValueOrDefault(LabelName);
         }
     }
     public Dictionary<string, Action<Actor>> GetExternalLabels() {
         lock (Lock) {
             return ExternalLabels.ToDictionary();
+        }
+    }
+    public void SetExternalLabel(string LabelName, Action<Actor>? Value) {
+        lock (Lock) {
+            if (Value is null) {
+                ExternalLabels.Remove(LabelName);
+            }
+            else {
+                ExternalLabels[LabelName] = Value;
+            }
         }
     }
     public Result GotoExternalLabel(SourceLocation Location, string LabelName) {
