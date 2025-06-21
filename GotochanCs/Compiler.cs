@@ -116,8 +116,9 @@ public static class Compiler {
             // Output condition
             Output += ConditionOutput;
             // Output check condition is flag
-            Output += $"if ({IdentifyTemporary(ConditionTemporaryIdentifier)}.{nameof(Thingie.Type)} is not {nameof(ThingieType)}.{nameof(ThingieType.Flag)}) ";
+            Output += $"if ({IdentifyTemporary(ConditionTemporaryIdentifier)}.{nameof(Thingie.Type)} is not {nameof(ThingieType)}.{nameof(ThingieType.Flag)}) {{" + "\n";
             Output += $"return new {nameof(Error)}($\"{Instruction.Condition.Location.Line}: condition must be flag, not '{{{IdentifyTemporary(ConditionTemporaryIdentifier)}.{nameof(Thingie.Type)}}}'\");" + "\n";
+            Output += "}" + "\n";
             // Output check condition
             Output += $"if ({IdentifyTemporary(ConditionTemporaryIdentifier)}) {{" + "\n";
         }
@@ -232,7 +233,9 @@ public static class Compiler {
             }
 
             // Output check no error
-            Output += $"if ({IdentifyTemporary(TemporaryIdentifier)}.{nameof(Result.IsError)} return {IdentifyTemporary(TemporaryIdentifier)};" + "\n";
+            Output += $"if ({IdentifyTemporary(TemporaryIdentifier)}.{nameof(Result.IsError)}) {{" + "\n";
+            Output += $"return {IdentifyTemporary(TemporaryIdentifier)};" + "\n";
+            Output += "}" + "\n";
         }
         // Binary
         else if (Expression is BinaryExpression BinaryExpression) {
