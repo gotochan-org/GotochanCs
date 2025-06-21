@@ -93,6 +93,7 @@ public static partial class CompileOutput {
         }
 
 
+        goto EndLabel;
     GotoLabelSwitch:
         switch (GotoLabelSwitchIdentifier) {
             case 1:

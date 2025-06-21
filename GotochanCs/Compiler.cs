@@ -69,6 +69,7 @@ public static class Compiler {
         // Compile goto label switch
         StringBuilder GotoLabelSwitchBuilder = new();
         {
+            GotoLabelSwitchBuilder.Append($"goto {IdentifyEndLabel()};" + "\n");
             GotoLabelSwitchBuilder.Append($"{IdentifyGotoLabelSwitch()}:" + "\n");
             GotoLabelSwitchBuilder.Append($"switch ({IdentifyGotoLabelSwitchIdentifier()}) {{" + "\n");
             foreach (int LineIndex in ParseResult.LineIndexes.Values.Distinct()) {
