@@ -38,6 +38,11 @@ public static class Compiler {
         // Enter class and method
         CompilerState.Depth += 2;
 
+        // Output lock actor
+        Output += Indent(CompilerState.Depth);
+        Output += $"lock ({IdentifyActor()}.{nameof(Actor.Lock)}) {{" + "\n";
+        CompilerState.Depth++;
+
         // Output load actor
         Output += Indent(CompilerState.Depth);
         Output += $"{IdentifyLoadActor()}();" + "\n";
@@ -82,6 +87,21 @@ public static class Compiler {
         // Append goto label switch to output
         Output += GotoLabelSwitch + "\n";
 
+        // Output end label
+        Output += Indent(CompilerState.Depth - 1);
+        Output += $"{IdentifyEndLabel()}:" + "\n";
+        Output += Indent(CompilerState.Depth);
+        Output += ";" + "\n";
+
+        // Output set variables in actor
+        Output += Indent(CompilerState.Depth);
+        Output += $"{IdentifySaveActor()}();" + "\n";
+
+        // Output end lock actor
+        CompilerState.Depth--;
+        Output += Indent(CompilerState.Depth);
+        Output += "}" + "\n";
+
         // Compile save actor
         string SaveActor = CompileSaveActor(ref CompilerState);
         // Prepend save actor to output
@@ -91,16 +111,6 @@ public static class Compiler {
         string LoadActor = CompileLoadActor(ref CompilerState);
         // Prepend load actor to output
         Output = LoadActor + "\n" + Output;
-
-        // Output end label
-        Output += Indent(CompilerState.Depth - 1);
-        Output += $"{IdentifyEndLabel()}:" + "\n";
-        Output += Indent(CompilerState.Depth);
-        Output += ";" + "\n";
-
-        // Output set variables in actor
-        Output += Indent(CompilerState.Depth);
-        Output += $"{IdentifySaveActor()}();";
 
         // Compile variables
         StringBuilder VariablesBuilder = new();
@@ -574,36 +584,31 @@ public static class Compiler {
         return Output;
     }
     private static string CompileSourceFile(string Output, string? NamespaceName, string ClassName, string MethodName) {
-        List<string> Components = [];
+        List<string> Lines = [];
 
         // Add usings
-        Components.Add("""
-            using System;
-            using System.Collections.Generic;
-            using GotochanCs;
-            using ResultZero;
-            """);
+        Lines.Add("using System;");
+        Lines.Add("using System.Collections.Generic;");
+        Lines.Add("using GotochanCs;");
+        Lines.Add("using ResultZero;");
+        Lines.Add("");
 
         // Add namespace
         if (NamespaceName is not null) {
-            Components.Add($"""
-                namespace {NamespaceName};
-                """);
+            Lines.Add($"namespace {NamespaceName};");
+            Lines.Add("");
         }
 
         // Add class and method
-        Components.Add($$"""
-            public static partial class {{ClassName}} {
-                public static {{nameof(Result)}} {{MethodName}}({{nameof(Actor)}} {{IdentifyActor()}}) {
-                    {{Output}}
-
-                    return {{nameof(Result)}}.{{nameof(Result.Success)}};
-                }
-            }
-            """);
+        Lines.Add($"public static partial class {ClassName} {{");
+        Lines.Add(Indent(1) + $"public static {nameof(Result)} {MethodName}({nameof(Actor)} {IdentifyActor()}) {{");
+        Lines.Add(Indent(2) + Output);
+        Lines.Add(Indent(2) + $"return {nameof(Result)}.{nameof(Result.Success)};");
+        Lines.Add(Indent(1) + "}");
+        Lines.Add("}");
 
         // Finish
-        return string.Join("\n\n", Components);
+        return string.Join("\n", Lines);
     }
     private static string Indent(int Depth) {
         if (Depth <= 0) {
