@@ -15,9 +15,8 @@ public static class Program {
         Result<CompileResult> CompileResult = Compiler.Compile(ParseResult);
         _ = CompileResult;
 
-        //CompileOutput.Execute(Actor);
-
-        Result Result = Actor.Interpret(ParseResult);
+        Result Result = CompileOutput.Execute(Actor);
+        //Result Result = Actor.Interpret(ParseResult);
 
         Console.WriteLine(new string('-', 10));
         Console.WriteLine($"Result: {Result}");

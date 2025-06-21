@@ -133,5 +133,6 @@ public class Tests {
         Actor Actor = new(new ConsoleBundle());
 
         CompileOutput.Execute(Actor).ShouldBe(Result.Success);
+        Actor.GetVariable("counter").ShouldBe(4);
     }
 }

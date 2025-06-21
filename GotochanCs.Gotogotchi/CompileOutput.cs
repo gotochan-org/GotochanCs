@@ -87,6 +87,79 @@ public static partial class CompileOutput {
         Thingie Variable52 = Thingie.Nothing();
         Thingie Variable53 = Thingie.Nothing();
 
+        bool GotoLabelIndexDirty1 = false;
+        bool GotoLabelIndexDirty2 = false;
+        bool GotoLabelIndexDirty3 = false;
+        bool GotoLabelIndexDirty4 = false;
+        bool GotoLabelIndexDirty5 = false;
+        bool GotoLabelIndexDirty6 = false;
+        bool GotoLabelIndexDirty7 = false;
+        bool GotoLabelIndexDirty8 = false;
+        bool GotoLabelIndexDirty9 = false;
+        bool GotoLabelIndexDirty10 = false;
+        bool GotoLabelIndexDirty11 = false;
+        bool GotoLabelIndexDirty12 = false;
+        bool GotoLabelIndexDirty13 = false;
+        bool GotoLabelIndexDirty14 = false;
+        bool GotoLabelIndexDirty15 = false;
+        bool GotoLabelIndexDirty16 = false;
+        bool GotoLabelIndexDirty17 = false;
+        bool GotoLabelIndexDirty18 = false;
+
+        bool VariableDirty1 = false;
+        bool VariableDirty2 = false;
+        bool VariableDirty3 = false;
+        bool VariableDirty4 = false;
+        bool VariableDirty5 = false;
+        bool VariableDirty6 = false;
+        bool VariableDirty7 = false;
+        bool VariableDirty8 = false;
+        bool VariableDirty9 = false;
+        bool VariableDirty10 = false;
+        bool VariableDirty11 = false;
+        bool VariableDirty12 = false;
+        bool VariableDirty13 = false;
+        bool VariableDirty14 = false;
+        bool VariableDirty15 = false;
+        bool VariableDirty16 = false;
+        bool VariableDirty17 = false;
+        bool VariableDirty18 = false;
+        bool VariableDirty19 = false;
+        bool VariableDirty20 = false;
+        bool VariableDirty21 = false;
+        bool VariableDirty22 = false;
+        bool VariableDirty23 = false;
+        bool VariableDirty24 = false;
+        bool VariableDirty25 = false;
+        bool VariableDirty26 = false;
+        bool VariableDirty27 = false;
+        bool VariableDirty28 = false;
+        bool VariableDirty29 = false;
+        bool VariableDirty30 = false;
+        bool VariableDirty31 = false;
+        bool VariableDirty32 = false;
+        bool VariableDirty33 = false;
+        bool VariableDirty34 = false;
+        bool VariableDirty35 = false;
+        bool VariableDirty36 = false;
+        bool VariableDirty37 = false;
+        bool VariableDirty38 = false;
+        bool VariableDirty39 = false;
+        bool VariableDirty40 = false;
+        bool VariableDirty41 = false;
+        bool VariableDirty42 = false;
+        bool VariableDirty43 = false;
+        bool VariableDirty44 = false;
+        bool VariableDirty45 = false;
+        bool VariableDirty46 = false;
+        bool VariableDirty47 = false;
+        bool VariableDirty48 = false;
+        bool VariableDirty49 = false;
+        bool VariableDirty50 = false;
+        bool VariableDirty51 = false;
+        bool VariableDirty52 = false;
+        bool VariableDirty53 = false;
+
         void LoadActor() {
             GotoLabelIndex1 = Actor.GetGotoLabelIndex(@"gameloop");
             GotoLabelIndex2 = Actor.GetGotoLabelIndex(@"endofinput");
@@ -162,77 +235,290 @@ public static partial class CompileOutput {
         }
 
         void SaveActor() {
-            Actor.SetGotoLabelIndex(@"gameloop", GotoLabelIndex1);
-            Actor.SetGotoLabelIndex(@"endofinput", GotoLabelIndex2);
-            Actor.SetGotoLabelIndex(@"drawgrid", GotoLabelIndex3);
-            Actor.SetGotoLabelIndex(@"fory", GotoLabelIndex4);
-            Actor.SetGotoLabelIndex(@"forx", GotoLabelIndex5);
-            Actor.SetGotoLabelIndex(@"endofforx", GotoLabelIndex6);
-            Actor.SetGotoLabelIndex(@"centertext", GotoLabelIndex7);
-            Actor.SetGotoLabelIndex(@"leftaligntext", GotoLabelIndex8);
-            Actor.SetGotoLabelIndex(@"wraphashtags", GotoLabelIndex9);
-            Actor.SetGotoLabelIndex(@"forcounter", GotoLabelIndex10);
-            Actor.SetGotoLabelIndex(@"endofforcounter", GotoLabelIndex11);
-            Actor.SetGotoLabelIndex(@"iseven", GotoLabelIndex12);
-            Actor.SetGotoLabelIndex(@"clampstats", GotoLabelIndex13);
-            Actor.SetGotoLabelIndex(@"checkdeath", GotoLabelIndex14);
-            Actor.SetGotoLabelIndex(@"death", GotoLabelIndex15);
-            Actor.SetGotoLabelIndex(@"lastinput", GotoLabelIndex16);
-            Actor.SetGotoLabelIndex(@"displaytitle", GotoLabelIndex17);
-            Actor.SetGotoLabelIndex(@"displaytutorialmessage", GotoLabelIndex18);
-            Actor.SetVariable(@"screenwidth", Variable1);
-            Actor.SetVariable(@"screenheight", Variable2);
-            Actor.SetVariable(@"dialogueline", Variable3);
-            Actor.SetVariable(@"dialoguetwoline", Variable4);
-            Actor.SetVariable(@"petline", Variable5);
-            Actor.SetVariable(@"pettwoline", Variable6);
-            Actor.SetVariable(@"hungerline", Variable7);
-            Actor.SetVariable(@"thirstline", Variable8);
-            Actor.SetVariable(@"funline", Variable9);
-            Actor.SetVariable(@"intutorial", Variable10);
-            Actor.SetVariable(@"hunger", Variable11);
-            Actor.SetVariable(@"thirst", Variable12);
-            Actor.SetVariable(@"fun", Variable13);
-            Actor.SetVariable(@"pet", Variable14);
-            Actor.SetVariable(@"pettwo", Variable15);
-            Actor.SetVariable(@"dialogue", Variable16);
-            Actor.SetVariable(@"dialoguetwo", Variable17);
-            Actor.SetVariable(@"timelastreducedstats", Variable18);
-            Actor.SetVariable(@"timestamp", Variable19);
-            Actor.SetVariable(@"redraw", Variable20);
-            Actor.SetVariable(@"seconds", Variable21);
-            Actor.SetVariable(@"currenttime", Variable22);
-            Actor.SetVariable(@"nottimetoreducestats", Variable23);
-            Actor.SetVariable(@"hasnoinput", Variable24);
-            Actor.SetVariable(@"result", Variable25);
-            Actor.SetVariable(@"what", Variable26);
-            Actor.SetVariable(@"inputisnotfeed", Variable27);
-            Actor.SetVariable(@"inputisnotwater", Variable28);
-            Actor.SetVariable(@"inputisnotplay", Variable29);
-            Actor.SetVariable(@"y", Variable30);
-            Actor.SetVariable(@"x", Variable31);
-            Actor.SetVariable(@"yisnotatdialogueline", Variable32);
-            Actor.SetVariable(@"yisnotatdialoguetwoline", Variable33);
-            Actor.SetVariable(@"yisnotatpetline", Variable34);
-            Actor.SetVariable(@"yisnotatpettwoline", Variable35);
-            Actor.SetVariable(@"yisnotathungerline", Variable36);
-            Actor.SetVariable(@"yisnotatthirstline", Variable37);
-            Actor.SetVariable(@"yisnotatfunline", Variable38);
-            Actor.SetVariable(@"xisnotatlimit", Variable39);
-            Actor.SetVariable(@"yisnotatlimit", Variable40);
-            Actor.SetVariable(@"texttocenter", Variable41);
-            Actor.SetVariable(@"numberofhashtags", Variable42);
-            Actor.SetVariable(@"lengthoftext", Variable43);
-            Actor.SetVariable(@"numberofhashtagsprinted", Variable44);
-            Actor.SetVariable(@"counter", Variable45);
-            Actor.SetVariable(@"counterisnumberofhashtags", Variable46);
-            Actor.SetVariable(@"nontruncated", Variable47);
-            Actor.SetVariable(@"truncatedisnotsame", Variable48);
-            Actor.SetVariable(@"comparison", Variable49);
-            Actor.SetVariable(@"lastinputresult", Variable50);
-            Actor.SetVariable(@"checky", Variable51);
-            Actor.SetVariable(@"whatisnothing", Variable52);
-            Actor.SetVariable(@"keyisnotenter", Variable53);
+            if (GotoLabelIndexDirty1) {
+                GotoLabelIndexDirty1 = false;
+                Actor.SetGotoLabelIndex(@"gameloop", GotoLabelIndex1);
+            }
+            if (GotoLabelIndexDirty2) {
+                GotoLabelIndexDirty2 = false;
+                Actor.SetGotoLabelIndex(@"endofinput", GotoLabelIndex2);
+            }
+            if (GotoLabelIndexDirty3) {
+                GotoLabelIndexDirty3 = false;
+                Actor.SetGotoLabelIndex(@"drawgrid", GotoLabelIndex3);
+            }
+            if (GotoLabelIndexDirty4) {
+                GotoLabelIndexDirty4 = false;
+                Actor.SetGotoLabelIndex(@"fory", GotoLabelIndex4);
+            }
+            if (GotoLabelIndexDirty5) {
+                GotoLabelIndexDirty5 = false;
+                Actor.SetGotoLabelIndex(@"forx", GotoLabelIndex5);
+            }
+            if (GotoLabelIndexDirty6) {
+                GotoLabelIndexDirty6 = false;
+                Actor.SetGotoLabelIndex(@"endofforx", GotoLabelIndex6);
+            }
+            if (GotoLabelIndexDirty7) {
+                GotoLabelIndexDirty7 = false;
+                Actor.SetGotoLabelIndex(@"centertext", GotoLabelIndex7);
+            }
+            if (GotoLabelIndexDirty8) {
+                GotoLabelIndexDirty8 = false;
+                Actor.SetGotoLabelIndex(@"leftaligntext", GotoLabelIndex8);
+            }
+            if (GotoLabelIndexDirty9) {
+                GotoLabelIndexDirty9 = false;
+                Actor.SetGotoLabelIndex(@"wraphashtags", GotoLabelIndex9);
+            }
+            if (GotoLabelIndexDirty10) {
+                GotoLabelIndexDirty10 = false;
+                Actor.SetGotoLabelIndex(@"forcounter", GotoLabelIndex10);
+            }
+            if (GotoLabelIndexDirty11) {
+                GotoLabelIndexDirty11 = false;
+                Actor.SetGotoLabelIndex(@"endofforcounter", GotoLabelIndex11);
+            }
+            if (GotoLabelIndexDirty12) {
+                GotoLabelIndexDirty12 = false;
+                Actor.SetGotoLabelIndex(@"iseven", GotoLabelIndex12);
+            }
+            if (GotoLabelIndexDirty13) {
+                GotoLabelIndexDirty13 = false;
+                Actor.SetGotoLabelIndex(@"clampstats", GotoLabelIndex13);
+            }
+            if (GotoLabelIndexDirty14) {
+                GotoLabelIndexDirty14 = false;
+                Actor.SetGotoLabelIndex(@"checkdeath", GotoLabelIndex14);
+            }
+            if (GotoLabelIndexDirty15) {
+                GotoLabelIndexDirty15 = false;
+                Actor.SetGotoLabelIndex(@"death", GotoLabelIndex15);
+            }
+            if (GotoLabelIndexDirty16) {
+                GotoLabelIndexDirty16 = false;
+                Actor.SetGotoLabelIndex(@"lastinput", GotoLabelIndex16);
+            }
+            if (GotoLabelIndexDirty17) {
+                GotoLabelIndexDirty17 = false;
+                Actor.SetGotoLabelIndex(@"displaytitle", GotoLabelIndex17);
+            }
+            if (GotoLabelIndexDirty18) {
+                GotoLabelIndexDirty18 = false;
+                Actor.SetGotoLabelIndex(@"displaytutorialmessage", GotoLabelIndex18);
+            }
+            if (VariableDirty1) {
+                VariableDirty1 = false;
+                Actor.SetVariable(@"screenwidth", Variable1);
+            }
+            if (VariableDirty2) {
+                VariableDirty2 = false;
+                Actor.SetVariable(@"screenheight", Variable2);
+            }
+            if (VariableDirty3) {
+                VariableDirty3 = false;
+                Actor.SetVariable(@"dialogueline", Variable3);
+            }
+            if (VariableDirty4) {
+                VariableDirty4 = false;
+                Actor.SetVariable(@"dialoguetwoline", Variable4);
+            }
+            if (VariableDirty5) {
+                VariableDirty5 = false;
+                Actor.SetVariable(@"petline", Variable5);
+            }
+            if (VariableDirty6) {
+                VariableDirty6 = false;
+                Actor.SetVariable(@"pettwoline", Variable6);
+            }
+            if (VariableDirty7) {
+                VariableDirty7 = false;
+                Actor.SetVariable(@"hungerline", Variable7);
+            }
+            if (VariableDirty8) {
+                VariableDirty8 = false;
+                Actor.SetVariable(@"thirstline", Variable8);
+            }
+            if (VariableDirty9) {
+                VariableDirty9 = false;
+                Actor.SetVariable(@"funline", Variable9);
+            }
+            if (VariableDirty10) {
+                VariableDirty10 = false;
+                Actor.SetVariable(@"intutorial", Variable10);
+            }
+            if (VariableDirty11) {
+                VariableDirty11 = false;
+                Actor.SetVariable(@"hunger", Variable11);
+            }
+            if (VariableDirty12) {
+                VariableDirty12 = false;
+                Actor.SetVariable(@"thirst", Variable12);
+            }
+            if (VariableDirty13) {
+                VariableDirty13 = false;
+                Actor.SetVariable(@"fun", Variable13);
+            }
+            if (VariableDirty14) {
+                VariableDirty14 = false;
+                Actor.SetVariable(@"pet", Variable14);
+            }
+            if (VariableDirty15) {
+                VariableDirty15 = false;
+                Actor.SetVariable(@"pettwo", Variable15);
+            }
+            if (VariableDirty16) {
+                VariableDirty16 = false;
+                Actor.SetVariable(@"dialogue", Variable16);
+            }
+            if (VariableDirty17) {
+                VariableDirty17 = false;
+                Actor.SetVariable(@"dialoguetwo", Variable17);
+            }
+            if (VariableDirty18) {
+                VariableDirty18 = false;
+                Actor.SetVariable(@"timelastreducedstats", Variable18);
+            }
+            if (VariableDirty19) {
+                VariableDirty19 = false;
+                Actor.SetVariable(@"timestamp", Variable19);
+            }
+            if (VariableDirty20) {
+                VariableDirty20 = false;
+                Actor.SetVariable(@"redraw", Variable20);
+            }
+            if (VariableDirty21) {
+                VariableDirty21 = false;
+                Actor.SetVariable(@"seconds", Variable21);
+            }
+            if (VariableDirty22) {
+                VariableDirty22 = false;
+                Actor.SetVariable(@"currenttime", Variable22);
+            }
+            if (VariableDirty23) {
+                VariableDirty23 = false;
+                Actor.SetVariable(@"nottimetoreducestats", Variable23);
+            }
+            if (VariableDirty24) {
+                VariableDirty24 = false;
+                Actor.SetVariable(@"hasnoinput", Variable24);
+            }
+            if (VariableDirty25) {
+                VariableDirty25 = false;
+                Actor.SetVariable(@"result", Variable25);
+            }
+            if (VariableDirty26) {
+                VariableDirty26 = false;
+                Actor.SetVariable(@"what", Variable26);
+            }
+            if (VariableDirty27) {
+                VariableDirty27 = false;
+                Actor.SetVariable(@"inputisnotfeed", Variable27);
+            }
+            if (VariableDirty28) {
+                VariableDirty28 = false;
+                Actor.SetVariable(@"inputisnotwater", Variable28);
+            }
+            if (VariableDirty29) {
+                VariableDirty29 = false;
+                Actor.SetVariable(@"inputisnotplay", Variable29);
+            }
+            if (VariableDirty30) {
+                VariableDirty30 = false;
+                Actor.SetVariable(@"y", Variable30);
+            }
+            if (VariableDirty31) {
+                VariableDirty31 = false;
+                Actor.SetVariable(@"x", Variable31);
+            }
+            if (VariableDirty32) {
+                VariableDirty32 = false;
+                Actor.SetVariable(@"yisnotatdialogueline", Variable32);
+            }
+            if (VariableDirty33) {
+                VariableDirty33 = false;
+                Actor.SetVariable(@"yisnotatdialoguetwoline", Variable33);
+            }
+            if (VariableDirty34) {
+                VariableDirty34 = false;
+                Actor.SetVariable(@"yisnotatpetline", Variable34);
+            }
+            if (VariableDirty35) {
+                VariableDirty35 = false;
+                Actor.SetVariable(@"yisnotatpettwoline", Variable35);
+            }
+            if (VariableDirty36) {
+                VariableDirty36 = false;
+                Actor.SetVariable(@"yisnotathungerline", Variable36);
+            }
+            if (VariableDirty37) {
+                VariableDirty37 = false;
+                Actor.SetVariable(@"yisnotatthirstline", Variable37);
+            }
+            if (VariableDirty38) {
+                VariableDirty38 = false;
+                Actor.SetVariable(@"yisnotatfunline", Variable38);
+            }
+            if (VariableDirty39) {
+                VariableDirty39 = false;
+                Actor.SetVariable(@"xisnotatlimit", Variable39);
+            }
+            if (VariableDirty40) {
+                VariableDirty40 = false;
+                Actor.SetVariable(@"yisnotatlimit", Variable40);
+            }
+            if (VariableDirty41) {
+                VariableDirty41 = false;
+                Actor.SetVariable(@"texttocenter", Variable41);
+            }
+            if (VariableDirty42) {
+                VariableDirty42 = false;
+                Actor.SetVariable(@"numberofhashtags", Variable42);
+            }
+            if (VariableDirty43) {
+                VariableDirty43 = false;
+                Actor.SetVariable(@"lengthoftext", Variable43);
+            }
+            if (VariableDirty44) {
+                VariableDirty44 = false;
+                Actor.SetVariable(@"numberofhashtagsprinted", Variable44);
+            }
+            if (VariableDirty45) {
+                VariableDirty45 = false;
+                Actor.SetVariable(@"counter", Variable45);
+            }
+            if (VariableDirty46) {
+                VariableDirty46 = false;
+                Actor.SetVariable(@"counterisnumberofhashtags", Variable46);
+            }
+            if (VariableDirty47) {
+                VariableDirty47 = false;
+                Actor.SetVariable(@"nontruncated", Variable47);
+            }
+            if (VariableDirty48) {
+                VariableDirty48 = false;
+                Actor.SetVariable(@"truncatedisnotsame", Variable48);
+            }
+            if (VariableDirty49) {
+                VariableDirty49 = false;
+                Actor.SetVariable(@"comparison", Variable49);
+            }
+            if (VariableDirty50) {
+                VariableDirty50 = false;
+                Actor.SetVariable(@"lastinputresult", Variable50);
+            }
+            if (VariableDirty51) {
+                VariableDirty51 = false;
+                Actor.SetVariable(@"checky", Variable51);
+            }
+            if (VariableDirty52) {
+                VariableDirty52 = false;
+                Actor.SetVariable(@"whatisnothing", Variable52);
+            }
+            if (VariableDirty53) {
+                VariableDirty53 = false;
+                Actor.SetVariable(@"keyisnotenter", Variable53);
+            }
         }
 
         lock (Actor.Lock) {
@@ -241,6 +527,7 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.Number(15);
+                VariableDirty1 = true;
                 Variable1 = Temporary1.Value;
             }
 
@@ -248,6 +535,7 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.Number(10);
+                VariableDirty2 = true;
                 Variable2 = Temporary1.Value;
             }
 
@@ -255,6 +543,7 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.Number(8);
+                VariableDirty3 = true;
                 Variable3 = Temporary1.Value;
             }
 
@@ -262,6 +551,7 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.Number(9);
+                VariableDirty4 = true;
                 Variable4 = Temporary1.Value;
             }
 
@@ -269,6 +559,7 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.Number(5);
+                VariableDirty5 = true;
                 Variable5 = Temporary1.Value;
             }
 
@@ -276,6 +567,7 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.Number(6);
+                VariableDirty6 = true;
                 Variable6 = Temporary1.Value;
             }
 
@@ -283,6 +575,7 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.Number(1);
+                VariableDirty7 = true;
                 Variable7 = Temporary1.Value;
             }
 
@@ -290,6 +583,7 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.Number(2);
+                VariableDirty8 = true;
                 Variable8 = Temporary1.Value;
             }
 
@@ -297,6 +591,7 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.Number(3);
+                VariableDirty9 = true;
                 Variable9 = Temporary1.Value;
             }
 
@@ -304,6 +599,7 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.Flag(true);
+                VariableDirty10 = true;
                 Variable10 = Temporary1.Value;
             }
 
@@ -311,6 +607,7 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.Number(100);
+                VariableDirty11 = true;
                 Variable11 = Temporary1.Value;
             }
 
@@ -318,6 +615,7 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.Number(100);
+                VariableDirty12 = true;
                 Variable12 = Temporary1.Value;
             }
 
@@ -325,6 +623,7 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.Number(100);
+                VariableDirty13 = true;
                 Variable13 = Temporary1.Value;
             }
 
@@ -332,6 +631,7 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.String(@"");
+                VariableDirty14 = true;
                 Variable14 = Temporary1.Value;
             }
 
@@ -339,6 +639,7 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.String(@"");
+                VariableDirty15 = true;
                 Variable15 = Temporary1.Value;
             }
 
@@ -346,6 +647,7 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.String(@"welcome.");
+                VariableDirty16 = true;
                 Variable16 = Temporary1.Value;
             }
 
@@ -353,11 +655,13 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.String(@"v2.0");
+                VariableDirty17 = true;
                 Variable17 = Temporary1.Value;
             }
 
         Index18:
             {
+                GotoLabelIndexDirty18 = true;
                 GotoLabelIndex18 = 19;
                 goto Label18;
             }
@@ -366,6 +670,7 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.String(@"take care of");
+                VariableDirty16 = true;
                 Variable16 = Temporary1.Value;
             }
 
@@ -373,11 +678,13 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.String(@"your neko.");
+                VariableDirty17 = true;
                 Variable17 = Temporary1.Value;
             }
 
         Index21:
             {
+                GotoLabelIndexDirty18 = true;
                 GotoLabelIndex18 = 22;
                 goto Label18;
             }
@@ -386,6 +693,7 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.String(@"press A to");
+                VariableDirty16 = true;
                 Variable16 = Temporary1.Value;
             }
 
@@ -393,11 +701,13 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.String(@"feed neko.");
+                VariableDirty17 = true;
                 Variable17 = Temporary1.Value;
             }
 
         Index24:
             {
+                GotoLabelIndexDirty18 = true;
                 GotoLabelIndex18 = 25;
                 goto Label18;
             }
@@ -406,6 +716,7 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.String(@"press B to");
+                VariableDirty16 = true;
                 Variable16 = Temporary1.Value;
             }
 
@@ -413,11 +724,13 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.String(@"water neko.");
+                VariableDirty17 = true;
                 Variable17 = Temporary1.Value;
             }
 
         Index27:
             {
+                GotoLabelIndexDirty18 = true;
                 GotoLabelIndex18 = 28;
                 goto Label18;
             }
@@ -426,6 +739,7 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.String(@"press C to");
+                VariableDirty16 = true;
                 Variable16 = Temporary1.Value;
             }
 
@@ -433,11 +747,13 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.String(@"play w/ neko.");
+                VariableDirty17 = true;
                 Variable17 = Temporary1.Value;
             }
 
         Index30:
             {
+                GotoLabelIndexDirty18 = true;
                 GotoLabelIndex18 = 31;
                 goto Label18;
             }
@@ -446,6 +762,7 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.String(@"keep numbers");
+                VariableDirty16 = true;
                 Variable16 = Temporary1.Value;
             }
 
@@ -453,11 +770,13 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.String(@"above 0.");
+                VariableDirty17 = true;
                 Variable17 = Temporary1.Value;
             }
 
         Index33:
             {
+                GotoLabelIndexDirty18 = true;
                 GotoLabelIndex18 = 34;
                 goto Label18;
             }
@@ -466,6 +785,7 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.Flag(false);
+                VariableDirty10 = true;
                 Variable10 = Temporary1.Value;
             }
 
@@ -473,6 +793,7 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.String(@"^ ^");
+                VariableDirty14 = true;
                 Variable14 = Temporary1.Value;
             }
 
@@ -480,6 +801,7 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.String(@"(>.<)");
+                VariableDirty15 = true;
                 Variable15 = Temporary1.Value;
             }
 
@@ -487,6 +809,7 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.String(@"");
+                VariableDirty16 = true;
                 Variable16 = Temporary1.Value;
             }
 
@@ -494,6 +817,7 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.String(@" A  B  C ");
+                VariableDirty17 = true;
                 Variable17 = Temporary1.Value;
             }
 
@@ -501,6 +825,7 @@ public static partial class CompileOutput {
             {
                 SaveActor();
                 Result GotoExternalLabelResult = Actor.GotoExternalLabel(new SourceLocation(54, 1), @"stamptime");
+                LoadActor();
                 if (GotoExternalLabelResult.IsError) {
                     return GotoExternalLabelResult.Error;
                 }
@@ -510,6 +835,7 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Variable19;
+                VariableDirty18 = true;
                 Variable18 = Temporary1.Value;
             }
 
@@ -517,6 +843,7 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.Flag(true);
+                VariableDirty20 = true;
                 Variable20 = Temporary1.Value;
             }
 
@@ -531,6 +858,7 @@ public static partial class CompileOutput {
                 if (Temporary1.Value.CastFlag()) {
                     SaveActor();
                     Result GotoExternalLabelResult = Actor.GotoExternalLabel(new SourceLocation(58, 3), @"clear");
+                    LoadActor();
                     if (GotoExternalLabelResult.IsError) {
                         return GotoExternalLabelResult.Error;
                     }
@@ -545,6 +873,7 @@ public static partial class CompileOutput {
                     return new Error($"59: condition must be flag, not '{Temporary1.Value.Type}'");
                 }
                 if (Temporary1.Value.CastFlag()) {
+                    GotoLabelIndexDirty3 = true;
                     GotoLabelIndex3 = 44;
                     goto Label3;
                 }
@@ -554,6 +883,7 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.Number(0.15);
+                VariableDirty21 = true;
                 Variable21 = Temporary1.Value;
             }
 
@@ -561,6 +891,7 @@ public static partial class CompileOutput {
             {
                 SaveActor();
                 Result GotoExternalLabelResult = Actor.GotoExternalLabel(new SourceLocation(62, 3), @"wait");
+                LoadActor();
                 if (GotoExternalLabelResult.IsError) {
                     return GotoExternalLabelResult.Error;
                 }
@@ -570,6 +901,7 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.Flag(false);
+                VariableDirty20 = true;
                 Variable20 = Temporary1.Value;
             }
 
@@ -577,6 +909,7 @@ public static partial class CompileOutput {
             {
                 SaveActor();
                 Result GotoExternalLabelResult = Actor.GotoExternalLabel(new SourceLocation(66, 3), @"stamptime");
+                LoadActor();
                 if (GotoExternalLabelResult.IsError) {
                     return GotoExternalLabelResult.Error;
                 }
@@ -586,6 +919,7 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Variable19;
+                VariableDirty22 = true;
                 Variable22 = Temporary1.Value;
             }
 
@@ -600,6 +934,7 @@ public static partial class CompileOutput {
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
+                VariableDirty19 = true;
                 Variable19 = Temporary1.Value;
             }
 
@@ -614,6 +949,7 @@ public static partial class CompileOutput {
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
+                VariableDirty23 = true;
                 Variable23 = Temporary1.Value;
             }
 
@@ -633,6 +969,7 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Variable22;
+                VariableDirty18 = true;
                 Variable18 = Temporary1.Value;
             }
 
@@ -640,6 +977,7 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.Flag(true);
+                VariableDirty20 = true;
                 Variable20 = Temporary1.Value;
             }
 
@@ -654,6 +992,7 @@ public static partial class CompileOutput {
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
+                VariableDirty11 = true;
                 Variable11 = Temporary1.Value;
             }
 
@@ -668,6 +1007,7 @@ public static partial class CompileOutput {
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
+                VariableDirty12 = true;
                 Variable12 = Temporary1.Value;
             }
 
@@ -682,6 +1022,7 @@ public static partial class CompileOutput {
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
+                VariableDirty13 = true;
                 Variable13 = Temporary1.Value;
             }
 
@@ -689,6 +1030,7 @@ public static partial class CompileOutput {
             {
                 SaveActor();
                 Result GotoExternalLabelResult = Actor.GotoExternalLabel(new SourceLocation(77, 3), @"peekkey");
+                LoadActor();
                 if (GotoExternalLabelResult.IsError) {
                     return GotoExternalLabelResult.Error;
                 }
@@ -705,6 +1047,7 @@ public static partial class CompileOutput {
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
+                VariableDirty24 = true;
                 Variable24 = Temporary1.Value;
             }
 
@@ -716,6 +1059,7 @@ public static partial class CompileOutput {
                     return new Error($"80: condition must be flag, not '{Temporary1.Value.Type}'");
                 }
                 if (Temporary1.Value.CastFlag()) {
+                    GotoLabelIndexDirty2 = true;
                     GotoLabelIndex2 = 60;
                     goto Label2;
                 }
@@ -723,6 +1067,7 @@ public static partial class CompileOutput {
 
         Index60:
             {
+                GotoLabelIndexDirty16 = true;
                 GotoLabelIndex16 = 61;
                 goto Label16;
             }
@@ -731,6 +1076,7 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Variable25;
+                VariableDirty26 = true;
                 Variable26 = Temporary1.Value;
             }
 
@@ -738,6 +1084,7 @@ public static partial class CompileOutput {
             {
                 SaveActor();
                 Result GotoExternalLabelResult = Actor.GotoExternalLabel(new SourceLocation(83, 5), @"casedown");
+                LoadActor();
                 if (GotoExternalLabelResult.IsError) {
                     return GotoExternalLabelResult.Error;
                 }
@@ -754,6 +1101,7 @@ public static partial class CompileOutput {
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
+                VariableDirty27 = true;
                 Variable27 = Temporary1.Value;
             }
 
@@ -773,6 +1121,7 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.Flag(true);
+                VariableDirty20 = true;
                 Variable20 = Temporary1.Value;
             }
 
@@ -787,6 +1136,7 @@ public static partial class CompileOutput {
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
+                VariableDirty11 = true;
                 Variable11 = Temporary1.Value;
             }
 
@@ -801,6 +1151,7 @@ public static partial class CompileOutput {
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
+                VariableDirty28 = true;
                 Variable28 = Temporary1.Value;
             }
 
@@ -820,6 +1171,7 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.Flag(true);
+                VariableDirty20 = true;
                 Variable20 = Temporary1.Value;
             }
 
@@ -834,6 +1186,7 @@ public static partial class CompileOutput {
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
+                VariableDirty12 = true;
                 Variable12 = Temporary1.Value;
             }
 
@@ -848,6 +1201,7 @@ public static partial class CompileOutput {
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
+                VariableDirty29 = true;
                 Variable29 = Temporary1.Value;
             }
 
@@ -867,6 +1221,7 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.Flag(true);
+                VariableDirty20 = true;
                 Variable20 = Temporary1.Value;
             }
 
@@ -881,24 +1236,28 @@ public static partial class CompileOutput {
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
+                VariableDirty13 = true;
                 Variable13 = Temporary1.Value;
             }
 
         Index75:
         Label2:
             {
+                GotoLabelIndexDirty13 = true;
                 GotoLabelIndex13 = 76;
                 goto Label13;
             }
 
         Index76:
             {
+                GotoLabelIndexDirty14 = true;
                 GotoLabelIndex14 = 77;
                 goto Label14;
             }
 
         Index77:
             {
+                GotoLabelIndexDirty1 = true;
                 GotoLabelIndex1 = 78;
                 goto Label1;
             }
@@ -913,6 +1272,7 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.Number(0);
+                VariableDirty30 = true;
                 Variable30 = Temporary1.Value;
             }
 
@@ -928,6 +1288,7 @@ public static partial class CompileOutput {
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
+                VariableDirty30 = true;
                 Variable30 = Temporary1.Value;
             }
 
@@ -935,11 +1296,13 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.Number(0);
+                VariableDirty31 = true;
                 Variable31 = Temporary1.Value;
             }
 
         Index82:
             {
+                GotoLabelIndexDirty17 = true;
                 GotoLabelIndex17 = 83;
                 goto Label17;
             }
@@ -955,6 +1318,7 @@ public static partial class CompileOutput {
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
+                VariableDirty32 = true;
                 Variable32 = Temporary1.Value;
             }
 
@@ -974,17 +1338,20 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Variable16;
+                VariableDirty26 = true;
                 Variable26 = Temporary1.Value;
             }
 
         Index86:
             {
+                GotoLabelIndexDirty7 = true;
                 GotoLabelIndex7 = 87;
                 goto Label7;
             }
 
         Index87:
             {
+                GotoLabelIndexDirty6 = true;
                 GotoLabelIndex6 = 88;
                 goto Label6;
             }
@@ -1000,6 +1367,7 @@ public static partial class CompileOutput {
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
+                VariableDirty33 = true;
                 Variable33 = Temporary1.Value;
             }
 
@@ -1019,17 +1387,20 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Variable17;
+                VariableDirty26 = true;
                 Variable26 = Temporary1.Value;
             }
 
         Index91:
             {
+                GotoLabelIndexDirty7 = true;
                 GotoLabelIndex7 = 92;
                 goto Label7;
             }
 
         Index92:
             {
+                GotoLabelIndexDirty6 = true;
                 GotoLabelIndex6 = 93;
                 goto Label6;
             }
@@ -1045,6 +1416,7 @@ public static partial class CompileOutput {
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
+                VariableDirty34 = true;
                 Variable34 = Temporary1.Value;
             }
 
@@ -1064,17 +1436,20 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Variable14;
+                VariableDirty26 = true;
                 Variable26 = Temporary1.Value;
             }
 
         Index96:
             {
+                GotoLabelIndexDirty7 = true;
                 GotoLabelIndex7 = 97;
                 goto Label7;
             }
 
         Index97:
             {
+                GotoLabelIndexDirty6 = true;
                 GotoLabelIndex6 = 98;
                 goto Label6;
             }
@@ -1090,6 +1465,7 @@ public static partial class CompileOutput {
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
+                VariableDirty35 = true;
                 Variable35 = Temporary1.Value;
             }
 
@@ -1109,17 +1485,20 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Variable15;
+                VariableDirty26 = true;
                 Variable26 = Temporary1.Value;
             }
 
         Index101:
             {
+                GotoLabelIndexDirty7 = true;
                 GotoLabelIndex7 = 102;
                 goto Label7;
             }
 
         Index102:
             {
+                GotoLabelIndexDirty6 = true;
                 GotoLabelIndex6 = 103;
                 goto Label6;
             }
@@ -1132,6 +1511,7 @@ public static partial class CompileOutput {
                     return new Error($"133: condition must be flag, not '{Temporary1.Value.Type}'");
                 }
                 if (Temporary1.Value.CastFlag()) {
+                    GotoLabelIndexDirty5 = true;
                     GotoLabelIndex5 = 104;
                     goto Label5;
                 }
@@ -1148,6 +1528,7 @@ public static partial class CompileOutput {
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
+                VariableDirty36 = true;
                 Variable36 = Temporary1.Value;
             }
 
@@ -1167,6 +1548,7 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.String(@"o-<: ");
+                VariableDirty26 = true;
                 Variable26 = Temporary1.Value;
             }
 
@@ -1181,6 +1563,7 @@ public static partial class CompileOutput {
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
+                VariableDirty26 = true;
                 Variable26 = Temporary1.Value;
             }
 
@@ -1195,17 +1578,20 @@ public static partial class CompileOutput {
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
+                VariableDirty26 = true;
                 Variable26 = Temporary1.Value;
             }
 
         Index109:
             {
+                GotoLabelIndexDirty8 = true;
                 GotoLabelIndex8 = 110;
                 goto Label8;
             }
 
         Index110:
             {
+                GotoLabelIndexDirty6 = true;
                 GotoLabelIndex6 = 111;
                 goto Label6;
             }
@@ -1221,6 +1607,7 @@ public static partial class CompileOutput {
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
+                VariableDirty37 = true;
                 Variable37 = Temporary1.Value;
             }
 
@@ -1240,6 +1627,7 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.String(@"|_|: ");
+                VariableDirty26 = true;
                 Variable26 = Temporary1.Value;
             }
 
@@ -1254,6 +1642,7 @@ public static partial class CompileOutput {
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
+                VariableDirty26 = true;
                 Variable26 = Temporary1.Value;
             }
 
@@ -1268,17 +1657,20 @@ public static partial class CompileOutput {
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
+                VariableDirty26 = true;
                 Variable26 = Temporary1.Value;
             }
 
         Index116:
             {
+                GotoLabelIndexDirty8 = true;
                 GotoLabelIndex8 = 117;
                 goto Label8;
             }
 
         Index117:
             {
+                GotoLabelIndexDirty6 = true;
                 GotoLabelIndex6 = 118;
                 goto Label6;
             }
@@ -1294,6 +1686,7 @@ public static partial class CompileOutput {
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
+                VariableDirty38 = true;
                 Variable38 = Temporary1.Value;
             }
 
@@ -1313,6 +1706,7 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.String(@"^_^: ");
+                VariableDirty26 = true;
                 Variable26 = Temporary1.Value;
             }
 
@@ -1327,6 +1721,7 @@ public static partial class CompileOutput {
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
+                VariableDirty26 = true;
                 Variable26 = Temporary1.Value;
             }
 
@@ -1341,17 +1736,20 @@ public static partial class CompileOutput {
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
+                VariableDirty26 = true;
                 Variable26 = Temporary1.Value;
             }
 
         Index123:
             {
+                GotoLabelIndexDirty8 = true;
                 GotoLabelIndex8 = 124;
                 goto Label8;
             }
 
         Index124:
             {
+                GotoLabelIndexDirty6 = true;
                 GotoLabelIndex6 = 125;
                 goto Label6;
             }
@@ -1368,6 +1766,7 @@ public static partial class CompileOutput {
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
+                VariableDirty31 = true;
                 Variable31 = Temporary1.Value;
             }
 
@@ -1375,6 +1774,7 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.String(@"#");
+                VariableDirty26 = true;
                 Variable26 = Temporary1.Value;
             }
 
@@ -1382,6 +1782,7 @@ public static partial class CompileOutput {
             {
                 SaveActor();
                 Result GotoExternalLabelResult = Actor.GotoExternalLabel(new SourceLocation(158, 9), @"say");
+                LoadActor();
                 if (GotoExternalLabelResult.IsError) {
                     return GotoExternalLabelResult.Error;
                 }
@@ -1398,6 +1799,7 @@ public static partial class CompileOutput {
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
+                VariableDirty39 = true;
                 Variable39 = Temporary1.Value;
             }
 
@@ -1409,6 +1811,7 @@ public static partial class CompileOutput {
                     return new Error($"160: condition must be flag, not '{Temporary1.Value.Type}'");
                 }
                 if (Temporary1.Value.CastFlag()) {
+                    GotoLabelIndexDirty5 = true;
                     GotoLabelIndex5 = 130;
                     goto Label5;
                 }
@@ -1420,6 +1823,7 @@ public static partial class CompileOutput {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.String(@"
 ");
+                VariableDirty26 = true;
                 Variable26 = Temporary1.Value;
             }
 
@@ -1427,6 +1831,7 @@ public static partial class CompileOutput {
             {
                 SaveActor();
                 Result GotoExternalLabelResult = Actor.GotoExternalLabel(new SourceLocation(163, 5), @"say");
+                LoadActor();
                 if (GotoExternalLabelResult.IsError) {
                     return GotoExternalLabelResult.Error;
                 }
@@ -1443,6 +1848,7 @@ public static partial class CompileOutput {
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
+                VariableDirty40 = true;
                 Variable40 = Temporary1.Value;
             }
 
@@ -1454,6 +1860,7 @@ public static partial class CompileOutput {
                     return new Error($"165: condition must be flag, not '{Temporary1.Value.Type}'");
                 }
                 if (Temporary1.Value.CastFlag()) {
+                    GotoLabelIndexDirty4 = true;
                     GotoLabelIndex4 = 134;
                     goto Label4;
                 }
@@ -1462,7 +1869,7 @@ public static partial class CompileOutput {
         Index134:
             {
                 if (GotoLabelIndex3 < 0) {
-                    return new Error($"166: no entry for goto label: 'drawgrid'");
+                    return new Error("166: no entry for goto label: 'drawgrid'");
                 }
                 GotoLabelSwitchIdentifier = GotoLabelIndex3;
                 goto GotoLabelSwitch;
@@ -1473,6 +1880,7 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Variable26;
+                VariableDirty41 = true;
                 Variable41 = Temporary1.Value;
             }
 
@@ -1480,6 +1888,7 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Variable1;
+                VariableDirty42 = true;
                 Variable42 = Temporary1.Value;
             }
 
@@ -1487,6 +1896,7 @@ public static partial class CompileOutput {
             {
                 SaveActor();
                 Result GotoExternalLabelResult = Actor.GotoExternalLabel(new SourceLocation(171, 3), @"measure");
+                LoadActor();
                 if (GotoExternalLabelResult.IsError) {
                     return GotoExternalLabelResult.Error;
                 }
@@ -1496,6 +1906,7 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Variable25;
+                VariableDirty43 = true;
                 Variable43 = Temporary1.Value;
             }
 
@@ -1510,6 +1921,7 @@ public static partial class CompileOutput {
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
+                VariableDirty42 = true;
                 Variable42 = Temporary1.Value;
             }
 
@@ -1524,6 +1936,7 @@ public static partial class CompileOutput {
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
+                VariableDirty42 = true;
                 Variable42 = Temporary1.Value;
             }
 
@@ -1531,6 +1944,7 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Variable42;
+                VariableDirty26 = true;
                 Variable26 = Temporary1.Value;
             }
 
@@ -1538,6 +1952,7 @@ public static partial class CompileOutput {
             {
                 SaveActor();
                 Result GotoExternalLabelResult = Actor.GotoExternalLabel(new SourceLocation(176, 3), @"truncate");
+                LoadActor();
                 if (GotoExternalLabelResult.IsError) {
                     return GotoExternalLabelResult.Error;
                 }
@@ -1547,6 +1962,7 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Variable25;
+                VariableDirty42 = true;
                 Variable42 = Temporary1.Value;
             }
 
@@ -1554,11 +1970,13 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.Number(0);
+                VariableDirty44 = true;
                 Variable44 = Temporary1.Value;
             }
 
         Index145:
             {
+                GotoLabelIndexDirty9 = true;
                 GotoLabelIndex9 = 146;
                 goto Label9;
             }
@@ -1567,6 +1985,7 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Variable41;
+                VariableDirty26 = true;
                 Variable26 = Temporary1.Value;
             }
 
@@ -1574,6 +1993,7 @@ public static partial class CompileOutput {
             {
                 SaveActor();
                 Result GotoExternalLabelResult = Actor.GotoExternalLabel(new SourceLocation(182, 3), @"say");
+                LoadActor();
                 if (GotoExternalLabelResult.IsError) {
                     return GotoExternalLabelResult.Error;
                 }
@@ -1581,6 +2001,7 @@ public static partial class CompileOutput {
 
         Index148:
             {
+                GotoLabelIndexDirty9 = true;
                 GotoLabelIndex9 = 149;
                 goto Label9;
             }
@@ -1589,11 +2010,13 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Variable43;
+                VariableDirty26 = true;
                 Variable26 = Temporary1.Value;
             }
 
         Index150:
             {
+                GotoLabelIndexDirty12 = true;
                 GotoLabelIndex12 = 151;
                 goto Label12;
             }
@@ -1609,6 +2032,7 @@ public static partial class CompileOutput {
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
+                VariableDirty25 = true;
                 Variable25 = Temporary1.Value;
             }
 
@@ -1628,6 +2052,7 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.String(@"#");
+                VariableDirty26 = true;
                 Variable26 = Temporary1.Value;
             }
 
@@ -1635,6 +2060,7 @@ public static partial class CompileOutput {
             {
                 SaveActor();
                 Result GotoExternalLabelResult = Actor.GotoExternalLabel(new SourceLocation(191, 3), @"say");
+                LoadActor();
                 if (GotoExternalLabelResult.IsError) {
                     return GotoExternalLabelResult.Error;
                 }
@@ -1643,7 +2069,7 @@ public static partial class CompileOutput {
         Index155:
             {
                 if (GotoLabelIndex7 < 0) {
-                    return new Error($"192: no entry for goto label: 'centertext'");
+                    return new Error("192: no entry for goto label: 'centertext'");
                 }
                 GotoLabelSwitchIdentifier = GotoLabelIndex7;
                 goto GotoLabelSwitch;
@@ -1654,6 +2080,7 @@ public static partial class CompileOutput {
             {
                 SaveActor();
                 Result GotoExternalLabelResult = Actor.GotoExternalLabel(new SourceLocation(195, 3), @"measure");
+                LoadActor();
                 if (GotoExternalLabelResult.IsError) {
                     return GotoExternalLabelResult.Error;
                 }
@@ -1663,6 +2090,7 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Variable25;
+                VariableDirty43 = true;
                 Variable43 = Temporary1.Value;
             }
 
@@ -1670,6 +2098,7 @@ public static partial class CompileOutput {
             {
                 SaveActor();
                 Result GotoExternalLabelResult = Actor.GotoExternalLabel(new SourceLocation(197, 3), @"say");
+                LoadActor();
                 if (GotoExternalLabelResult.IsError) {
                     return GotoExternalLabelResult.Error;
                 }
@@ -1679,6 +2108,7 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Variable1;
+                VariableDirty42 = true;
                 Variable42 = Temporary1.Value;
             }
 
@@ -1693,11 +2123,13 @@ public static partial class CompileOutput {
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
+                VariableDirty42 = true;
                 Variable42 = Temporary1.Value;
             }
 
         Index161:
             {
+                GotoLabelIndexDirty9 = true;
                 GotoLabelIndex9 = 162;
                 goto Label9;
             }
@@ -1705,7 +2137,7 @@ public static partial class CompileOutput {
         Index162:
             {
                 if (GotoLabelIndex8 < 0) {
-                    return new Error($"201: no entry for goto label: 'leftaligntext'");
+                    return new Error("201: no entry for goto label: 'leftaligntext'");
                 }
                 GotoLabelSwitchIdentifier = GotoLabelIndex8;
                 goto GotoLabelSwitch;
@@ -1716,6 +2148,7 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.Number(0);
+                VariableDirty45 = true;
                 Variable45 = Temporary1.Value;
             }
 
@@ -1731,6 +2164,7 @@ public static partial class CompileOutput {
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
+                VariableDirty45 = true;
                 Variable45 = Temporary1.Value;
             }
 
@@ -1738,6 +2172,7 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.String(@"#");
+                VariableDirty26 = true;
                 Variable26 = Temporary1.Value;
             }
 
@@ -1745,6 +2180,7 @@ public static partial class CompileOutput {
             {
                 SaveActor();
                 Result GotoExternalLabelResult = Actor.GotoExternalLabel(new SourceLocation(208, 5), @"say");
+                LoadActor();
                 if (GotoExternalLabelResult.IsError) {
                     return GotoExternalLabelResult.Error;
                 }
@@ -1761,6 +2197,7 @@ public static partial class CompileOutput {
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
+                VariableDirty44 = true;
                 Variable44 = Temporary1.Value;
             }
 
@@ -1775,6 +2212,7 @@ public static partial class CompileOutput {
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
+                VariableDirty46 = true;
                 Variable46 = Temporary1.Value;
             }
 
@@ -1786,6 +2224,7 @@ public static partial class CompileOutput {
                     return new Error($"211: condition must be flag, not '{Temporary1.Value.Type}'");
                 }
                 if (Temporary1.Value.CastFlag()) {
+                    GotoLabelIndexDirty11 = true;
                     GotoLabelIndex11 = 170;
                     goto Label11;
                 }
@@ -1793,6 +2232,7 @@ public static partial class CompileOutput {
 
         Index170:
             {
+                GotoLabelIndexDirty10 = true;
                 GotoLabelIndex10 = 171;
                 goto Label10;
             }
@@ -1801,7 +2241,7 @@ public static partial class CompileOutput {
         Label11:
             {
                 if (GotoLabelIndex9 < 0) {
-                    return new Error($"214: no entry for goto label: 'wraphashtags'");
+                    return new Error("214: no entry for goto label: 'wraphashtags'");
                 }
                 GotoLabelSwitchIdentifier = GotoLabelIndex9;
                 goto GotoLabelSwitch;
@@ -1819,6 +2259,7 @@ public static partial class CompileOutput {
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
+                VariableDirty26 = true;
                 Variable26 = Temporary1.Value;
             }
 
@@ -1826,6 +2267,7 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Variable26;
+                VariableDirty47 = true;
                 Variable47 = Temporary1.Value;
             }
 
@@ -1833,6 +2275,7 @@ public static partial class CompileOutput {
             {
                 SaveActor();
                 Result GotoExternalLabelResult = Actor.GotoExternalLabel(new SourceLocation(219, 3), @"truncate");
+                LoadActor();
                 if (GotoExternalLabelResult.IsError) {
                     return GotoExternalLabelResult.Error;
                 }
@@ -1849,6 +2292,7 @@ public static partial class CompileOutput {
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
+                VariableDirty48 = true;
                 Variable48 = Temporary1.Value;
             }
 
@@ -1868,6 +2312,7 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.Flag(true);
+                VariableDirty25 = true;
                 Variable25 = Temporary1.Value;
             }
 
@@ -1880,13 +2325,14 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.Flag(false);
+                VariableDirty25 = true;
                 Variable25 = Temporary1.Value;
             }
 
         Index180:
             {
                 if (GotoLabelIndex12 < 0) {
-                    return new Error($"225: no entry for goto label: 'iseven'");
+                    return new Error("225: no entry for goto label: 'iseven'");
                 }
                 GotoLabelSwitchIdentifier = GotoLabelIndex12;
                 goto GotoLabelSwitch;
@@ -1904,6 +2350,7 @@ public static partial class CompileOutput {
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
+                VariableDirty49 = true;
                 Variable49 = Temporary1.Value;
             }
 
@@ -1923,6 +2370,7 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.Number(0);
+                VariableDirty11 = true;
                 Variable11 = Temporary1.Value;
             }
 
@@ -1937,6 +2385,7 @@ public static partial class CompileOutput {
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
+                VariableDirty49 = true;
                 Variable49 = Temporary1.Value;
             }
 
@@ -1956,6 +2405,7 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.Number(100);
+                VariableDirty11 = true;
                 Variable11 = Temporary1.Value;
             }
 
@@ -1970,6 +2420,7 @@ public static partial class CompileOutput {
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
+                VariableDirty49 = true;
                 Variable49 = Temporary1.Value;
             }
 
@@ -1989,6 +2440,7 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.Number(0);
+                VariableDirty12 = true;
                 Variable12 = Temporary1.Value;
             }
 
@@ -2003,6 +2455,7 @@ public static partial class CompileOutput {
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
+                VariableDirty49 = true;
                 Variable49 = Temporary1.Value;
             }
 
@@ -2022,6 +2475,7 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.Number(100);
+                VariableDirty12 = true;
                 Variable12 = Temporary1.Value;
             }
 
@@ -2036,6 +2490,7 @@ public static partial class CompileOutput {
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
+                VariableDirty49 = true;
                 Variable49 = Temporary1.Value;
             }
 
@@ -2055,6 +2510,7 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.Number(0);
+                VariableDirty13 = true;
                 Variable13 = Temporary1.Value;
             }
 
@@ -2069,6 +2525,7 @@ public static partial class CompileOutput {
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
+                VariableDirty49 = true;
                 Variable49 = Temporary1.Value;
             }
 
@@ -2088,13 +2545,14 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.Number(100);
+                VariableDirty13 = true;
                 Variable13 = Temporary1.Value;
             }
 
         Index199:
             {
                 if (GotoLabelIndex13 < 0) {
-                    return new Error($"246: no entry for goto label: 'clampstats'");
+                    return new Error("246: no entry for goto label: 'clampstats'");
                 }
                 GotoLabelSwitchIdentifier = GotoLabelIndex13;
                 goto GotoLabelSwitch;
@@ -2112,6 +2570,7 @@ public static partial class CompileOutput {
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
+                VariableDirty49 = true;
                 Variable49 = Temporary1.Value;
             }
 
@@ -2123,6 +2582,7 @@ public static partial class CompileOutput {
                     return new Error($"250: condition must be flag, not '{Temporary1.Value.Type}'");
                 }
                 if (Temporary1.Value.CastFlag()) {
+                    GotoLabelIndexDirty15 = true;
                     GotoLabelIndex15 = 202;
                     goto Label15;
                 }
@@ -2139,6 +2599,7 @@ public static partial class CompileOutput {
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
+                VariableDirty49 = true;
                 Variable49 = Temporary1.Value;
             }
 
@@ -2150,6 +2611,7 @@ public static partial class CompileOutput {
                     return new Error($"252: condition must be flag, not '{Temporary1.Value.Type}'");
                 }
                 if (Temporary1.Value.CastFlag()) {
+                    GotoLabelIndexDirty15 = true;
                     GotoLabelIndex15 = 204;
                     goto Label15;
                 }
@@ -2166,6 +2628,7 @@ public static partial class CompileOutput {
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
+                VariableDirty49 = true;
                 Variable49 = Temporary1.Value;
             }
 
@@ -2177,6 +2640,7 @@ public static partial class CompileOutput {
                     return new Error($"254: condition must be flag, not '{Temporary1.Value.Type}'");
                 }
                 if (Temporary1.Value.CastFlag()) {
+                    GotoLabelIndexDirty15 = true;
                     GotoLabelIndex15 = 206;
                     goto Label15;
                 }
@@ -2185,7 +2649,7 @@ public static partial class CompileOutput {
         Index206:
             {
                 if (GotoLabelIndex14 < 0) {
-                    return new Error($"255: no entry for goto label: 'checkdeath'");
+                    return new Error("255: no entry for goto label: 'checkdeath'");
                 }
                 GotoLabelSwitchIdentifier = GotoLabelIndex14;
                 goto GotoLabelSwitch;
@@ -2196,6 +2660,7 @@ public static partial class CompileOutput {
             {
                 SaveActor();
                 Result GotoExternalLabelResult = Actor.GotoExternalLabel(new SourceLocation(258, 3), @"clear");
+                LoadActor();
                 if (GotoExternalLabelResult.IsError) {
                     return GotoExternalLabelResult.Error;
                 }
@@ -2205,6 +2670,7 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.String(@"your gotogotchi died. :C");
+                VariableDirty26 = true;
                 Variable26 = Temporary1.Value;
             }
 
@@ -2212,6 +2678,7 @@ public static partial class CompileOutput {
             {
                 SaveActor();
                 Result GotoExternalLabelResult = Actor.GotoExternalLabel(new SourceLocation(260, 3), @"say");
+                LoadActor();
                 if (GotoExternalLabelResult.IsError) {
                     return GotoExternalLabelResult.Error;
                 }
@@ -2225,7 +2692,7 @@ public static partial class CompileOutput {
         Index211:
             {
                 if (GotoLabelIndex15 < 0) {
-                    return new Error($"262: no entry for goto label: 'death'");
+                    return new Error("262: no entry for goto label: 'death'");
                 }
                 GotoLabelSwitchIdentifier = GotoLabelIndex15;
                 goto GotoLabelSwitch;
@@ -2236,6 +2703,7 @@ public static partial class CompileOutput {
             {
                 SaveActor();
                 Result GotoExternalLabelResult = Actor.GotoExternalLabel(new SourceLocation(265, 3), @"eatkey");
+                LoadActor();
                 if (GotoExternalLabelResult.IsError) {
                     return GotoExternalLabelResult.Error;
                 }
@@ -2245,6 +2713,7 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Variable25;
+                VariableDirty50 = true;
                 Variable50 = Temporary1.Value;
             }
 
@@ -2252,6 +2721,7 @@ public static partial class CompileOutput {
             {
                 SaveActor();
                 Result GotoExternalLabelResult = Actor.GotoExternalLabel(new SourceLocation(267, 3), @"peekkey");
+                LoadActor();
                 if (GotoExternalLabelResult.IsError) {
                     return GotoExternalLabelResult.Error;
                 }
@@ -2273,13 +2743,14 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Variable50;
+                VariableDirty25 = true;
                 Variable25 = Temporary1.Value;
             }
 
         Index217:
             {
                 if (GotoLabelIndex16 < 0) {
-                    return new Error($"270: no entry for goto label: 'lastinput'");
+                    return new Error("270: no entry for goto label: 'lastinput'");
                 }
                 GotoLabelSwitchIdentifier = GotoLabelIndex16;
                 goto GotoLabelSwitch;
@@ -2290,6 +2761,7 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.Nothing();
+                VariableDirty26 = true;
                 Variable26 = Temporary1.Value;
             }
 
@@ -2304,6 +2776,7 @@ public static partial class CompileOutput {
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
+                VariableDirty51 = true;
                 Variable51 = Temporary1.Value;
             }
 
@@ -2323,6 +2796,7 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.String(@"g");
+                VariableDirty26 = true;
                 Variable26 = Temporary1.Value;
             }
 
@@ -2337,6 +2811,7 @@ public static partial class CompileOutput {
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
+                VariableDirty51 = true;
                 Variable51 = Temporary1.Value;
             }
 
@@ -2356,6 +2831,7 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.String(@"o");
+                VariableDirty26 = true;
                 Variable26 = Temporary1.Value;
             }
 
@@ -2370,6 +2846,7 @@ public static partial class CompileOutput {
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
+                VariableDirty51 = true;
                 Variable51 = Temporary1.Value;
             }
 
@@ -2389,6 +2866,7 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.String(@"t");
+                VariableDirty26 = true;
                 Variable26 = Temporary1.Value;
             }
 
@@ -2403,6 +2881,7 @@ public static partial class CompileOutput {
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
+                VariableDirty51 = true;
                 Variable51 = Temporary1.Value;
             }
 
@@ -2422,6 +2901,7 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.String(@"o");
+                VariableDirty26 = true;
                 Variable26 = Temporary1.Value;
             }
 
@@ -2436,6 +2916,7 @@ public static partial class CompileOutput {
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
+                VariableDirty51 = true;
                 Variable51 = Temporary1.Value;
             }
 
@@ -2455,6 +2936,7 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.String(@"g");
+                VariableDirty26 = true;
                 Variable26 = Temporary1.Value;
             }
 
@@ -2469,6 +2951,7 @@ public static partial class CompileOutput {
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
+                VariableDirty51 = true;
                 Variable51 = Temporary1.Value;
             }
 
@@ -2488,6 +2971,7 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.String(@"o");
+                VariableDirty26 = true;
                 Variable26 = Temporary1.Value;
             }
 
@@ -2502,6 +2986,7 @@ public static partial class CompileOutput {
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
+                VariableDirty51 = true;
                 Variable51 = Temporary1.Value;
             }
 
@@ -2521,6 +3006,7 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.String(@"t");
+                VariableDirty26 = true;
                 Variable26 = Temporary1.Value;
             }
 
@@ -2535,6 +3021,7 @@ public static partial class CompileOutput {
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
+                VariableDirty51 = true;
                 Variable51 = Temporary1.Value;
             }
 
@@ -2554,6 +3041,7 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.String(@"c");
+                VariableDirty26 = true;
                 Variable26 = Temporary1.Value;
             }
 
@@ -2568,6 +3056,7 @@ public static partial class CompileOutput {
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
+                VariableDirty51 = true;
                 Variable51 = Temporary1.Value;
             }
 
@@ -2587,6 +3076,7 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.String(@"h");
+                VariableDirty26 = true;
                 Variable26 = Temporary1.Value;
             }
 
@@ -2601,6 +3091,7 @@ public static partial class CompileOutput {
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
+                VariableDirty51 = true;
                 Variable51 = Temporary1.Value;
             }
 
@@ -2620,6 +3111,7 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.String(@"i");
+                VariableDirty26 = true;
                 Variable26 = Temporary1.Value;
             }
 
@@ -2634,6 +3126,7 @@ public static partial class CompileOutput {
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
+                VariableDirty52 = true;
                 Variable52 = Temporary1.Value;
             }
 
@@ -2660,6 +3153,7 @@ public static partial class CompileOutput {
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
+                VariableDirty26 = true;
                 Variable26 = Temporary1.Value;
             }
 
@@ -2667,6 +3161,7 @@ public static partial class CompileOutput {
             {
                 SaveActor();
                 Result GotoExternalLabelResult = Actor.GotoExternalLabel(new SourceLocation(309, 3), @"say");
+                LoadActor();
                 if (GotoExternalLabelResult.IsError) {
                     return GotoExternalLabelResult.Error;
                 }
@@ -2675,7 +3170,7 @@ public static partial class CompileOutput {
         Index253:
             {
                 if (GotoLabelIndex17 < 0) {
-                    return new Error($"310: no entry for goto label: 'displaytitle'");
+                    return new Error("310: no entry for goto label: 'displaytitle'");
                 }
                 GotoLabelSwitchIdentifier = GotoLabelIndex17;
                 goto GotoLabelSwitch;
@@ -2686,6 +3181,7 @@ public static partial class CompileOutput {
             {
                 SaveActor();
                 Result GotoExternalLabelResult = Actor.GotoExternalLabel(new SourceLocation(313, 3), @"clear");
+                LoadActor();
                 if (GotoExternalLabelResult.IsError) {
                     return GotoExternalLabelResult.Error;
                 }
@@ -2693,6 +3189,7 @@ public static partial class CompileOutput {
 
         Index255:
             {
+                GotoLabelIndexDirty3 = true;
                 GotoLabelIndex3 = 256;
                 goto Label3;
             }
@@ -2701,6 +3198,7 @@ public static partial class CompileOutput {
             {
                 SaveActor();
                 Result GotoExternalLabelResult = Actor.GotoExternalLabel(new SourceLocation(315, 3), @"eatkey");
+                LoadActor();
                 if (GotoExternalLabelResult.IsError) {
                     return GotoExternalLabelResult.Error;
                 }
@@ -2718,6 +3216,7 @@ public static partial class CompileOutput {
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
+                VariableDirty53 = true;
                 Variable53 = Temporary1.Value;
             }
 
@@ -2736,7 +3235,7 @@ public static partial class CompileOutput {
         Index259:
             {
                 if (GotoLabelIndex18 < 0) {
-                    return new Error($"318: no entry for goto label: 'displaytutorialmessage'");
+                    return new Error("318: no entry for goto label: 'displaytutorialmessage'");
                 }
                 GotoLabelSwitchIdentifier = GotoLabelIndex18;
                 goto GotoLabelSwitch;
