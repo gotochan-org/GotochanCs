@@ -38,7 +38,7 @@ public static partial class CompileOutput {
 
     Index3:
         {
-            GotoLabelIndex2 = 2;
+            GotoLabelIndex2 = 4;
             goto Label2;
         }
 
@@ -57,7 +57,7 @@ public static partial class CompileOutput {
                 return new Error($"5: condition must be flag, not '{Temporary1.Value.Type}'");
             }
             if (Temporary1.Value.CastFlag()) {
-                GotoLabelIndex1 = 3;
+                GotoLabelIndex1 = 5;
                 goto Label1;
             }
         }

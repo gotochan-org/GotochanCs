@@ -196,8 +196,10 @@ public static class Compiler {
                 Output += "}" + "\n";
             }
             else {
+                // Get index identifier
+                int IndexIdentifier = CompilerState.ParseResult.LineIndexes[GotoLabelInstruction.Location.Line] + 1;
                 // Output set goto label index
-                Output += $"{IdentifyGotoLabelIndex(LabelIdentifier)} = {CompilerState.ParseResult.LineIndexes[GotoLabelInstruction.Location.Line]};" + "\n";
+                Output += $"{IdentifyGotoLabelIndex(LabelIdentifier)} = {IndexIdentifier + 1};" + "\n";
                 // Output goto
                 Output += $"goto {IdentifyLabel(LabelIdentifier)};" + "\n";
             }
