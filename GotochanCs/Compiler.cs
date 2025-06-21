@@ -586,6 +586,15 @@ public static class Compiler {
     private static string CompileSourceFile(string Output, string? NamespaceName, string ClassName, string MethodName) {
         List<string> Lines = [];
 
+        // Add pragma disable warnings
+        Lines.Add("#pragma warning disable IDE0079 // Remove unnecessary suppression");
+        Lines.Add("#pragma warning disable IDE0005 // Using directive is unnecessary");
+        Lines.Add("#pragma warning disable CS0162 // Unreachable code detected");
+        Lines.Add("#pragma warning disable CS0168 // Variable is declared but never used");
+        Lines.Add("#pragma warning disable IDE0059 // Unnecessary assignment of a value");
+        Lines.Add("#pragma warning restore IDE0079 // Remove unnecessary suppression");
+        Lines.Add("");
+
         // Add usings
         Lines.Add("using System;");
         Lines.Add("using System.Collections.Generic;");

@@ -1,3 +1,10 @@
+#pragma warning disable IDE0079 // Remove unnecessary suppression
+#pragma warning disable IDE0005 // Using directive is unnecessary
+#pragma warning disable CS0162 // Unreachable code detected
+#pragma warning disable CS0168 // Variable is declared but never used
+#pragma warning disable IDE0059 // Unnecessary assignment of a value
+#pragma warning restore IDE0079 // Remove unnecessary suppression
+
 using System;
 using System.Collections.Generic;
 using GotochanCs;
