@@ -11,6 +11,12 @@ public static class Program {
         Parser.Optimize(ParseResult);
 
         Actor Actor = new(new ConsoleBundle());
+
+        Result<CompileResult> CompileResult = Compiler.Compile(ParseResult);
+        _ = CompileResult;
+
+        //CompileOutput.Execute(Actor);
+
         Result Result = Actor.Interpret(ParseResult);
 
         Console.WriteLine(new string('-', 10));
