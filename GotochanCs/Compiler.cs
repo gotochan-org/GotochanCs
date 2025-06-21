@@ -35,7 +35,11 @@ public static class Compiler {
         // Get instructions as span
         ReadOnlySpan<Instruction> InstructionsSpan = CollectionsMarshal.AsSpan(ParseResult.Instructions);
 
+        // Enter class and method
+        CompilerState.Depth += 2;
+
         // Output load actor
+        Output += Indent(CompilerState.Depth);
         Output += $"{IdentifyLoadActor()}();" + "\n";
 
         // Compile instructions
@@ -43,11 +47,12 @@ public static class Compiler {
         for (int Index = 0; Index < InstructionsSpan.Length; Index++) {
             Instruction Instruction = InstructionsSpan[Index];
 
-            // Line
+            // Index
             {
                 // Get index identifier
-                int IndexIdentifier = ParseResult.LineIndexes[Instruction.Location.Line] + 1;
+                int IndexIdentifier = Index + 1;
                 // Output label
+                InstructionsBuilder.Append(Indent(CompilerState.Depth - 1));
                 InstructionsBuilder.Append($"{IdentifyIndex(IndexIdentifier)}:" + "\n");
             }
             // Label
@@ -56,6 +61,7 @@ public static class Compiler {
                     // Get label identifier
                     int LabelIdentifier = CompilerState.Labels[LabelName];
                     // Output label
+                    InstructionsBuilder.Append(Indent(CompilerState.Depth - 1));
                     InstructionsBuilder.Append($"{IdentifyLabel(LabelIdentifier)}:" + "\n");
                     break;
                 }
@@ -87,13 +93,20 @@ public static class Compiler {
         Output = LoadActor + "\n" + Output;
 
         // Output end label
+        Output += Indent(CompilerState.Depth - 1);
         Output += $"{IdentifyEndLabel()}:" + "\n";
+        Output += Indent(CompilerState.Depth);
         Output += ";" + "\n";
+
+        // Output set variables in actor
+        Output += Indent(CompilerState.Depth);
+        Output += $"{IdentifySaveActor()}();";
 
         // Compile variables
         StringBuilder VariablesBuilder = new();
         foreach ((string VariableName, int VariableIdentifier) in CompilerState.Variables) {
             // Add variable declaration
+            VariablesBuilder.Append(Indent(CompilerState.Depth));
             VariablesBuilder.Append($"{nameof(Thingie)} {IdentifyVariable(VariableIdentifier)} = {CompileNothing()};" + "\n");
         }
         // Prepend variables to output
@@ -103,6 +116,7 @@ public static class Compiler {
         StringBuilder GotoLabelIndexesBuilder = new();
         foreach ((string LabelName, int LabelIdentifier) in CompilerState.Labels) {
             // Add goto label index declaration
+            GotoLabelIndexesBuilder.Append(Indent(CompilerState.Depth));
             GotoLabelIndexesBuilder.Append($"int {IdentifyGotoLabelIndex(LabelIdentifier)} = -1;" + "\n");
         }
         // Prepend goto label indexes to output
@@ -113,9 +127,6 @@ public static class Compiler {
         GotoLabelSwitchParametersOutput += $"int {IdentifyGotoLabelSwitchIdentifier()} = -1;" + "\n";
         // Prepend goto label switch parameters to output
         Output = GotoLabelSwitchParametersOutput + "\n" + Output;
-
-        // Compile set variables in actor
-        // TODO
 
         // Create source file
         string SourceFile = CompileSourceFile(Output, CompileOptions.NamespaceName, CompileOptions.ClassName, CompileOptions.MethodName);
@@ -133,7 +144,9 @@ public static class Compiler {
         string Output = "";
 
         // Output scope
+        Output += Indent(CompilerState.Depth);
         Output += "{" + "\n";
+        CompilerState.Depth++;
 
         // Condition
         if (Instruction.Condition is not null) {
@@ -145,12 +158,19 @@ public static class Compiler {
             }
             // Output condition
             Output += ConditionOutput;
+
             // Output check condition is flag
+            Output += Indent(CompilerState.Depth);
             Output += $"if ({IdentifyTemporary(ConditionTemporaryIdentifier)}.{nameof(Result<Thingie>.Value)}.{nameof(Thingie.Type)} is not {nameof(ThingieType)}.{nameof(ThingieType.Flag)}) {{" + "\n";
+            Output += Indent(CompilerState.Depth + 1);
             Output += $"return new {nameof(Error)}($\"{Instruction.Condition.Location.Line}: condition must be flag, not '{{{IdentifyTemporary(ConditionTemporaryIdentifier)}.{nameof(Result<Thingie>.Value)}.{nameof(Thingie.Type)}}}'\");" + "\n";
+            Output += Indent(CompilerState.Depth);
             Output += "}" + "\n";
+
             // Output check condition
+            Output += Indent(CompilerState.Depth);
             Output += $"if ({IdentifyTemporary(ConditionTemporaryIdentifier)}.{nameof(Result<Thingie>.Value)}.{nameof(Thingie.CastFlag)}()) {{" + "\n";
+            CompilerState.Depth++;
         }
 
         // Set variable
@@ -169,11 +189,13 @@ public static class Compiler {
             // Output value
             Output += ValueOutput;
             // Output assign
+            Output += Indent(CompilerState.Depth);
             Output += $"{IdentifyVariable(VariableIdentifier)} = {IdentifyTemporary(ValueTemporaryIdentifier)}.{nameof(Result<Thingie>.Value)};" + "\n";
         }
         // Label
         else if (Instruction is LabelInstruction) {
-            // Pass
+            // Output empty statement
+            Output += Indent(CompilerState.Depth);
             Output += ";" + "\n";
         }
         // Goto line
@@ -181,10 +203,12 @@ public static class Compiler {
             // Check if line exists
             if (!CompilerState.ParseResult.LineIndexes.TryGetValue(GotoLineInstruction.LineNumber, out int IndexIdentifier)) {
                 // Output goto end
+                Output += Indent(CompilerState.Depth);
                 Output += $"goto {IdentifyEndLabel()};" + "\n";
             }
             else {
                 // Output goto
+                Output += Indent(CompilerState.Depth);
                 Output += $"goto {IdentifyIndex(IndexIdentifier + 1)};" + "\n";
             }
         }
@@ -193,20 +217,27 @@ public static class Compiler {
             // Get label identifier
             if (!CompilerState.Labels.TryGetValue(GotoLabelInstruction.LabelName, out int LabelIdentifier)) {
                 // Output save actor
+                Output += Indent(CompilerState.Depth);
                 Output += $"{IdentifySaveActor()}();" + "\n";
                 // Output goto external label
+                Output += Indent(CompilerState.Depth);
                 Output += $"{nameof(Result)} {IdentifyGotoExternalLabelResult()} = {IdentifyActor()}.{nameof(Actor.GotoExternalLabel)}({CompileLocationLiteral(GotoLabelInstruction.Location)}, {CompileStringLiteral(GotoLabelInstruction.LabelName)});" + "\n";
                 // Output check no error
+                Output += Indent(CompilerState.Depth);
                 Output += $"if ({IdentifyGotoExternalLabelResult()}.{nameof(Result.IsError)}) {{" + "\n";
+                Output += Indent(CompilerState.Depth + 1);
                 Output += $"return {IdentifyGotoExternalLabelResult()}.{nameof(Result.Error)};" + "\n";
+                Output += Indent(CompilerState.Depth);
                 Output += "}" + "\n";
             }
             else {
                 // Get index identifier
                 int IndexIdentifier = CompilerState.ParseResult.LineIndexes[GotoLabelInstruction.Location.Line] + 1;
                 // Output set goto label index
+                Output += Indent(CompilerState.Depth);
                 Output += $"{IdentifyGotoLabelIndex(LabelIdentifier)} = {IndexIdentifier + 1};" + "\n";
                 // Output goto
+                Output += Indent(CompilerState.Depth);
                 Output += $"goto {IdentifyLabel(LabelIdentifier)};" + "\n";
             }
         }
@@ -215,12 +246,17 @@ public static class Compiler {
             // Get label identifier
             int LabelIdentifier = CompilerState.Labels[GotoGotoLabelInstruction.LabelName];
             // Output check goto label index exists
+            Output += Indent(CompilerState.Depth);
             Output += $"if ({IdentifyGotoLabelIndex(LabelIdentifier)} < 0) {{" + "\n";
+            Output += Indent(CompilerState.Depth + 1);
             Output += $"return new {nameof(Error)}($\"{GotoGotoLabelInstruction.Location.Line}: no entry for goto label: '{GotoGotoLabelInstruction.LabelName}'\");" + "\n";
+            Output += Indent(CompilerState.Depth);
             Output += "}" + "\n";
             // Output set goto goto parameters
+            Output += Indent(CompilerState.Depth);
             Output += $"{IdentifyGotoLabelSwitchIdentifier()} = {IdentifyGotoLabelIndex(LabelIdentifier)};" + "\n";
             // Output goto goto
+            Output += Indent(CompilerState.Depth);
             Output += $"goto {IdentifyGotoLabelSwitch()};" + "\n";
         }
         // Not implemented
@@ -231,10 +267,14 @@ public static class Compiler {
         // Condition
         if (Instruction.Condition is not null) {
             // Output end check condition
+            CompilerState.Depth--;
+            Output += Indent(CompilerState.Depth);
             Output += "}" + "\n";
         }
 
         // Output end scope
+        CompilerState.Depth--;
+        Output += Indent(CompilerState.Depth);
         Output += "}" + "\n";
         // Reset temporary counter
         CompilerState.TemporaryCounter = 0;
@@ -251,6 +291,7 @@ public static class Compiler {
             // Expression cannot error
             OmitErrorCheck = true;
             // Output constant
+            Output += Indent(CompilerState.Depth);
             Output += $"{IdentifyTemporary(TemporaryIdentifier)} = {CompileThingie(ConstantExpression.Value)};" + "\n";
         }
         // Get variable
@@ -263,6 +304,7 @@ public static class Compiler {
                 CompilerState.Variables[GetVariableExpression.VariableName] = VariableIdentifier;
             }
             // Output variable
+            Output += Indent(CompilerState.Depth);
             Output += $"{IdentifyTemporary(TemporaryIdentifier)} = {IdentifyVariable(VariableIdentifier)};" + "\n";
         }
         // Unary
@@ -275,6 +317,9 @@ public static class Compiler {
             }
             // Output expression
             Output += ExpressionOutput;
+
+            // Indent
+            Output += Indent(CompilerState.Depth);
 
             // Plus
             if (UnaryExpression.Operator is UnaryOperator.Plus) {
@@ -306,6 +351,9 @@ public static class Compiler {
             // Output expressions
             Output += Expression1Output;
             Output += Expression2Output;
+
+            // Indent
+            Output += Indent(CompilerState.Depth);
 
             // Add
             if (BinaryExpression.Operator is BinaryOperator.Add) {
@@ -379,8 +427,11 @@ public static class Compiler {
 
         // Output check no error
         if (!OmitErrorCheck) {
+            Output += Indent(CompilerState.Depth);
             Output += $"if ({IdentifyTemporary(TemporaryIdentifier)}.{nameof(Result.IsError)}) {{" + "\n";
+            Output += Indent(CompilerState.Depth + 1);
             Output += $"return {IdentifyTemporary(TemporaryIdentifier)}.{nameof(Result.Error)};" + "\n";
+            Output += Indent(CompilerState.Depth);
             Output += "}" + "\n";
         }
 
@@ -388,9 +439,13 @@ public static class Compiler {
         return Output;
     }
     private static string CompileTemporary(ref CompilerState CompilerState, out int TemporaryIdentifier, Thingie? DefaultValue = null) {
+        // Increment temporary variable identifier
         CompilerState.TemporaryCounter++;
         TemporaryIdentifier = CompilerState.TemporaryCounter;
-        return $"{nameof(Result<Thingie>)}<{nameof(Thingie)}> {IdentifyTemporary(TemporaryIdentifier)}{(DefaultValue is not null ? $" = {CompileNothing()}" : "")};" + "\n";
+
+        // Output declare temporary variable
+        return Indent(CompilerState.Depth)
+            + $"{nameof(Result<Thingie>)}<{nameof(Thingie)}> {IdentifyTemporary(TemporaryIdentifier)}{(DefaultValue is not null ? $" = {CompileNothing()}" : "")};" + "\n";
     }
     private static string CompileStringLiteral(string String) {
         return $"@\"{String.Replace("\"", "\"\"")}\"";
@@ -423,18 +478,36 @@ public static class Compiler {
         string Output = "";
 
         // Output goto end label
+        Output += Indent(CompilerState.Depth);
         Output += $"goto {IdentifyEndLabel()};" + "\n";
 
-        // Output goto label switch
+        // Output goto label switch label
+        Output += Indent(CompilerState.Depth - 1);
         Output += $"{IdentifyGotoLabelSwitch()}:" + "\n";
+
+        // Output goto label switch
+        Output += Indent(CompilerState.Depth);
         Output += $"switch ({IdentifyGotoLabelSwitchIdentifier()}) {{" + "\n";
+        CompilerState.Depth++;
+
+        // Output goto label cases
         foreach (int IndexIdentifier in CompilerState.ParseResult.LineIndexes.Values.Distinct()) {
             // Add case for label
+            Output += Indent(CompilerState.Depth);
             Output += $"case {IndexIdentifier + 1}:" + "\n";
+            Output += Indent(CompilerState.Depth + 1);
             Output += $"goto {IdentifyIndex(IndexIdentifier + 1)};" + "\n";
         }
+
+        // Output default case
+        Output += Indent(CompilerState.Depth);
         Output += "default:" + "\n";
-        Output += $"throw new {nameof(InvalidProgramException)}();";
+        Output += Indent(CompilerState.Depth + 1);
+        Output += $"throw new {nameof(InvalidProgramException)}();" + "\n";
+
+        // Output end goto label switch
+        CompilerState.Depth--;
+        Output += Indent(CompilerState.Depth);
         Output += "}" + "\n";
 
         // Finish
@@ -444,21 +517,27 @@ public static class Compiler {
         string Output = "";
 
         // Output method
+        Output += Indent(CompilerState.Depth);
         Output += $"void {IdentifyLoadActor()}() {{" + "\n";
+        CompilerState.Depth++;
 
         // Load goto label indexes
         foreach ((string LabelName, int LabelIdentifier) in CompilerState.Labels) {
             // Output set goto label index
+            Output += Indent(CompilerState.Depth);
             Output += $"{IdentifyGotoLabelIndex(LabelIdentifier)} = {nameof(Actor)}.{nameof(Actor.GetGotoLabelIndex)}({CompileStringLiteral(LabelName)});" + "\n";
         }
 
         // Load variables
         foreach ((string VariableName, int VariableIdentifier) in CompilerState.Variables) {
             // Output set variable
+            Output += Indent(CompilerState.Depth);
             Output += $"{IdentifyVariable(VariableIdentifier)} = {nameof(Actor)}.{nameof(Actor.GetVariable)}({CompileStringLiteral(VariableName)});" + "\n";
         }
 
         // Output end method
+        CompilerState.Depth--;
+        Output += Indent(CompilerState.Depth);
         Output += "}" + "\n";
 
         // Finish
@@ -468,21 +547,27 @@ public static class Compiler {
         string Output = "";
 
         // Output method
+        Output += Indent(CompilerState.Depth);
         Output += $"void {IdentifySaveActor()}() {{" + "\n";
+        CompilerState.Depth++;
 
         // Save goto label indexes
         foreach ((string LabelName, int LabelIdentifier) in CompilerState.Labels) {
             // Output set actor goto label index
+            Output += Indent(CompilerState.Depth);
             Output += $"{nameof(Actor)}.{nameof(Actor.SetGotoLabelIndex)}({CompileStringLiteral(LabelName)}, {IdentifyGotoLabelIndex(LabelIdentifier)});" + "\n";
         }
 
         // Save variables
         foreach ((string VariableName, int VariableIdentifier) in CompilerState.Variables) {
             // Output set actor variable
+            Output += Indent(CompilerState.Depth);
             Output += $"{nameof(Actor)}.{nameof(Actor.SetVariable)}({CompileStringLiteral(VariableName)}, {IdentifyVariable(VariableIdentifier)});" + "\n";
         }
 
         // Output end method
+        CompilerState.Depth--;
+        Output += Indent(CompilerState.Depth);
         Output += "}" + "\n";
 
         // Finish
@@ -520,12 +605,19 @@ public static class Compiler {
         // Finish
         return string.Join("\n\n", Components);
     }
+    private static string Indent(int Depth) {
+        if (Depth <= 0) {
+            return "";
+        }
+        return new string(' ', Depth * 4);
+    }
 
     private record struct CompilerState() {
         public required ParseResult ParseResult { get; set; }
         public Dictionary<string, int> Variables { get; set; } = [];
         public Dictionary<string, int> Labels { get; set; } = [];
         public int TemporaryCounter { get; set; } = 0;
+        public int Depth { get; set; } = 0;
     }
 }
 

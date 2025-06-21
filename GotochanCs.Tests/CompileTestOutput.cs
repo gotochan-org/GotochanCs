@@ -135,7 +135,7 @@ public static partial class CompileOutput {
 
     EndLabel:
         ;
-
+        SaveActor();
 
         return Result.Success;
     }
