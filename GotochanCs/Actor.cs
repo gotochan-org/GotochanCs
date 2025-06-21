@@ -91,22 +91,10 @@ public class Actor {
                     }
                     // Get index of label
                     else if (!ParseResult.LabelIndexes.TryGetValue(GotoLabelInstruction.LabelName, out TargetIndex)) {
-                        // Get external label
-                        if (ExternalLabels.TryGetValue(GotoLabelInstruction.LabelName, out Action<Actor>? ExternalLabel)) {
-                            // Call external label
-                            try {
-                                ExternalLabel(this);
-                                continue;
-                            }
-                            // Return exceptions as errors
-                            catch (Exception Ex) {
-                                return new Error($"{Instruction.Location.Line}: '{Ex.GetType()}': '{Ex.Message}'");
-                            }
+                        if (GotoExternalLabel(GotoLabelInstruction.Location, GotoLabelInstruction.LabelName).TryGetError(out Error GotoExternalLabelError)) {
+                            return GotoExternalLabelError;
                         }
-                        // Invalid
-                        else {
-                            return new Error($"{Instruction.Location.Line}: invalid label");
-                        }
+                        continue;
                     }
                     // Set index of goto label
                     GotoLabelIndexes[GotoLabelInstruction.LabelName] = Index;
@@ -268,6 +256,24 @@ public class Actor {
     public Dictionary<string, Action<Actor>> GetExternalLabels() {
         lock (Lock) {
             return ExternalLabels.ToDictionary();
+        }
+    }
+    public Result GotoExternalLabel(SourceLocation Location, string LabelName) {
+        // Get external label
+        if (ExternalLabels.TryGetValue(LabelName, out Action<Actor>? ExternalLabel)) {
+            // Call external label
+            try {
+                ExternalLabel(this);
+                return Result.Success;
+            }
+            // Return exceptions as errors
+            catch (Exception Ex) {
+                return new Error($"{Location.Line}: '{Ex.GetType()}': '{Ex.Message}'");
+            }
+        }
+        // Invalid
+        else {
+            return new Error($"{Location.Line}: invalid label");
         }
     }
     public void IncludeBundle(Bundle Bundle) {

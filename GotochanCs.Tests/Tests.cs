@@ -103,13 +103,20 @@ public class Tests {
             counter = 1
             label loop
             counter += 1
+            goto saycounter
             goto loop if counter <= 3
+
+            goto +99999
+
+            label saycounter
+            what = counter
+            goto say
+            goto goto saycounter
             """;
 
         LexResult LexResult = Lexer.Lex(Source).Value;
 
         ParseResult ParseResult = Parser.Parse(LexResult).Value;
-        ParseResult.Instructions.Count.ShouldBe(4);
 
         Parser.Optimize(ParseResult);
 
