@@ -220,12 +220,12 @@ public static class Compiler {
             // Plus
             if (UnaryExpression.Operator is UnaryOperator.Plus) {
                 // Output unary plus
-                Output += $"{IdentifyTemporary(TemporaryIdentifier)} = {nameof(Thingie)}.{nameof(Thingie.Plus)}({CompileLocationLiteral(UnaryExpression.Location)}, {IdentifyTemporary(0)});" + "\n";
+                Output += $"{IdentifyTemporary(TemporaryIdentifier)} = {nameof(Thingie)}.{nameof(Thingie.Plus)}({CompileLocationLiteral(UnaryExpression.Location)}, {IdentifyTemporary(ExpressionTemporaryIdentifier)});" + "\n";
             }
             // Minus
             else if (UnaryExpression.Operator is UnaryOperator.Minus) {
                 // Output unary minus
-                Output += $"{IdentifyTemporary(TemporaryIdentifier)} = {nameof(Thingie)}.{nameof(Thingie.Minus)}({CompileLocationLiteral(UnaryExpression.Location)}, {IdentifyTemporary(0)});" + "\n";
+                Output += $"{IdentifyTemporary(TemporaryIdentifier)} = {nameof(Thingie)}.{nameof(Thingie.Minus)}({CompileLocationLiteral(UnaryExpression.Location)}, {IdentifyTemporary(ExpressionTemporaryIdentifier)});" + "\n";
             }
             // Invalid
             else {
