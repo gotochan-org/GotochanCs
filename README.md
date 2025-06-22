@@ -1,5 +1,7 @@
 <img src="https://github.com/gotochan-org/GotochanCs/blob/main/Assets/GotochanIcon2x.png?raw=true">
 
+[![NuGet](https://img.shields.io/nuget/v/GotochanCs.svg)](https://www.nuget.org/packages/GotochanCs)
+
 # Gotochan for C#
 
 Do you hate:
