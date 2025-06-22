@@ -658,7 +658,7 @@ public readonly record struct ParseAnalyzeResult {
 /// Analysis types for <see cref="Parser.Analyze(ParseResult, ParseAnalyses)"/>.
 /// </summary>
 [Flags]
-public enum ParseAnalyses : long {
+public enum ParseAnalyses : ulong {
     /// <summary>
     /// Reports labels that are not targeted by a goto instruction.
     /// </summary>
@@ -671,14 +671,14 @@ public enum ParseAnalyses : long {
     /// <summary>
     /// Indicates that every analysis should be performed.
     /// </summary>
-    All = long.MaxValue,
+    All = ulong.MaxValue,
 }
 
 /// <summary>
 /// Optimization types for <see cref="Parser.Optimize(ParseResult, ParseOptimizations)"/>.
 /// </summary>
 [Flags]
-public enum ParseOptimizations : long {
+public enum ParseOptimizations : ulong {
     /// <summary>
     /// Removes label instructions which are otherwise skipped at runtime.
     /// </summary>
@@ -703,5 +703,5 @@ public enum ParseOptimizations : long {
     /// <summary>
     /// Indicates that every optimization should be performed.
     /// </summary>
-    All = long.MaxValue,
+    All = ulong.MaxValue,
 }
