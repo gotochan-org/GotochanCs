@@ -125,6 +125,9 @@ public static class Compiler {
         return Compile(ParseResult, new CompileOptions());
     }
 
+    /// <summary>
+    /// Converts the given instruction to C# code.
+    /// </summary>
     private static Result<string> CompileInstruction(Instruction Instruction, ref CompilerState CompilerState) {
         string Output = "";
 
@@ -265,6 +268,9 @@ public static class Compiler {
         // Finish
         return Output;
     }
+    /// <summary>
+    /// Converts the given expression to C# code.
+    /// </summary>
     private static Result<string> CompileExpression(Expression Expression, ref CompilerState CompilerState, int TemporaryIdentifier) {
         string Output = "";
         bool OmitErrorCheck = false;
