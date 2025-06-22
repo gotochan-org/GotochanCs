@@ -4,6 +4,9 @@ using ResultZero;
 
 namespace GotochanCs;
 
+/// <summary>
+/// Converts Gotochan instructions to C# code.
+/// </summary>
 public static class Compiler {
     private static string IdentifyActor() => "Actor";
     private static string IdentifyIndex(int Identifier) => $"Index{Identifier}";
@@ -13,6 +16,18 @@ public static class Compiler {
     private static string IdentifyTemporary(int Identifier) => $"Temporary{Identifier}";
     private static string IdentifyEndLabel() => "EndLabel";
 
+    /// <summary>
+    /// Converts the given code to C# code.
+    /// </summary>
+    public static Result<CompileResult> Compile(string Source) {
+        if (Parser.Parse(Source).TryGetError(out Error ParseError, out ParseResult ParseResult)) {
+            return ParseError;
+        }
+        return Compile(ParseResult);
+    }
+    /// <summary>
+    /// Converts the given instructions to C# code.
+    /// </summary>
     public static Result<CompileResult> Compile(ParseResult ParseResult, CompileOptions CompileOptions) {
         string Output = "";
 
@@ -104,9 +119,13 @@ public static class Compiler {
             Output = SourceFile,
         };
     }
+    /// <summary>
+    /// Converts the given instructions to C# code.
+    /// </summary>
     public static Result<CompileResult> Compile(ParseResult ParseResult) {
         return Compile(ParseResult, new CompileOptions());
     }
+
     private static Result<string> CompileInstruction(Instruction Instruction, ref CompilerState CompilerState) {
         string Output = "";
 
@@ -530,13 +549,34 @@ public static class Compiler {
     }
 }
 
+/// <summary>
+/// A result from <see cref="Compiler"/>.
+/// </summary>
 public readonly record struct CompileResult {
+    /// <summary>
+    /// The original Gotochan code.
+    /// </summary>
     public required string Source { get; init; }
+    /// <summary>
+    /// The resulting C# code.
+    /// </summary>
     public required string Output { get; init; }
 }
 
+/// <summary>
+/// Options for <see cref="Compiler"/>.
+/// </summary>
 public readonly record struct CompileOptions() {
+    /// <summary>
+    /// The namespace (or none) to generate.
+    /// </summary>
     public string? NamespaceName { get; init; } = null;
+    /// <summary>
+    /// The static partial class to generate.
+    /// </summary>
     public string ClassName { get; init; } = "CompileOutput";
+    /// <summary>
+    /// The static method to generate.
+    /// </summary>
     public string MethodName { get; init; } = "Execute";
 }

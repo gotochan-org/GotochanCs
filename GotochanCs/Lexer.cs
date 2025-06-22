@@ -3,19 +3,30 @@ using ResultZero;
 
 namespace GotochanCs;
 
+/// <summary>
+/// Converts Gotochan code to Gotochan tokens.
+/// </summary>
 public static class Lexer {
+    /// <summary>
+    /// The characters that can end an instruction.
+    /// </summary>
     public static ReadOnlySpan<char> NewlineChars => ['\n', '\r', '\u2028', '\u2029'];
+    /// <summary>
+    /// The characters that cannot be used in an identifier.
+    /// </summary>
     public static ReadOnlySpan<char> ReservedChars => ['+', '-', '*', '/', '%', '^', '=', '!', '>', '<', '\\', ';', '~', '#'];
 
+    /// <summary>
+    /// Converts the given code to tokens.
+    /// </summary>
     public static Result<LexResult> Lex(string Source) {
         List<Token> CurrentTokens = [];
 
         // Build tokens
         for (int Index = 0; Index < Source.Length; Index++) {
             char Next = Source[Index];
-            int NextIndex = Index;
             char? NextNext = Index + 1 < Source.Length ? Source[Index + 1] : null;
-            int NextNextIndex = Index + 1;
+            int NextIndex = Index;
 
             // Escape
             if (Next is '\\') {
@@ -332,7 +343,16 @@ public static class Lexer {
     }
 }
 
+/// <summary>
+/// A result from <see cref="Lexer"/>.
+/// </summary>
 public readonly record struct LexResult {
+    /// <summary>
+    /// The original Gotochan code.
+    /// </summary>
     public required string Source { get; init; }
+    /// <summary>
+    /// The resulting Gotochan tokens.
+    /// </summary>
     public required List<Token> Tokens { get; init; }
 }

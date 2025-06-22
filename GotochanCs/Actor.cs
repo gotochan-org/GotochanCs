@@ -7,22 +7,50 @@ using System.Runtime.InteropServices;
 
 namespace GotochanCs;
 
+/// <summary>
+/// A runtime state for Gotochan. Actors use collaborative multithreading using a lock.
+/// </summary>
 public class Actor {
-    public static Actor Default { get; } = new();
+    /// <summary>
+    /// A global actor instance.
+    /// </summary>
+    public static Actor Shared { get; } = new();
 
+    /// <summary>
+    /// A lock used to prevent multithreading.
+    /// </summary>
     public Lock Lock { get; } = new();
-    public Dictionary<string, int> GotoLabelIndexes { get; } = [];
-    public Dictionary<string, Thingie> Variables { get; } = [];
-    public Dictionary<string, Action<Actor>> ExternalLabels { get; } = [];
 
+    /// <summary>
+    /// The index of the last executed goto instruction to each label.
+    /// </summary>
+    private Dictionary<string, int> GotoLabelIndexes { get; } = [];
+    /// <summary>
+    /// The value of each global variable.
+    /// </summary>
+    private Dictionary<string, Thingie> Variables { get; } = [];
+    /// <summary>
+    /// The external delegates accessible as labels.
+    /// </summary>
+    private Dictionary<string, Action<Actor>> ExternalLabels { get; } = [];
+
+    /// <summary>
+    /// Constructs an empty actor.
+    /// </summary>
     public Actor() {
     }
+    /// <summary>
+    /// Constructs an actor with the given bundles included.
+    /// </summary>
     public Actor(params IEnumerable<Bundle> Bundles)
         : this() {
         foreach (Bundle Bundle in Bundles) {
             IncludeBundle(Bundle);
         }
     }
+    /// <summary>
+    /// Evaluates each instruction, returning an error on failure.
+    /// </summary>
     public Result Interpret(ParseResult ParseResult) {
         lock (Lock) {
             // Get instructions as span
@@ -55,7 +83,7 @@ public class Actor {
                         return ValueError;
                     }
                     // Set variable to value
-                    Variables[SetVariableInstruction.VariableName] = Value;
+                    SetVariable(SetVariableInstruction.VariableName, Value);
                 }
                 // Label
                 else if (Instruction is LabelInstruction) {
@@ -99,7 +127,7 @@ public class Actor {
                         continue;
                     }
                     // Set index of goto label
-                    GotoLabelIndexes[GotoLabelInstruction.LabelName] = Index;
+                    SetGotoLabelIndex(GotoLabelInstruction.LabelName, Index);
                     // Go to index
                     Index = TargetIndex;
                     Index--;
@@ -107,7 +135,8 @@ public class Actor {
                 // Goto goto
                 else if (Instruction is GotoGotoLabelInstruction GotoGotoLabelInstruction) {
                     // Get index of goto label
-                    if (!GotoLabelIndexes.TryGetValue(GotoGotoLabelInstruction.LabelName, out int TargetIndex)) {
+                    int TargetIndex = GetGotoLabelIndex(GotoGotoLabelInstruction.LabelName);
+                    if (TargetIndex < 0) {
                         return new Error($"{Instruction.Location.Line}: no entry for goto label: '{GotoGotoLabelInstruction.LabelName}'");
                     }
                     // Go to index
@@ -121,6 +150,9 @@ public class Actor {
             return Result.Success;
         }
     }
+    /// <summary>
+    /// Evaluates the expression.
+    /// </summary>
     public Result<Thingie> InterpretExpression(Expression Expression) {
         lock (Lock) {
             // Constant
@@ -129,7 +161,7 @@ public class Actor {
             }
             // Get variable
             else if (Expression is GetVariableExpression GetVariableExpression) {
-                return Variables.GetValueOrDefault(GetVariableExpression.VariableName);
+                return GetVariable(GetVariableExpression.VariableName);
             }
             // Unary
             else if (Expression is UnaryExpression UnaryExpression) {
@@ -220,16 +252,25 @@ public class Actor {
             }
         }
     }
+    /// <summary>
+    /// Returns the value of the given variable, or <see cref="Thingie.Nothing()"/>.
+    /// </summary>
     public Thingie GetVariable(string VariableName) {
         lock (Lock) {
             return Variables.GetValueOrDefault(VariableName);
         }
     }
+    /// <summary>
+    /// Returns a snapshot of the value of each variable.
+    /// </summary>
     public Dictionary<string, Thingie> GetVariables() {
         lock (Lock) {
             return Variables.ToDictionary();
         }
     }
+    /// <summary>
+    /// Sets the value of the given variable.
+    /// </summary>
     public void SetVariable(string VariableName, Thingie Value) {
         lock (Lock) {
             if (Value.Type is ThingieType.Nothing) {
@@ -240,16 +281,25 @@ public class Actor {
             }
         }
     }
+    /// <summary>
+    /// Returns the index of the last executed goto instruction to the given label, or -1.
+    /// </summary>
     public int GetGotoLabelIndex(string LabelName) {
         lock (Lock) {
-            return GotoLabelIndexes.GetValueOrDefault(LabelName);
+            return GotoLabelIndexes.GetValueOrDefault(LabelName, -1);
         }
     }
+    /// <summary>
+    /// Returns a snapshot of the index of the last executed goto instruction for each label.
+    /// </summary>
     public Dictionary<string, int> GetGotoLabelIndexes() {
         lock (Lock) {
             return GotoLabelIndexes.ToDictionary();
         }
     }
+    /// <summary>
+    /// Sets the index of the last executed goto instruction to the given label.
+    /// </summary>
     public void SetGotoLabelIndex(string LabelName, int Value) {
         lock (Lock) {
             if (Value < 0) {
@@ -260,16 +310,25 @@ public class Actor {
             }
         }
     }
+    /// <summary>
+    /// Returns the given external delegate accessible as a label, or <see langword="null"/>.
+    /// </summary>
     public Delegate? GetExternalLabel(string LabelName) {
         lock (Lock) {
             return ExternalLabels.GetValueOrDefault(LabelName);
         }
     }
+    /// <summary>
+    /// Returns a snapshot of each external delegate accessible as a label.
+    /// </summary>
     public Dictionary<string, Action<Actor>> GetExternalLabels() {
         lock (Lock) {
             return ExternalLabels.ToDictionary();
         }
     }
+    /// <summary>
+    /// Sets the given external delegate accessible as a label.
+    /// </summary>
     public void SetExternalLabel(string LabelName, Action<Actor>? Value) {
         lock (Lock) {
             if (Value is null) {
@@ -280,9 +339,12 @@ public class Actor {
             }
         }
     }
+    /// <summary>
+    /// Calls the external delegate accessible as a label.
+    /// </summary>
     public Result GotoExternalLabel(SourceLocation Location, string LabelName) {
         // Get external label
-        if (ExternalLabels.TryGetValue(LabelName, out Action<Actor>? ExternalLabel)) {
+        if (GetExternalLabel(LabelName) is Action<Actor> ExternalLabel) {
             // Call external label
             try {
                 ExternalLabel(this);
@@ -298,25 +360,29 @@ public class Actor {
             return new Error($"{Location.Line}: invalid label");
         }
     }
+    /// <summary>
+    /// Applies the contents of the given bundle and its dependencies.
+    /// </summary>
     public void IncludeBundle(Bundle Bundle) {
         HashSet<Bundle> IncludedBundles = [];
-        Queue<Bundle> PendingBundles = [];
 
-        PendingBundles.Enqueue(Bundle);
-
-        while (PendingBundles.TryDequeue(out Bundle? CurrentBundle)) {
+        void IncludeBundleRecursive(Bundle CurrentBundle) {
             // Skip cyclic dependencies
             if (!IncludedBundles.Add(CurrentBundle)) {
-                continue;
+                return;
             }
-            // Add external labels
-            foreach (KeyValuePair<string, Action<Actor>> ExternalLabel in CurrentBundle.ExternalLabels) {
-                ExternalLabels[ExternalLabel.Key] = ExternalLabel.Value;
-            }
-            // Add dependencies
+
+            // Include dependencies first
             foreach (Bundle Dependency in CurrentBundle.Dependencies) {
-                PendingBundles.Enqueue(Dependency);
+                IncludeBundleRecursive(Dependency);
+            }
+
+            // Set external labels
+            foreach (KeyValuePair<string, Action<Actor>> ExternalLabel in CurrentBundle.ExternalLabels) {
+                SetExternalLabel(ExternalLabel.Key, ExternalLabel.Value);
             }
         }
+
+        IncludeBundleRecursive(Bundle);
     }
 }

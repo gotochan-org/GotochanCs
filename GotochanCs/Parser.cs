@@ -3,13 +3,22 @@ using ResultZero;
 
 namespace GotochanCs;
 
+/// <summary>
+/// Converts Gotochan tokens to Gotochan instructions.
+/// </summary>
 public static class Parser {
+    /// <summary>
+    /// Converts the given code to instructions.
+    /// </summary>
     public static Result<ParseResult> Parse(string Source) {
         if (Lexer.Lex(Source).TryGetError(out Error LexError, out LexResult LexResult)) {
             return LexError;
         }
         return Parse(LexResult);
     }
+    /// <summary>
+    /// Converts the given tokens to instructions.
+    /// </summary>
     public static Result<ParseResult> Parse(LexResult LexResult) {
         List<Instruction> Instructions = [];
         Dictionary<int, int> LineIndexes = [];
@@ -92,6 +101,9 @@ public static class Parser {
             LabelIndexes = LabelIndexes,
         };
     }
+    /// <summary>
+    /// Converts the given tokens to a single instruction.
+    /// </summary>
     public static Result<Instruction> ParseInstruction(scoped ReadOnlySpan<Token> Tokens) {
         // Ensure any token present
         if (Tokens.Length <= 0) {
@@ -300,6 +312,9 @@ public static class Parser {
         // Invalid
         return new Error($"{Tokens[0].Location.Line}: invalid instruction");
     }
+    /// <summary>
+    /// Converts the given tokens to a single expression.
+    /// </summary>
     public static Result<Expression> ParseExpression(scoped ReadOnlySpan<Token> Tokens) {
         // Ensure any token present
         if (Tokens.Length <= 0) {
@@ -451,6 +466,9 @@ public static class Parser {
         // Invalid
         return new Error($"{Tokens[0].Location.Line}: invalid expression");
     }
+    /// <summary>
+    /// Analyzes warnings about the given instructions.
+    /// </summary>
     public static List<ParseAnalyzeResult> Analyze(ParseResult ParseResult, ParseAnalyses Analyses = ParseAnalyses.All) {
         List<ParseAnalyzeResult> Results = [];
 
@@ -490,6 +508,9 @@ public static class Parser {
 
         return Results;
     }
+    /// <summary>
+    /// Optimizes the performance of the given instructions.
+    /// </summary>
     public static void Optimize(ParseResult ParseResult, ParseOptimizations Optimizations = ParseOptimizations.All) {
         for (int Index = 0; Index < ParseResult.Instructions.Count; Index++) {
             Instruction Instruction = ParseResult.Instructions[Index];
@@ -589,35 +610,98 @@ public static class Parser {
     }
 }
 
+/// <summary>
+/// A result from <see cref="Parser"/>.
+/// </summary>
 public readonly record struct ParseResult {
+    /// <summary>
+    /// The original Gotochan code.
+    /// </summary>
     public required string Source { get; init; }
+    /// <summary>
+    /// The resulting Gotochan instructions.
+    /// </summary>
     public required List<Instruction> Instructions { get; init; }
+    /// <summary>
+    /// The resulting index of the first instruction on each line.
+    /// </summary>
     public required Dictionary<int, int> LineIndexes { get; init; }
+    /// <summary>
+    /// The resulting final line with an instruction.
+    /// </summary>
     public required int MaximumLine { get; init; }
+    /// <summary>
+    /// The resulting index of the instruction for each label.
+    /// </summary>
     public required Dictionary<string, int> LabelIndexes { get; init; }
 }
 
+/// <summary>
+/// A result from <see cref="Parser.Analyze(ParseResult, ParseAnalyses)"/>.
+/// </summary>
 public readonly record struct ParseAnalyzeResult {
+    /// <summary>
+    /// The source location of the analysis.
+    /// </summary>
     public required SourceLocation Location { get; init; }
+    /// <summary>
+    /// The type of analysis.
+    /// </summary>
     public required ParseAnalyses Analysis { get; init; }
+    /// <summary>
+    /// The display message for the analysis.
+    /// </summary>
     public required string Message { get; init; }
 }
 
+/// <summary>
+/// Analysis types for <see cref="Parser.Analyze(ParseResult, ParseAnalyses)"/>.
+/// </summary>
 [Flags]
 public enum ParseAnalyses : long {
+    /// <summary>
+    /// Reports labels that are not targeted by a goto instruction.
+    /// </summary>
     UnusedLabel = 1,
 
+    /// <summary>
+    /// Indicates that no analysis should be performed.
+    /// </summary>
     None = 0,
+    /// <summary>
+    /// Indicates that every analysis should be performed.
+    /// </summary>
     All = long.MaxValue,
 }
 
+/// <summary>
+/// Optimization types for <see cref="Parser.Optimize(ParseResult, ParseOptimizations)"/>.
+/// </summary>
 [Flags]
 public enum ParseOptimizations : long {
+    /// <summary>
+    /// Removes label instructions which are otherwise skipped at runtime.
+    /// </summary>
     RemoveLabels = 1,
+    /// <summary>
+    /// Calculates the target index of goto line instructions which are otherwise calculated at runtime.
+    /// </summary>
     PrecalculateGotoLineIndexes = 2,
+    /// <summary>
+    /// Calculates the target index of goto label instructions which are otherwise calculated at runtime.
+    /// </summary>
     PrecalculateGotoLabelIndexes = 4,
+    /// <summary>
+    /// Removes constant yes/no conditions which are otherwise evaluated at runtime.
+    /// </summary>
     RemoveConstantConditions = 8,
 
+    /// <summary>
+    /// Indicates that no optimization should be performed.
+    /// </summary>
     None = 0,
+    /// <summary>
+    /// Indicates that every optimization should be performed.
+    /// </summary>
     All = long.MaxValue,
 }
