@@ -18,6 +18,7 @@ public static class Program {
         //Result Result = CompileOutput.Execute(Actor);
         Result Result = Actor.Interpret(ParseResult);
 
+        Console.WriteLine();
         Console.WriteLine(new string('-', 10));
         Console.WriteLine($"Result: {Result}");
         Console.ReadLine();
