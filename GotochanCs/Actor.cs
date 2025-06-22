@@ -51,7 +51,11 @@ public class Actor {
     /// <summary>
     /// Evaluates each instruction, returning an error on failure.
     /// </summary>
-    public Result Interpret(ParseResult ParseResult) {
+    /// <param name="CancelToken">
+    /// Checked before each instruction is evaluated.
+    /// </param>
+    /// <exception cref="OperationCanceledException"/>
+    public Result Interpret(ParseResult ParseResult, CancellationToken CancelToken = default) {
         lock (Lock) {
             // Get instructions as span
             ReadOnlySpan<Instruction> InstructionsSpan = CollectionsMarshal.AsSpan(ParseResult.Instructions);
@@ -59,6 +63,9 @@ public class Actor {
             // Interpret each instruction
             for (int Index = 0; Index < InstructionsSpan.Length; Index++) {
                 Instruction Instruction = InstructionsSpan[Index];
+
+                // Check cancel token
+                CancelToken.ThrowIfCancellationRequested();
 
                 // Condition
                 if (Instruction.Condition is not null) {

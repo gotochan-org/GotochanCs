@@ -8,6 +8,11 @@
   </PropertyGroup>
 
   <PropertyGroup>
+    <!-- CS1573: Parameter 'parameter' has no matching param tag in the XML comment for 'parameter' (but other parameters do) -->
+    <NoWarn>CS1573</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup>
     <IsAotCompatible>true</IsAotCompatible>
   </PropertyGroup>
 
