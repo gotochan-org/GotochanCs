@@ -166,7 +166,6 @@ public static class Lexer {
 
         // Finish
         return new LexResult() {
-            Source = Source,
             Tokens = CurrentTokens,
         };
     }
@@ -347,10 +346,6 @@ public static class Lexer {
 /// A result from <see cref="Lexer"/>.
 /// </summary>
 public readonly record struct LexResult {
-    /// <summary>
-    /// The original Gotochan code.
-    /// </summary>
-    public required string Source { get; init; }
     /// <summary>
     /// The resulting Gotochan tokens.
     /// </summary>

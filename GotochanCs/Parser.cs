@@ -94,7 +94,6 @@ public static class Parser {
 
         // Finish
         return new ParseResult() {
-            Source = LexResult.Source,
             Instructions = Instructions,
             LineIndexes = LineIndexes,
             MaximumLine = MaximumLine,
@@ -614,10 +613,6 @@ public static class Parser {
 /// A result from <see cref="Parser"/>.
 /// </summary>
 public readonly record struct ParseResult {
-    /// <summary>
-    /// The original Gotochan code.
-    /// </summary>
-    public required string Source { get; init; }
     /// <summary>
     /// The resulting Gotochan instructions.
     /// </summary>

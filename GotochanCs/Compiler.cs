@@ -115,7 +115,6 @@ public static class Compiler {
 
         // Finish
         return new CompileResult() {
-            Source = ParseResult.Source,
             Output = SourceFile,
         };
     }
@@ -553,10 +552,6 @@ public static class Compiler {
 /// A result from <see cref="Compiler"/>.
 /// </summary>
 public readonly record struct CompileResult {
-    /// <summary>
-    /// The original Gotochan code.
-    /// </summary>
-    public required string Source { get; init; }
     /// <summary>
     /// The resulting C# code.
     /// </summary>
