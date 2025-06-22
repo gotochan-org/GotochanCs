@@ -173,7 +173,8 @@ label centertext
   numberofhashtags -= lengthoftext
   numberofhashtags /= 2
   what = numberofhashtags
-  goto truncate
+  how = ~chop
+  goto round
   numberofhashtags = result
   
   numberofhashtagsprinted = 0
@@ -216,7 +217,8 @@ goto goto wraphashtags
 label iseven
   what /= 2
   nontruncated = what
-  goto truncate
+  how = ~chop
+  goto round
   truncatedisnotsame = result != nontruncated
   goto +3 if truncatedisnotsame
   result = yes

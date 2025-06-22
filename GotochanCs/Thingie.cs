@@ -75,6 +75,22 @@ public readonly struct Thingie : IEquatable<Thingie> {
     public string CastString() => Type is ThingieType.String ? StringData! : throw new InvalidCastException("thingie is not string");
 
     /// <summary>
+    /// Casts the thingie to type flag (boolean) or type nothing (null), or throws an exception.
+    /// </summary>
+    /// <exception cref="InvalidCastException"/>
+    public bool? CastFlagOrNothing() => Type is ThingieType.Nothing ? null : CastFlag();
+    /// <summary>
+    /// Casts the thingie to type number (64-bit signed float) or type nothing (null), or throws an exception.
+    /// </summary>
+    /// <exception cref="InvalidCastException"/>
+    public double? CastNumberOrNothing() => Type is ThingieType.Nothing ? null : CastNumber();
+    /// <summary>
+    /// Casts the thingie to type string (UTF-16 char sequence) or type nothing (null), or throws an exception.
+    /// </summary>
+    /// <exception cref="InvalidCastException"/>
+    public string? CastStringOrNothing() => Type is ThingieType.Nothing ? null : CastString();
+
+    /// <summary>
     /// Casts the thingie to type nothing (null), or returns an error.
     /// </summary>
     public Result<object?> AsNothing() => Type is ThingieType.Nothing ? CastNothing() : new Error("thingie is not nothing");
@@ -91,30 +107,34 @@ public readonly struct Thingie : IEquatable<Thingie> {
     /// </summary>
     public Result<string> AsString() => Type is ThingieType.String ? CastString() : new Error("thingie is not string");
 
+    /// <summary>
+    /// Casts the thingie to type flag (boolean) or type nothing (null), or returns an error.
+    /// </summary>
+    public Result<bool?> AsFlagOrNothing() => Type is ThingieType.Nothing ? (bool?)null : AsFlag().Try(Flag => (bool?)Flag);
+    /// <summary>
+    /// Casts the thingie to type number (64-bit signed float) or type nothing (null), or returns an error.
+    /// </summary>
+    public Result<double?> AsNumberOrNothing() => Type is ThingieType.Nothing ? (double?)null : AsNumber().Try(Number => (double?)Number);
+    /// <summary>
+    /// Casts the thingie to type string (UTF-16 char sequence) or type nothing (null), or returns an error.
+    /// </summary>
+    public Result<string?> AsStringOrNothing() => Type is ThingieType.Nothing ? null : CastString();
+
     /// <inheritdoc cref="CastFlag()"/>
     public static explicit operator bool(Thingie Thingie) => Thingie.CastFlag();
+    /// <inheritdoc cref="CastFlagOrNothing()"/>
+    public static explicit operator bool?(Thingie Thingie) => Thingie.CastFlagOrNothing();
     /// <inheritdoc cref="CastNumber()"/>
     public static explicit operator double(Thingie Thingie) => Thingie.CastNumber();
-    /// <summary>
-    /// Casts the thingie to type flag (boolean) or type nothing (null), or throws an exception.
-    /// </summary>
-    /// <exception cref="InvalidCastException"/>
-    public static explicit operator bool?(Thingie Thingie) => Thingie.Type is ThingieType.Nothing ? null : Thingie.CastFlag();
-    /// <summary>
-    /// Casts the thingie to type number (64-bit signed float) or type nothing (null), or throws an exception.
-    /// </summary>
-    /// <exception cref="InvalidCastException"/>
-    public static explicit operator double?(Thingie Thingie) => Thingie.Type is ThingieType.Nothing ? null : Thingie.CastNumber();
-    /// <summary>
-    /// Casts the thingie to type string (UTF-16 char sequence) or type nothing (null), or throws an exception.
-    /// </summary>
-    /// <exception cref="InvalidCastException"/>
-    public static explicit operator string?(Thingie Thingie) => Thingie.Type is ThingieType.Nothing ? null : Thingie.CastString();
+    /// <inheritdoc cref="CastNumberOrNothing()"/>
+    public static explicit operator double?(Thingie Thingie) => Thingie.CastNumberOrNothing();
+    /// <inheritdoc cref="CastStringOrNothing()"/>
+    public static explicit operator string?(Thingie Thingie) => Thingie.CastStringOrNothing();
 
     /// <summary>
     /// Converts the thingie to a CLR object appropriate for the type.
     /// </summary>
-    public object? AsObject => Type switch {
+    public object? AsObject() => Type switch {
         ThingieType.Nothing => CastNothing(),
         ThingieType.Flag => CastFlag(),
         ThingieType.Number => CastNumber(),
