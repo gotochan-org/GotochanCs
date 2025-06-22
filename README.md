@@ -1,3 +1,5 @@
+<img src="https://github.com/gotochan-org/GotochanCs/blob/main/Assets/GotochanIcon2x.png?raw=true">
+
 # Gotochan for C#
 
 Do you hate:
