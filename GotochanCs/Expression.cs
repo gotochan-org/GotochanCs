@@ -1,11 +1,11 @@
 namespace GotochanCs;
 
 /// <summary>
-/// A Gotochan expression.
+/// A Gotochan expression. Expressions are used in instructions.
 /// </summary>
 public abstract record Expression {
     /// <summary>
-    /// The location of the start of expression in the original source code.
+    /// The location of the expression in the original source code.
     /// </summary>
     public required SourceLocation Location { get; init; }
 }

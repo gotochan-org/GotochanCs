@@ -1316,186 +1316,193 @@ public static partial class CompileOutput {
 
         Index142:
             {
+                Result<Thingie> Temporary1;
+                Temporary1 = Thingie.String(@"chop");
+                Actor.SetVariable(@"how", Temporary1.Value);
+            }
+
+        Index143:
+            {
                 Result Temporary1;
-                Temporary1 = Actor.GotoExternalLabel(new SourceLocation(176, 3), @"truncate");
+                Temporary1 = Actor.GotoExternalLabel(new SourceLocation(177, 3), @"round");
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
             }
 
-        Index143:
+        Index144:
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Actor.GetVariable(@"result");
                 Actor.SetVariable(@"numberofhashtags", Temporary1.Value);
             }
 
-        Index144:
+        Index145:
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.Number(0);
                 Actor.SetVariable(@"numberofhashtagsprinted", Temporary1.Value);
             }
 
-        Index145:
+        Index146:
             {
-                Actor.SetGotoLabelIndex(@"wraphashtags", 144);
+                Actor.SetGotoLabelIndex(@"wraphashtags", 145);
                 goto Label9;
             }
 
-        Index146:
+        Index147:
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Actor.GetVariable(@"texttocenter");
                 Actor.SetVariable(@"what", Temporary1.Value);
             }
 
-        Index147:
+        Index148:
             {
                 Result Temporary1;
-                Temporary1 = Actor.GotoExternalLabel(new SourceLocation(182, 3), @"say");
+                Temporary1 = Actor.GotoExternalLabel(new SourceLocation(183, 3), @"say");
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
             }
 
-        Index148:
+        Index149:
             {
-                Actor.SetGotoLabelIndex(@"wraphashtags", 147);
+                Actor.SetGotoLabelIndex(@"wraphashtags", 148);
                 goto Label9;
             }
 
-        Index149:
+        Index150:
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Actor.GetVariable(@"lengthoftext");
                 Actor.SetVariable(@"what", Temporary1.Value);
             }
 
-        Index150:
+        Index151:
             {
-                Actor.SetGotoLabelIndex(@"iseven", 149);
+                Actor.SetGotoLabelIndex(@"iseven", 150);
                 goto Label12;
             }
 
-        Index151:
+        Index152:
             {
                 Result<Thingie> Temporary1;
                 Result<Thingie> Temporary2;
                 Result<Thingie> Temporary3;
                 Temporary2 = Actor.GetVariable(@"result");
                 Temporary3 = Thingie.Flag(false);
-                Temporary1 = Thingie.Equals(new SourceLocation(188, 12), Temporary2.Value, Temporary3.Value);
+                Temporary1 = Thingie.Equals(new SourceLocation(189, 12), Temporary2.Value, Temporary3.Value);
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
                 Actor.SetVariable(@"result", Temporary1.Value);
             }
 
-        Index152:
+        Index153:
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Actor.GetVariable(@"result");
                 if (Temporary1.Value.Type is not ThingieType.Flag) {
-                    return new Error($"189: condition must be flag, not '{Temporary1.Value.Type}'");
+                    return new Error($"190: condition must be flag, not '{Temporary1.Value.Type}'");
                 }
                 if (Temporary1.Value.CastFlag()) {
-                    goto Index155;
+                    goto Index156;
                 }
             }
 
-        Index153:
+        Index154:
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.String(@"#");
                 Actor.SetVariable(@"what", Temporary1.Value);
             }
 
-        Index154:
+        Index155:
             {
                 Result Temporary1;
-                Temporary1 = Actor.GotoExternalLabel(new SourceLocation(191, 3), @"say");
+                Temporary1 = Actor.GotoExternalLabel(new SourceLocation(192, 3), @"say");
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
             }
 
-        Index155:
+        Index156:
             {
                 int Temporary1;
                 Temporary1 = Actor.GetGotoLabelIndex(@"centertext");
                 if (Temporary1 < 0) {
-                    return new Error(@"192: no entry for goto label: 'centertext'");
+                    return new Error(@"193: no entry for goto label: 'centertext'");
                 }
                 GotoLabelSwitchIdentifier = Temporary1 + 1 + 1;
                 goto GotoLabelSwitch;
             }
 
-        Index156:
+        Index157:
         Label8:
             {
                 Result Temporary1;
-                Temporary1 = Actor.GotoExternalLabel(new SourceLocation(195, 3), @"measure");
+                Temporary1 = Actor.GotoExternalLabel(new SourceLocation(196, 3), @"measure");
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
             }
 
-        Index157:
+        Index158:
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Actor.GetVariable(@"result");
                 Actor.SetVariable(@"lengthoftext", Temporary1.Value);
             }
 
-        Index158:
+        Index159:
             {
                 Result Temporary1;
-                Temporary1 = Actor.GotoExternalLabel(new SourceLocation(197, 3), @"say");
+                Temporary1 = Actor.GotoExternalLabel(new SourceLocation(198, 3), @"say");
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
             }
 
-        Index159:
+        Index160:
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Actor.GetVariable(@"screenwidth");
                 Actor.SetVariable(@"numberofhashtags", Temporary1.Value);
             }
 
-        Index160:
+        Index161:
             {
                 Result<Thingie> Temporary1;
                 Result<Thingie> Temporary2;
                 Result<Thingie> Temporary3;
                 Temporary2 = Actor.GetVariable(@"numberofhashtags");
                 Temporary3 = Actor.GetVariable(@"lengthoftext");
-                Temporary1 = Thingie.Subtract(new SourceLocation(199, 23), Temporary2.Value, Temporary3.Value);
+                Temporary1 = Thingie.Subtract(new SourceLocation(200, 23), Temporary2.Value, Temporary3.Value);
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
                 Actor.SetVariable(@"numberofhashtags", Temporary1.Value);
             }
 
-        Index161:
+        Index162:
             {
-                Actor.SetGotoLabelIndex(@"wraphashtags", 160);
+                Actor.SetGotoLabelIndex(@"wraphashtags", 161);
                 goto Label9;
             }
 
-        Index162:
+        Index163:
             {
                 int Temporary1;
                 Temporary1 = Actor.GetGotoLabelIndex(@"leftaligntext");
                 if (Temporary1 < 0) {
-                    return new Error(@"201: no entry for goto label: 'leftaligntext'");
+                    return new Error(@"202: no entry for goto label: 'leftaligntext'");
                 }
                 GotoLabelSwitchIdentifier = Temporary1 + 1 + 1;
                 goto GotoLabelSwitch;
             }
 
-        Index163:
+        Index164:
         Label9:
             {
                 Result<Thingie> Temporary1;
@@ -1503,7 +1510,7 @@ public static partial class CompileOutput {
                 Actor.SetVariable(@"counter", Temporary1.Value);
             }
 
-        Index164:
+        Index165:
         Label10:
             {
                 Result<Thingie> Temporary1;
@@ -1511,41 +1518,27 @@ public static partial class CompileOutput {
                 Result<Thingie> Temporary3;
                 Temporary2 = Actor.GetVariable(@"counter");
                 Temporary3 = Thingie.Number(1);
-                Temporary1 = Thingie.Add(new SourceLocation(206, 16), Temporary2.Value, Temporary3.Value);
+                Temporary1 = Thingie.Add(new SourceLocation(207, 16), Temporary2.Value, Temporary3.Value);
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
                 Actor.SetVariable(@"counter", Temporary1.Value);
             }
 
-        Index165:
+        Index166:
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.String(@"#");
                 Actor.SetVariable(@"what", Temporary1.Value);
             }
 
-        Index166:
-            {
-                Result Temporary1;
-                Temporary1 = Actor.GotoExternalLabel(new SourceLocation(208, 5), @"say");
-                if (Temporary1.IsError) {
-                    return Temporary1.Error;
-                }
-            }
-
         Index167:
             {
-                Result<Thingie> Temporary1;
-                Result<Thingie> Temporary2;
-                Result<Thingie> Temporary3;
-                Temporary2 = Actor.GetVariable(@"numberofhashtagsprinted");
-                Temporary3 = Thingie.Number(1);
-                Temporary1 = Thingie.Add(new SourceLocation(209, 32), Temporary2.Value, Temporary3.Value);
+                Result Temporary1;
+                Temporary1 = Actor.GotoExternalLabel(new SourceLocation(209, 5), @"say");
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
-                Actor.SetVariable(@"numberofhashtagsprinted", Temporary1.Value);
             }
 
         Index168:
@@ -1553,47 +1546,61 @@ public static partial class CompileOutput {
                 Result<Thingie> Temporary1;
                 Result<Thingie> Temporary2;
                 Result<Thingie> Temporary3;
+                Temporary2 = Actor.GetVariable(@"numberofhashtagsprinted");
+                Temporary3 = Thingie.Number(1);
+                Temporary1 = Thingie.Add(new SourceLocation(210, 32), Temporary2.Value, Temporary3.Value);
+                if (Temporary1.IsError) {
+                    return Temporary1.Error;
+                }
+                Actor.SetVariable(@"numberofhashtagsprinted", Temporary1.Value);
+            }
+
+        Index169:
+            {
+                Result<Thingie> Temporary1;
+                Result<Thingie> Temporary2;
+                Result<Thingie> Temporary3;
                 Temporary2 = Actor.GetVariable(@"counter");
                 Temporary3 = Actor.GetVariable(@"numberofhashtags");
-                Temporary1 = Thingie.Equals(new SourceLocation(210, 33), Temporary2.Value, Temporary3.Value);
+                Temporary1 = Thingie.Equals(new SourceLocation(211, 33), Temporary2.Value, Temporary3.Value);
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
                 Actor.SetVariable(@"counterisnumberofhashtags", Temporary1.Value);
             }
 
-        Index169:
+        Index170:
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Actor.GetVariable(@"counterisnumberofhashtags");
                 if (Temporary1.Value.Type is not ThingieType.Flag) {
-                    return new Error($"211: condition must be flag, not '{Temporary1.Value.Type}'");
+                    return new Error($"212: condition must be flag, not '{Temporary1.Value.Type}'");
                 }
                 if (Temporary1.Value.CastFlag()) {
-                    Actor.SetGotoLabelIndex(@"endofforcounter", 168);
+                    Actor.SetGotoLabelIndex(@"endofforcounter", 169);
                     goto Label11;
                 }
             }
 
-        Index170:
+        Index171:
             {
-                Actor.SetGotoLabelIndex(@"forcounter", 169);
+                Actor.SetGotoLabelIndex(@"forcounter", 170);
                 goto Label10;
             }
 
-        Index171:
+        Index172:
         Label11:
             {
                 int Temporary1;
                 Temporary1 = Actor.GetGotoLabelIndex(@"wraphashtags");
                 if (Temporary1 < 0) {
-                    return new Error(@"214: no entry for goto label: 'wraphashtags'");
+                    return new Error(@"215: no entry for goto label: 'wraphashtags'");
                 }
                 GotoLabelSwitchIdentifier = Temporary1 + 1 + 1;
                 goto GotoLabelSwitch;
             }
 
-        Index172:
+        Index173:
         Label12:
             {
                 Result<Thingie> Temporary1;
@@ -1601,86 +1608,93 @@ public static partial class CompileOutput {
                 Result<Thingie> Temporary3;
                 Temporary2 = Actor.GetVariable(@"what");
                 Temporary3 = Thingie.Number(2);
-                Temporary1 = Thingie.Divide(new SourceLocation(217, 11), Temporary2.Value, Temporary3.Value);
+                Temporary1 = Thingie.Divide(new SourceLocation(218, 11), Temporary2.Value, Temporary3.Value);
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
                 Actor.SetVariable(@"what", Temporary1.Value);
             }
 
-        Index173:
+        Index174:
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Actor.GetVariable(@"what");
                 Actor.SetVariable(@"nontruncated", Temporary1.Value);
             }
 
-        Index174:
-            {
-                Result Temporary1;
-                Temporary1 = Actor.GotoExternalLabel(new SourceLocation(219, 3), @"truncate");
-                if (Temporary1.IsError) {
-                    return Temporary1.Error;
-                }
-            }
-
         Index175:
             {
                 Result<Thingie> Temporary1;
-                Result<Thingie> Temporary2;
-                Result<Thingie> Temporary3;
-                Temporary2 = Actor.GetVariable(@"result");
-                Temporary3 = Actor.GetVariable(@"nontruncated");
-                Temporary1 = Thingie.NotEquals(new SourceLocation(220, 24), Temporary2.Value, Temporary3.Value);
-                if (Temporary1.IsError) {
-                    return Temporary1.Error;
-                }
-                Actor.SetVariable(@"truncatedisnotsame", Temporary1.Value);
+                Temporary1 = Thingie.String(@"chop");
+                Actor.SetVariable(@"how", Temporary1.Value);
             }
 
         Index176:
             {
-                Result<Thingie> Temporary1;
-                Temporary1 = Actor.GetVariable(@"truncatedisnotsame");
-                if (Temporary1.Value.Type is not ThingieType.Flag) {
-                    return new Error($"221: condition must be flag, not '{Temporary1.Value.Type}'");
-                }
-                if (Temporary1.Value.CastFlag()) {
-                    goto Index179;
+                Result Temporary1;
+                Temporary1 = Actor.GotoExternalLabel(new SourceLocation(221, 3), @"round");
+                if (Temporary1.IsError) {
+                    return Temporary1.Error;
                 }
             }
 
         Index177:
             {
                 Result<Thingie> Temporary1;
-                Temporary1 = Thingie.Flag(true);
-                Actor.SetVariable(@"result", Temporary1.Value);
+                Result<Thingie> Temporary2;
+                Result<Thingie> Temporary3;
+                Temporary2 = Actor.GetVariable(@"result");
+                Temporary3 = Actor.GetVariable(@"nontruncated");
+                Temporary1 = Thingie.NotEquals(new SourceLocation(222, 24), Temporary2.Value, Temporary3.Value);
+                if (Temporary1.IsError) {
+                    return Temporary1.Error;
+                }
+                Actor.SetVariable(@"truncatedisnotsame", Temporary1.Value);
             }
 
         Index178:
             {
-                goto Index180;
+                Result<Thingie> Temporary1;
+                Temporary1 = Actor.GetVariable(@"truncatedisnotsame");
+                if (Temporary1.Value.Type is not ThingieType.Flag) {
+                    return new Error($"223: condition must be flag, not '{Temporary1.Value.Type}'");
+                }
+                if (Temporary1.Value.CastFlag()) {
+                    goto Index181;
+                }
             }
 
         Index179:
+            {
+                Result<Thingie> Temporary1;
+                Temporary1 = Thingie.Flag(true);
+                Actor.SetVariable(@"result", Temporary1.Value);
+            }
+
+        Index180:
+            {
+                goto Index182;
+            }
+
+        Index181:
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.Flag(false);
                 Actor.SetVariable(@"result", Temporary1.Value);
             }
 
-        Index180:
+        Index182:
             {
                 int Temporary1;
                 Temporary1 = Actor.GetGotoLabelIndex(@"iseven");
                 if (Temporary1 < 0) {
-                    return new Error(@"225: no entry for goto label: 'iseven'");
+                    return new Error(@"227: no entry for goto label: 'iseven'");
                 }
                 GotoLabelSwitchIdentifier = Temporary1 + 1 + 1;
                 goto GotoLabelSwitch;
             }
 
-        Index181:
+        Index183:
         Label13:
             {
                 Result<Thingie> Temporary1;
@@ -1688,242 +1702,215 @@ public static partial class CompileOutput {
                 Result<Thingie> Temporary3;
                 Temporary2 = Actor.GetVariable(@"hunger");
                 Temporary3 = Thingie.Number(0);
-                Temporary1 = Thingie.GreaterThanOrEqualTo(new SourceLocation(228, 16), Temporary2.Value, Temporary3.Value);
+                Temporary1 = Thingie.GreaterThanOrEqualTo(new SourceLocation(230, 16), Temporary2.Value, Temporary3.Value);
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
                 Actor.SetVariable(@"comparison", Temporary1.Value);
             }
 
-        Index182:
+        Index184:
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Actor.GetVariable(@"comparison");
                 if (Temporary1.Value.Type is not ThingieType.Flag) {
-                    return new Error($"229: condition must be flag, not '{Temporary1.Value.Type}'");
+                    return new Error($"231: condition must be flag, not '{Temporary1.Value.Type}'");
                 }
                 if (Temporary1.Value.CastFlag()) {
-                    goto Index184;
+                    goto Index186;
                 }
             }
 
-        Index183:
+        Index185:
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.Number(0);
                 Actor.SetVariable(@"hunger", Temporary1.Value);
             }
 
-        Index184:
+        Index186:
             {
                 Result<Thingie> Temporary1;
                 Result<Thingie> Temporary2;
                 Result<Thingie> Temporary3;
                 Temporary2 = Actor.GetVariable(@"hunger");
                 Temporary3 = Thingie.Number(100);
-                Temporary1 = Thingie.LessThanOrEqualTo(new SourceLocation(231, 16), Temporary2.Value, Temporary3.Value);
+                Temporary1 = Thingie.LessThanOrEqualTo(new SourceLocation(233, 16), Temporary2.Value, Temporary3.Value);
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
                 Actor.SetVariable(@"comparison", Temporary1.Value);
             }
 
-        Index185:
+        Index187:
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Actor.GetVariable(@"comparison");
                 if (Temporary1.Value.Type is not ThingieType.Flag) {
-                    return new Error($"232: condition must be flag, not '{Temporary1.Value.Type}'");
+                    return new Error($"234: condition must be flag, not '{Temporary1.Value.Type}'");
                 }
                 if (Temporary1.Value.CastFlag()) {
-                    goto Index187;
+                    goto Index189;
                 }
             }
 
-        Index186:
+        Index188:
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.Number(100);
                 Actor.SetVariable(@"hunger", Temporary1.Value);
             }
 
-        Index187:
+        Index189:
             {
                 Result<Thingie> Temporary1;
                 Result<Thingie> Temporary2;
                 Result<Thingie> Temporary3;
                 Temporary2 = Actor.GetVariable(@"thirst");
                 Temporary3 = Thingie.Number(0);
-                Temporary1 = Thingie.GreaterThanOrEqualTo(new SourceLocation(234, 16), Temporary2.Value, Temporary3.Value);
+                Temporary1 = Thingie.GreaterThanOrEqualTo(new SourceLocation(236, 16), Temporary2.Value, Temporary3.Value);
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
                 Actor.SetVariable(@"comparison", Temporary1.Value);
-            }
-
-        Index188:
-            {
-                Result<Thingie> Temporary1;
-                Temporary1 = Actor.GetVariable(@"comparison");
-                if (Temporary1.Value.Type is not ThingieType.Flag) {
-                    return new Error($"235: condition must be flag, not '{Temporary1.Value.Type}'");
-                }
-                if (Temporary1.Value.CastFlag()) {
-                    goto Index190;
-                }
-            }
-
-        Index189:
-            {
-                Result<Thingie> Temporary1;
-                Temporary1 = Thingie.Number(0);
-                Actor.SetVariable(@"thirst", Temporary1.Value);
             }
 
         Index190:
             {
                 Result<Thingie> Temporary1;
+                Temporary1 = Actor.GetVariable(@"comparison");
+                if (Temporary1.Value.Type is not ThingieType.Flag) {
+                    return new Error($"237: condition must be flag, not '{Temporary1.Value.Type}'");
+                }
+                if (Temporary1.Value.CastFlag()) {
+                    goto Index192;
+                }
+            }
+
+        Index191:
+            {
+                Result<Thingie> Temporary1;
+                Temporary1 = Thingie.Number(0);
+                Actor.SetVariable(@"thirst", Temporary1.Value);
+            }
+
+        Index192:
+            {
+                Result<Thingie> Temporary1;
                 Result<Thingie> Temporary2;
                 Result<Thingie> Temporary3;
                 Temporary2 = Actor.GetVariable(@"thirst");
                 Temporary3 = Thingie.Number(100);
-                Temporary1 = Thingie.LessThanOrEqualTo(new SourceLocation(237, 16), Temporary2.Value, Temporary3.Value);
+                Temporary1 = Thingie.LessThanOrEqualTo(new SourceLocation(239, 16), Temporary2.Value, Temporary3.Value);
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
                 Actor.SetVariable(@"comparison", Temporary1.Value);
             }
 
-        Index191:
+        Index193:
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Actor.GetVariable(@"comparison");
                 if (Temporary1.Value.Type is not ThingieType.Flag) {
-                    return new Error($"238: condition must be flag, not '{Temporary1.Value.Type}'");
+                    return new Error($"240: condition must be flag, not '{Temporary1.Value.Type}'");
                 }
                 if (Temporary1.Value.CastFlag()) {
-                    goto Index193;
+                    goto Index195;
                 }
             }
 
-        Index192:
+        Index194:
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.Number(100);
                 Actor.SetVariable(@"thirst", Temporary1.Value);
             }
 
-        Index193:
+        Index195:
             {
                 Result<Thingie> Temporary1;
                 Result<Thingie> Temporary2;
                 Result<Thingie> Temporary3;
                 Temporary2 = Actor.GetVariable(@"fun");
                 Temporary3 = Thingie.Number(0);
-                Temporary1 = Thingie.GreaterThanOrEqualTo(new SourceLocation(240, 16), Temporary2.Value, Temporary3.Value);
+                Temporary1 = Thingie.GreaterThanOrEqualTo(new SourceLocation(242, 16), Temporary2.Value, Temporary3.Value);
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
                 Actor.SetVariable(@"comparison", Temporary1.Value);
             }
 
-        Index194:
+        Index196:
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Actor.GetVariable(@"comparison");
                 if (Temporary1.Value.Type is not ThingieType.Flag) {
-                    return new Error($"241: condition must be flag, not '{Temporary1.Value.Type}'");
+                    return new Error($"243: condition must be flag, not '{Temporary1.Value.Type}'");
                 }
                 if (Temporary1.Value.CastFlag()) {
-                    goto Index196;
+                    goto Index198;
                 }
             }
 
-        Index195:
+        Index197:
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.Number(0);
                 Actor.SetVariable(@"fun", Temporary1.Value);
             }
 
-        Index196:
+        Index198:
             {
                 Result<Thingie> Temporary1;
                 Result<Thingie> Temporary2;
                 Result<Thingie> Temporary3;
                 Temporary2 = Actor.GetVariable(@"fun");
                 Temporary3 = Thingie.Number(100);
-                Temporary1 = Thingie.LessThanOrEqualTo(new SourceLocation(243, 16), Temporary2.Value, Temporary3.Value);
+                Temporary1 = Thingie.LessThanOrEqualTo(new SourceLocation(245, 16), Temporary2.Value, Temporary3.Value);
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
                 Actor.SetVariable(@"comparison", Temporary1.Value);
             }
 
-        Index197:
+        Index199:
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Actor.GetVariable(@"comparison");
                 if (Temporary1.Value.Type is not ThingieType.Flag) {
-                    return new Error($"244: condition must be flag, not '{Temporary1.Value.Type}'");
+                    return new Error($"246: condition must be flag, not '{Temporary1.Value.Type}'");
                 }
                 if (Temporary1.Value.CastFlag()) {
-                    goto Index199;
+                    goto Index201;
                 }
             }
 
-        Index198:
+        Index200:
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.Number(100);
                 Actor.SetVariable(@"fun", Temporary1.Value);
             }
 
-        Index199:
+        Index201:
             {
                 int Temporary1;
                 Temporary1 = Actor.GetGotoLabelIndex(@"clampstats");
                 if (Temporary1 < 0) {
-                    return new Error(@"246: no entry for goto label: 'clampstats'");
+                    return new Error(@"248: no entry for goto label: 'clampstats'");
                 }
                 GotoLabelSwitchIdentifier = Temporary1 + 1 + 1;
                 goto GotoLabelSwitch;
             }
 
-        Index200:
+        Index202:
         Label14:
             {
                 Result<Thingie> Temporary1;
                 Result<Thingie> Temporary2;
                 Result<Thingie> Temporary3;
                 Temporary2 = Actor.GetVariable(@"hunger");
-                Temporary3 = Thingie.Number(0);
-                Temporary1 = Thingie.Equals(new SourceLocation(249, 16), Temporary2.Value, Temporary3.Value);
-                if (Temporary1.IsError) {
-                    return Temporary1.Error;
-                }
-                Actor.SetVariable(@"comparison", Temporary1.Value);
-            }
-
-        Index201:
-            {
-                Result<Thingie> Temporary1;
-                Temporary1 = Actor.GetVariable(@"comparison");
-                if (Temporary1.Value.Type is not ThingieType.Flag) {
-                    return new Error($"250: condition must be flag, not '{Temporary1.Value.Type}'");
-                }
-                if (Temporary1.Value.CastFlag()) {
-                    Actor.SetGotoLabelIndex(@"death", 200);
-                    goto Label15;
-                }
-            }
-
-        Index202:
-            {
-                Result<Thingie> Temporary1;
-                Result<Thingie> Temporary2;
-                Result<Thingie> Temporary3;
-                Temporary2 = Actor.GetVariable(@"thirst");
                 Temporary3 = Thingie.Number(0);
                 Temporary1 = Thingie.Equals(new SourceLocation(251, 16), Temporary2.Value, Temporary3.Value);
                 if (Temporary1.IsError) {
@@ -1950,7 +1937,7 @@ public static partial class CompileOutput {
                 Result<Thingie> Temporary1;
                 Result<Thingie> Temporary2;
                 Result<Thingie> Temporary3;
-                Temporary2 = Actor.GetVariable(@"fun");
+                Temporary2 = Actor.GetVariable(@"thirst");
                 Temporary3 = Thingie.Number(0);
                 Temporary1 = Thingie.Equals(new SourceLocation(253, 16), Temporary2.Value, Temporary3.Value);
                 if (Temporary1.IsError) {
@@ -1974,36 +1961,47 @@ public static partial class CompileOutput {
 
         Index206:
             {
-                int Temporary1;
-                Temporary1 = Actor.GetGotoLabelIndex(@"checkdeath");
-                if (Temporary1 < 0) {
-                    return new Error(@"255: no entry for goto label: 'checkdeath'");
+                Result<Thingie> Temporary1;
+                Result<Thingie> Temporary2;
+                Result<Thingie> Temporary3;
+                Temporary2 = Actor.GetVariable(@"fun");
+                Temporary3 = Thingie.Number(0);
+                Temporary1 = Thingie.Equals(new SourceLocation(255, 16), Temporary2.Value, Temporary3.Value);
+                if (Temporary1.IsError) {
+                    return Temporary1.Error;
                 }
-                GotoLabelSwitchIdentifier = Temporary1 + 1 + 1;
-                goto GotoLabelSwitch;
+                Actor.SetVariable(@"comparison", Temporary1.Value);
             }
 
         Index207:
-        Label15:
             {
-                Result Temporary1;
-                Temporary1 = Actor.GotoExternalLabel(new SourceLocation(258, 3), @"clear");
-                if (Temporary1.IsError) {
-                    return Temporary1.Error;
+                Result<Thingie> Temporary1;
+                Temporary1 = Actor.GetVariable(@"comparison");
+                if (Temporary1.Value.Type is not ThingieType.Flag) {
+                    return new Error($"256: condition must be flag, not '{Temporary1.Value.Type}'");
+                }
+                if (Temporary1.Value.CastFlag()) {
+                    Actor.SetGotoLabelIndex(@"death", 206);
+                    goto Label15;
                 }
             }
 
         Index208:
             {
-                Result<Thingie> Temporary1;
-                Temporary1 = Thingie.String(@"your gotogotchi died. :C");
-                Actor.SetVariable(@"what", Temporary1.Value);
+                int Temporary1;
+                Temporary1 = Actor.GetGotoLabelIndex(@"checkdeath");
+                if (Temporary1 < 0) {
+                    return new Error(@"257: no entry for goto label: 'checkdeath'");
+                }
+                GotoLabelSwitchIdentifier = Temporary1 + 1 + 1;
+                goto GotoLabelSwitch;
             }
 
         Index209:
+        Label15:
             {
                 Result Temporary1;
-                Temporary1 = Actor.GotoExternalLabel(new SourceLocation(260, 3), @"say");
+                Temporary1 = Actor.GotoExternalLabel(new SourceLocation(260, 3), @"clear");
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
@@ -2011,41 +2009,41 @@ public static partial class CompileOutput {
 
         Index210:
             {
-                goto EndLabel;
+                Result<Thingie> Temporary1;
+                Temporary1 = Thingie.String(@"your gotogotchi died. :C");
+                Actor.SetVariable(@"what", Temporary1.Value);
             }
 
         Index211:
             {
-                int Temporary1;
-                Temporary1 = Actor.GetGotoLabelIndex(@"death");
-                if (Temporary1 < 0) {
-                    return new Error(@"262: no entry for goto label: 'death'");
-                }
-                GotoLabelSwitchIdentifier = Temporary1 + 1 + 1;
-                goto GotoLabelSwitch;
-            }
-
-        Index212:
-        Label16:
-            {
                 Result Temporary1;
-                Temporary1 = Actor.GotoExternalLabel(new SourceLocation(265, 3), @"eatkey");
+                Temporary1 = Actor.GotoExternalLabel(new SourceLocation(262, 3), @"say");
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
             }
 
+        Index212:
+            {
+                goto EndLabel;
+            }
+
         Index213:
             {
-                Result<Thingie> Temporary1;
-                Temporary1 = Actor.GetVariable(@"result");
-                Actor.SetVariable(@"lastinputresult", Temporary1.Value);
+                int Temporary1;
+                Temporary1 = Actor.GetGotoLabelIndex(@"death");
+                if (Temporary1 < 0) {
+                    return new Error(@"264: no entry for goto label: 'death'");
+                }
+                GotoLabelSwitchIdentifier = Temporary1 + 1 + 1;
+                goto GotoLabelSwitch;
             }
 
         Index214:
+        Label16:
             {
                 Result Temporary1;
-                Temporary1 = Actor.GotoExternalLabel(new SourceLocation(267, 3), @"peekkey");
+                Temporary1 = Actor.GotoExternalLabel(new SourceLocation(267, 3), @"eatkey");
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
@@ -2055,33 +2053,49 @@ public static partial class CompileOutput {
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Actor.GetVariable(@"result");
-                if (Temporary1.Value.Type is not ThingieType.Flag) {
-                    return new Error($"268: condition must be flag, not '{Temporary1.Value.Type}'");
-                }
-                if (Temporary1.Value.CastFlag()) {
-                    goto Index212;
-                }
+                Actor.SetVariable(@"lastinputresult", Temporary1.Value);
             }
 
         Index216:
+            {
+                Result Temporary1;
+                Temporary1 = Actor.GotoExternalLabel(new SourceLocation(269, 3), @"peekkey");
+                if (Temporary1.IsError) {
+                    return Temporary1.Error;
+                }
+            }
+
+        Index217:
+            {
+                Result<Thingie> Temporary1;
+                Temporary1 = Actor.GetVariable(@"result");
+                if (Temporary1.Value.Type is not ThingieType.Flag) {
+                    return new Error($"270: condition must be flag, not '{Temporary1.Value.Type}'");
+                }
+                if (Temporary1.Value.CastFlag()) {
+                    goto Index214;
+                }
+            }
+
+        Index218:
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Actor.GetVariable(@"lastinputresult");
                 Actor.SetVariable(@"result", Temporary1.Value);
             }
 
-        Index217:
+        Index219:
             {
                 int Temporary1;
                 Temporary1 = Actor.GetGotoLabelIndex(@"lastinput");
                 if (Temporary1 < 0) {
-                    return new Error(@"270: no entry for goto label: 'lastinput'");
+                    return new Error(@"272: no entry for goto label: 'lastinput'");
                 }
                 GotoLabelSwitchIdentifier = Temporary1 + 1 + 1;
                 goto GotoLabelSwitch;
             }
 
-        Index218:
+        Index220:
         Label17:
             {
                 Result<Thingie> Temporary1;
@@ -2089,360 +2103,334 @@ public static partial class CompileOutput {
                 Actor.SetVariable(@"what", Temporary1.Value);
             }
 
-        Index219:
+        Index221:
             {
                 Result<Thingie> Temporary1;
                 Result<Thingie> Temporary2;
                 Result<Thingie> Temporary3;
                 Temporary2 = Actor.GetVariable(@"y");
                 Temporary3 = Thingie.Number(1);
-                Temporary1 = Thingie.NotEquals(new SourceLocation(275, 12), Temporary2.Value, Temporary3.Value);
+                Temporary1 = Thingie.NotEquals(new SourceLocation(277, 12), Temporary2.Value, Temporary3.Value);
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
                 Actor.SetVariable(@"checky", Temporary1.Value);
             }
 
-        Index220:
+        Index222:
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Actor.GetVariable(@"checky");
                 if (Temporary1.Value.Type is not ThingieType.Flag) {
-                    return new Error($"276: condition must be flag, not '{Temporary1.Value.Type}'");
+                    return new Error($"278: condition must be flag, not '{Temporary1.Value.Type}'");
                 }
                 if (Temporary1.Value.CastFlag()) {
-                    goto Index222;
+                    goto Index224;
                 }
             }
 
-        Index221:
+        Index223:
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.String(@"g");
                 Actor.SetVariable(@"what", Temporary1.Value);
             }
 
-        Index222:
+        Index224:
             {
                 Result<Thingie> Temporary1;
                 Result<Thingie> Temporary2;
                 Result<Thingie> Temporary3;
                 Temporary2 = Actor.GetVariable(@"y");
                 Temporary3 = Thingie.Number(2);
-                Temporary1 = Thingie.NotEquals(new SourceLocation(278, 12), Temporary2.Value, Temporary3.Value);
+                Temporary1 = Thingie.NotEquals(new SourceLocation(280, 12), Temporary2.Value, Temporary3.Value);
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
                 Actor.SetVariable(@"checky", Temporary1.Value);
             }
 
-        Index223:
+        Index225:
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Actor.GetVariable(@"checky");
                 if (Temporary1.Value.Type is not ThingieType.Flag) {
-                    return new Error($"279: condition must be flag, not '{Temporary1.Value.Type}'");
+                    return new Error($"281: condition must be flag, not '{Temporary1.Value.Type}'");
                 }
                 if (Temporary1.Value.CastFlag()) {
-                    goto Index225;
+                    goto Index227;
                 }
             }
 
-        Index224:
+        Index226:
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.String(@"o");
                 Actor.SetVariable(@"what", Temporary1.Value);
             }
 
-        Index225:
+        Index227:
             {
                 Result<Thingie> Temporary1;
                 Result<Thingie> Temporary2;
                 Result<Thingie> Temporary3;
                 Temporary2 = Actor.GetVariable(@"y");
                 Temporary3 = Thingie.Number(3);
-                Temporary1 = Thingie.NotEquals(new SourceLocation(281, 12), Temporary2.Value, Temporary3.Value);
+                Temporary1 = Thingie.NotEquals(new SourceLocation(283, 12), Temporary2.Value, Temporary3.Value);
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
                 Actor.SetVariable(@"checky", Temporary1.Value);
             }
 
-        Index226:
+        Index228:
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Actor.GetVariable(@"checky");
                 if (Temporary1.Value.Type is not ThingieType.Flag) {
-                    return new Error($"282: condition must be flag, not '{Temporary1.Value.Type}'");
+                    return new Error($"284: condition must be flag, not '{Temporary1.Value.Type}'");
                 }
                 if (Temporary1.Value.CastFlag()) {
-                    goto Index228;
+                    goto Index230;
                 }
             }
 
-        Index227:
+        Index229:
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.String(@"t");
                 Actor.SetVariable(@"what", Temporary1.Value);
             }
 
-        Index228:
+        Index230:
             {
                 Result<Thingie> Temporary1;
                 Result<Thingie> Temporary2;
                 Result<Thingie> Temporary3;
                 Temporary2 = Actor.GetVariable(@"y");
                 Temporary3 = Thingie.Number(4);
-                Temporary1 = Thingie.NotEquals(new SourceLocation(284, 12), Temporary2.Value, Temporary3.Value);
+                Temporary1 = Thingie.NotEquals(new SourceLocation(286, 12), Temporary2.Value, Temporary3.Value);
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
                 Actor.SetVariable(@"checky", Temporary1.Value);
             }
 
-        Index229:
+        Index231:
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Actor.GetVariable(@"checky");
                 if (Temporary1.Value.Type is not ThingieType.Flag) {
-                    return new Error($"285: condition must be flag, not '{Temporary1.Value.Type}'");
+                    return new Error($"287: condition must be flag, not '{Temporary1.Value.Type}'");
                 }
                 if (Temporary1.Value.CastFlag()) {
-                    goto Index231;
+                    goto Index233;
                 }
             }
 
-        Index230:
+        Index232:
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.String(@"o");
                 Actor.SetVariable(@"what", Temporary1.Value);
             }
 
-        Index231:
+        Index233:
             {
                 Result<Thingie> Temporary1;
                 Result<Thingie> Temporary2;
                 Result<Thingie> Temporary3;
                 Temporary2 = Actor.GetVariable(@"y");
                 Temporary3 = Thingie.Number(5);
-                Temporary1 = Thingie.NotEquals(new SourceLocation(287, 12), Temporary2.Value, Temporary3.Value);
+                Temporary1 = Thingie.NotEquals(new SourceLocation(289, 12), Temporary2.Value, Temporary3.Value);
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
                 Actor.SetVariable(@"checky", Temporary1.Value);
             }
 
-        Index232:
+        Index234:
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Actor.GetVariable(@"checky");
                 if (Temporary1.Value.Type is not ThingieType.Flag) {
-                    return new Error($"288: condition must be flag, not '{Temporary1.Value.Type}'");
+                    return new Error($"290: condition must be flag, not '{Temporary1.Value.Type}'");
                 }
                 if (Temporary1.Value.CastFlag()) {
-                    goto Index234;
+                    goto Index236;
                 }
             }
 
-        Index233:
+        Index235:
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.String(@"g");
                 Actor.SetVariable(@"what", Temporary1.Value);
             }
 
-        Index234:
+        Index236:
             {
                 Result<Thingie> Temporary1;
                 Result<Thingie> Temporary2;
                 Result<Thingie> Temporary3;
                 Temporary2 = Actor.GetVariable(@"y");
                 Temporary3 = Thingie.Number(6);
-                Temporary1 = Thingie.NotEquals(new SourceLocation(290, 12), Temporary2.Value, Temporary3.Value);
+                Temporary1 = Thingie.NotEquals(new SourceLocation(292, 12), Temporary2.Value, Temporary3.Value);
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
                 Actor.SetVariable(@"checky", Temporary1.Value);
             }
 
-        Index235:
+        Index237:
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Actor.GetVariable(@"checky");
                 if (Temporary1.Value.Type is not ThingieType.Flag) {
-                    return new Error($"291: condition must be flag, not '{Temporary1.Value.Type}'");
+                    return new Error($"293: condition must be flag, not '{Temporary1.Value.Type}'");
                 }
                 if (Temporary1.Value.CastFlag()) {
-                    goto Index237;
+                    goto Index239;
                 }
             }
 
-        Index236:
+        Index238:
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.String(@"o");
                 Actor.SetVariable(@"what", Temporary1.Value);
             }
 
-        Index237:
+        Index239:
             {
                 Result<Thingie> Temporary1;
                 Result<Thingie> Temporary2;
                 Result<Thingie> Temporary3;
                 Temporary2 = Actor.GetVariable(@"y");
                 Temporary3 = Thingie.Number(7);
-                Temporary1 = Thingie.NotEquals(new SourceLocation(293, 12), Temporary2.Value, Temporary3.Value);
+                Temporary1 = Thingie.NotEquals(new SourceLocation(295, 12), Temporary2.Value, Temporary3.Value);
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
                 Actor.SetVariable(@"checky", Temporary1.Value);
             }
 
-        Index238:
+        Index240:
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Actor.GetVariable(@"checky");
                 if (Temporary1.Value.Type is not ThingieType.Flag) {
-                    return new Error($"294: condition must be flag, not '{Temporary1.Value.Type}'");
+                    return new Error($"296: condition must be flag, not '{Temporary1.Value.Type}'");
                 }
                 if (Temporary1.Value.CastFlag()) {
-                    goto Index240;
+                    goto Index242;
                 }
             }
 
-        Index239:
+        Index241:
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.String(@"t");
                 Actor.SetVariable(@"what", Temporary1.Value);
             }
 
-        Index240:
+        Index242:
             {
                 Result<Thingie> Temporary1;
                 Result<Thingie> Temporary2;
                 Result<Thingie> Temporary3;
                 Temporary2 = Actor.GetVariable(@"y");
                 Temporary3 = Thingie.Number(8);
-                Temporary1 = Thingie.NotEquals(new SourceLocation(296, 12), Temporary2.Value, Temporary3.Value);
+                Temporary1 = Thingie.NotEquals(new SourceLocation(298, 12), Temporary2.Value, Temporary3.Value);
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
                 Actor.SetVariable(@"checky", Temporary1.Value);
             }
 
-        Index241:
+        Index243:
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Actor.GetVariable(@"checky");
                 if (Temporary1.Value.Type is not ThingieType.Flag) {
-                    return new Error($"297: condition must be flag, not '{Temporary1.Value.Type}'");
+                    return new Error($"299: condition must be flag, not '{Temporary1.Value.Type}'");
                 }
                 if (Temporary1.Value.CastFlag()) {
-                    goto Index243;
+                    goto Index245;
                 }
             }
 
-        Index242:
+        Index244:
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.String(@"c");
                 Actor.SetVariable(@"what", Temporary1.Value);
             }
 
-        Index243:
+        Index245:
             {
                 Result<Thingie> Temporary1;
                 Result<Thingie> Temporary2;
                 Result<Thingie> Temporary3;
                 Temporary2 = Actor.GetVariable(@"y");
                 Temporary3 = Thingie.Number(9);
-                Temporary1 = Thingie.NotEquals(new SourceLocation(299, 12), Temporary2.Value, Temporary3.Value);
+                Temporary1 = Thingie.NotEquals(new SourceLocation(301, 12), Temporary2.Value, Temporary3.Value);
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
                 Actor.SetVariable(@"checky", Temporary1.Value);
             }
 
-        Index244:
+        Index246:
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Actor.GetVariable(@"checky");
                 if (Temporary1.Value.Type is not ThingieType.Flag) {
-                    return new Error($"300: condition must be flag, not '{Temporary1.Value.Type}'");
+                    return new Error($"302: condition must be flag, not '{Temporary1.Value.Type}'");
                 }
                 if (Temporary1.Value.CastFlag()) {
-                    goto Index246;
+                    goto Index248;
                 }
             }
 
-        Index245:
+        Index247:
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Thingie.String(@"h");
                 Actor.SetVariable(@"what", Temporary1.Value);
             }
 
-        Index246:
+        Index248:
             {
                 Result<Thingie> Temporary1;
                 Result<Thingie> Temporary2;
                 Result<Thingie> Temporary3;
                 Temporary2 = Actor.GetVariable(@"y");
                 Temporary3 = Thingie.Number(10);
-                Temporary1 = Thingie.NotEquals(new SourceLocation(302, 12), Temporary2.Value, Temporary3.Value);
+                Temporary1 = Thingie.NotEquals(new SourceLocation(304, 12), Temporary2.Value, Temporary3.Value);
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
                 Actor.SetVariable(@"checky", Temporary1.Value);
             }
 
-        Index247:
+        Index249:
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Actor.GetVariable(@"checky");
                 if (Temporary1.Value.Type is not ThingieType.Flag) {
-                    return new Error($"303: condition must be flag, not '{Temporary1.Value.Type}'");
+                    return new Error($"305: condition must be flag, not '{Temporary1.Value.Type}'");
                 }
                 if (Temporary1.Value.CastFlag()) {
-                    goto Index249;
+                    goto Index251;
                 }
-            }
-
-        Index248:
-            {
-                Result<Thingie> Temporary1;
-                Temporary1 = Thingie.String(@"i");
-                Actor.SetVariable(@"what", Temporary1.Value);
-            }
-
-        Index249:
-            {
-                Result<Thingie> Temporary1;
-                Result<Thingie> Temporary2;
-                Result<Thingie> Temporary3;
-                Temporary2 = Actor.GetVariable(@"what");
-                Temporary3 = Thingie.Nothing();
-                Temporary1 = Thingie.Equals(new SourceLocation(306, 19), Temporary2.Value, Temporary3.Value);
-                if (Temporary1.IsError) {
-                    return Temporary1.Error;
-                }
-                Actor.SetVariable(@"whatisnothing", Temporary1.Value);
             }
 
         Index250:
             {
                 Result<Thingie> Temporary1;
-                Temporary1 = Actor.GetVariable(@"whatisnothing");
-                if (Temporary1.Value.Type is not ThingieType.Flag) {
-                    return new Error($"307: condition must be flag, not '{Temporary1.Value.Type}'");
-                }
-                if (Temporary1.Value.CastFlag()) {
-                    goto Index253;
-                }
+                Temporary1 = Thingie.String(@"i");
+                Actor.SetVariable(@"what", Temporary1.Value);
             }
 
         Index251:
@@ -2451,39 +2439,44 @@ public static partial class CompileOutput {
                 Result<Thingie> Temporary2;
                 Result<Thingie> Temporary3;
                 Temporary2 = Actor.GetVariable(@"what");
+                Temporary3 = Thingie.Nothing();
+                Temporary1 = Thingie.Equals(new SourceLocation(308, 19), Temporary2.Value, Temporary3.Value);
+                if (Temporary1.IsError) {
+                    return Temporary1.Error;
+                }
+                Actor.SetVariable(@"whatisnothing", Temporary1.Value);
+            }
+
+        Index252:
+            {
+                Result<Thingie> Temporary1;
+                Temporary1 = Actor.GetVariable(@"whatisnothing");
+                if (Temporary1.Value.Type is not ThingieType.Flag) {
+                    return new Error($"309: condition must be flag, not '{Temporary1.Value.Type}'");
+                }
+                if (Temporary1.Value.CastFlag()) {
+                    goto Index255;
+                }
+            }
+
+        Index253:
+            {
+                Result<Thingie> Temporary1;
+                Result<Thingie> Temporary2;
+                Result<Thingie> Temporary3;
+                Temporary2 = Actor.GetVariable(@"what");
                 Temporary3 = Thingie.String(@"|");
-                Temporary1 = Thingie.Add(new SourceLocation(308, 11), Temporary2.Value, Temporary3.Value);
+                Temporary1 = Thingie.Add(new SourceLocation(310, 11), Temporary2.Value, Temporary3.Value);
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
                 Actor.SetVariable(@"what", Temporary1.Value);
             }
 
-        Index252:
-            {
-                Result Temporary1;
-                Temporary1 = Actor.GotoExternalLabel(new SourceLocation(309, 3), @"say");
-                if (Temporary1.IsError) {
-                    return Temporary1.Error;
-                }
-            }
-
-        Index253:
-            {
-                int Temporary1;
-                Temporary1 = Actor.GetGotoLabelIndex(@"displaytitle");
-                if (Temporary1 < 0) {
-                    return new Error(@"310: no entry for goto label: 'displaytitle'");
-                }
-                GotoLabelSwitchIdentifier = Temporary1 + 1 + 1;
-                goto GotoLabelSwitch;
-            }
-
         Index254:
-        Label18:
             {
                 Result Temporary1;
-                Temporary1 = Actor.GotoExternalLabel(new SourceLocation(313, 3), @"clear");
+                Temporary1 = Actor.GotoExternalLabel(new SourceLocation(311, 3), @"say");
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
@@ -2491,14 +2484,20 @@ public static partial class CompileOutput {
 
         Index255:
             {
-                Actor.SetGotoLabelIndex(@"drawgrid", 254);
-                goto Label3;
+                int Temporary1;
+                Temporary1 = Actor.GetGotoLabelIndex(@"displaytitle");
+                if (Temporary1 < 0) {
+                    return new Error(@"312: no entry for goto label: 'displaytitle'");
+                }
+                GotoLabelSwitchIdentifier = Temporary1 + 1 + 1;
+                goto GotoLabelSwitch;
             }
 
         Index256:
+        Label18:
             {
                 Result Temporary1;
-                Temporary1 = Actor.GotoExternalLabel(new SourceLocation(315, 3), @"eatkey");
+                Temporary1 = Actor.GotoExternalLabel(new SourceLocation(315, 3), @"clear");
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
@@ -2506,37 +2505,51 @@ public static partial class CompileOutput {
 
         Index257:
             {
+                Actor.SetGotoLabelIndex(@"drawgrid", 256);
+                goto Label3;
+            }
+
+        Index258:
+            {
+                Result Temporary1;
+                Temporary1 = Actor.GotoExternalLabel(new SourceLocation(317, 3), @"eatkey");
+                if (Temporary1.IsError) {
+                    return Temporary1.Error;
+                }
+            }
+
+        Index259:
+            {
                 Result<Thingie> Temporary1;
                 Result<Thingie> Temporary2;
                 Result<Thingie> Temporary3;
                 Temporary2 = Actor.GetVariable(@"result");
-                Temporary3 = Thingie.String(@"
-");
-                Temporary1 = Thingie.NotEquals(new SourceLocation(316, 19), Temporary2.Value, Temporary3.Value);
+                Temporary3 = Thingie.String(@"enter");
+                Temporary1 = Thingie.NotEquals(new SourceLocation(318, 19), Temporary2.Value, Temporary3.Value);
                 if (Temporary1.IsError) {
                     return Temporary1.Error;
                 }
                 Actor.SetVariable(@"keyisnotenter", Temporary1.Value);
             }
 
-        Index258:
+        Index260:
             {
                 Result<Thingie> Temporary1;
                 Temporary1 = Actor.GetVariable(@"keyisnotenter");
                 if (Temporary1.Value.Type is not ThingieType.Flag) {
-                    return new Error($"317: condition must be flag, not '{Temporary1.Value.Type}'");
+                    return new Error($"319: condition must be flag, not '{Temporary1.Value.Type}'");
                 }
                 if (Temporary1.Value.CastFlag()) {
-                    goto Index256;
+                    goto Index258;
                 }
             }
 
-        Index259:
+        Index261:
             {
                 int Temporary1;
                 Temporary1 = Actor.GetGotoLabelIndex(@"displaytutorialmessage");
                 if (Temporary1 < 0) {
-                    return new Error(@"318: no entry for goto label: 'displaytutorialmessage'");
+                    return new Error(@"320: no entry for goto label: 'displaytutorialmessage'");
                 }
                 GotoLabelSwitchIdentifier = Temporary1 + 1 + 1;
                 goto GotoLabelSwitch;
@@ -3064,6 +3077,10 @@ public static partial class CompileOutput {
                     goto Index258;
                 case 259:
                     goto Index259;
+                case 260:
+                    goto Index260;
+                case 261:
+                    goto Index261;
                 default:
                     throw new InvalidProgramException();
             }

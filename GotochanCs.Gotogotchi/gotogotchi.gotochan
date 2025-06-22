@@ -315,6 +315,6 @@ label displaytutorialmessage
   goto clear
   goto drawgrid
   goto eatkey
-  keyisnotenter = result != ~\n
+  keyisnotenter = result != ~enter
   goto -2 if keyisnotenter
 goto goto displaytutorialmessage

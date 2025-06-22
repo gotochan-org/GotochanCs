@@ -1,11 +1,11 @@
 namespace GotochanCs;
 
 /// <summary>
-/// A Gotochan instruction.
+/// A Gotochan instruction. Instructions perform operations in sequence.
 /// </summary>
 public abstract record Instruction {
     /// <summary>
-    /// The location of the start of instruction in the original source code.
+    /// The location of the instruction in the original source code.
     /// </summary>
     public required SourceLocation Location { get; init; }
     /// <summary>
