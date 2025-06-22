@@ -1,5 +1,5 @@
 <Solution>
-  <Project Path="GotochanCs.Gotogotchi/GotochanCs.Gotogotchi.csproj" Id="02dbc676-9718-491b-9567-6e05c8083e1b" />
-  <Project Path="GotochanCs.Tests/GotochanCs.Tests.csproj" />
   <Project Path="GotochanCs/GotochanCs.csproj" />
+  <Project Path="GotochanCs.Tests/GotochanCs.Tests.csproj" />
+  <Project Path="GotochanCs.Gotogotchi/GotochanCs.Gotogotchi.csproj" />
 </Solution>
