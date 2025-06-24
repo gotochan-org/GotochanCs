@@ -56,6 +56,10 @@ public enum UnaryOperator {
     /// A unary minus (-) operation.
     /// </summary>
     Minus,
+    /// <summary>
+    /// A unary not (!) operation.
+    /// </summary>
+    Not,
 }
 
 /// <summary>

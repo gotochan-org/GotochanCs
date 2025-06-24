@@ -98,6 +98,24 @@ public class Tests {
         UnusedLabelSuccess.ShouldBeTrue();
     }
     [Fact]
+    public void NotTest() {
+        string Source = """
+            invalid = no
+            goto +2 if !no
+            invalid = yes
+            """;
+
+        LexResult LexResult = Lexer.Lex(Source).Value;
+
+        ParseResult ParseResult = Parser.Parse(LexResult).Value;
+
+        Parser.Optimize(ParseResult);
+
+        Actor Actor = new(new ConsoleBundle());
+        Actor.Interpret(ParseResult).ShouldBe(Result.Success);
+        Actor.GetVariable("invalid").ShouldBe(false);
+    }
+    [Fact]
     public void CompileTest() {
         string Source = """
             counter = 1

@@ -320,6 +320,11 @@ public static class Compiler {
                 // Output unary minus
                 Output += $"{IdentifyTemporary(TemporaryIdentifier)} = {nameof(Thingie)}.{nameof(Thingie.Minus)}({CompileLocationLiteral(UnaryExpression.Location)}, {IdentifyTemporary(ExpressionTemporaryIdentifier)}.{nameof(Result<Thingie>.Value)});" + "\n";
             }
+            // Not
+            else if (UnaryExpression.Operator is UnaryOperator.Not) {
+                // Output unary not
+                Output += $"{IdentifyTemporary(TemporaryIdentifier)} = {nameof(Thingie)}.{nameof(Thingie.Not)}({CompileLocationLiteral(UnaryExpression.Location)}, {IdentifyTemporary(ExpressionTemporaryIdentifier)}.{nameof(Result<Thingie>.Value)});" + "\n";
+            }
             // Invalid
             else {
                 return new Error($"{Expression.Location.Line}: invalid unary operator: '{UnaryExpression.Operator}'");

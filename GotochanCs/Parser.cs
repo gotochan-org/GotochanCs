@@ -441,6 +441,7 @@ public static class Parser {
                 UnaryOperator UnaryOperator = Tokens[0].Value switch {
                     "+" => UnaryOperator.Plus,
                     "-" => UnaryOperator.Minus,
+                    "!" => UnaryOperator.Not,
                     _ => throw new NotImplementedException($"{Tokens[0].Location.Line}: unhandled unary operator: '{Tokens[0].Value}'")
                 };
 

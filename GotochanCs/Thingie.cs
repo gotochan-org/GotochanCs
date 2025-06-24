@@ -216,6 +216,19 @@ public readonly struct Thingie : IEquatable<Thingie> {
         }
     }
     /// <summary>
+    /// Performs a unary not (!) operation on <paramref name="Value"/>.
+    /// </summary>
+    public static Result<Thingie> Not(SourceLocation Location, Thingie Value) {
+        // Flag
+        if (Value.Type is ThingieType.Flag) {
+            return Flag(!Value.CastFlag());
+        }
+        // Invalid
+        else {
+            return new Error($"{Location.Line}: invalid type for '!': '{Value.Type}'");
+        }
+    }
+    /// <summary>
     /// Performs a binary add (+) operation on <paramref name="Value1"/> and <paramref name="Value2"/>.
     /// </summary>
     public static Result<Thingie> Add(SourceLocation Location, Thingie Value1, Thingie Value2) {

@@ -185,6 +185,10 @@ public class Actor {
                 else if (UnaryExpression.Operator is UnaryOperator.Minus) {
                     return Thingie.Minus(UnaryExpression.Location, Value);
                 }
+                // Not
+                else if (UnaryExpression.Operator is UnaryOperator.Not) {
+                    return Thingie.Not(UnaryExpression.Location, Value);
+                }
                 // Invalid
                 else {
                     return new Error($"{Expression.Location.Line}: invalid unary operator: '{UnaryExpression.Operator}'");

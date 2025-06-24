@@ -111,8 +111,8 @@ public static class Lexer {
                     CurrentTokens.Add(new Token(Source, NextIndex, TokenType.Operator, "!="));
                 }
                 else {
-                    // Invalid
-                    return new Error($"{SourceLocation.GetLine(Source, Index)}: invalid '!'");
+                    // Create token
+                    CurrentTokens.Add(new Token(Source, NextIndex, TokenType.Operator, "!"));
                 }
             }
             // Greater than, less than
