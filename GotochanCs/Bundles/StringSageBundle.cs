@@ -43,16 +43,19 @@ public class StringSageBundle : Bundle {
 
             Actor.SetVariable("result", What.Replace(Target, Replace));
         },
-        // Returns the index of a substring in a string, or nothing.
+        // Returns the grapheme index of a substring in a string, or nothing.
         ["find"] = Actor => {
             string What = Actor.GetVariable("what").CastString();
             string Target = Actor.GetVariable("target").CastString();
 
-            int? Index = What.IndexOf(Target);
-            if (Index < 0) {
-                Index = null;
+            int CharIndex = What.IndexOf(Target, StringComparison.Ordinal);
+
+            int? GraphemeIndex = null;
+            if (CharIndex >= 0) {
+                GraphemeIndex = new StringInfo(What[..CharIndex]).LengthInTextElements;
             }
-            Actor.SetVariable("result", Index);
+
+            Actor.SetVariable("result", GraphemeIndex);
         },
     };
 }
