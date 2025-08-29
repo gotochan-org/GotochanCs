@@ -518,11 +518,14 @@ public static class Parser {
             // Remove labels
             if (Optimizations.HasFlag(ParseOptimizations.RemoveLabels)) {
                 // Label
-                if (Instruction is LabelInstruction) {
-                    // Remove instruction
-                    RemoveInstruction(ParseResult, Index);
-                    Index--;
-                    continue;
+                if (Instruction is LabelInstruction LabelInstruction) {
+                    // No condition
+                    if (LabelInstruction.Condition is null) {
+                        // Remove instruction
+                        RemoveInstruction(ParseResult, Index);
+                        Index--;
+                        continue;
+                    }
                 }
             }
             // Calculate goto line index
