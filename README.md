@@ -4,19 +4,13 @@
 
 # Gotochan for C#
 
-Do you hate:
-
-- Functions?
-- Reading?
-- Object oriented objects?
-
-Look no further – Gotochan is everyone's *least* favorite programming language!
+A scripting language to power the universe.
 
 Designed in 2023 and perfected in 2025.
 
 ## Getting Started
 
-Let's make a basic hello world program!
+Let's create a basic 'hello world' program:
 
 ```gotochan
 what = ~hello~world!
@@ -27,7 +21,7 @@ Gotochan does not use type annotations, curly braces, capital letters, or anythi
 
 Gotochan is simple and elegant, so everything is accomplished with `goto`, `label` and `if`.
 
-Now let's make a rocket launch!
+Now let's make a rocket launch.
 
 ```gotochan
 counter = 10
@@ -45,11 +39,11 @@ what = ~blast~off!
 goto say
 ```
 
-It's pretty, easy and neat! You just use `goto` for everything.
+It's aesthetic. It's easy. You use `goto` for everything.
 
-But can you `goto` a `goto`?
+#### But can you `goto` a `goto`?
 
-Yes!
+Yes.
 
 ```gotochan
 goto dosomething
@@ -59,34 +53,34 @@ goto goto dosomething
 ```
 
 Goto goto goes to the last goto label for a label you've gone to.
-So you can goto the line after the line you goto'd the label you wanted to go to.
+So you can goto the line after the line of the goto for the label you wanted to go to.
 
-What if you have a lot of `goto`?
+#### What if you have a lot of `goto`?
 
-That's okay. Become friends with `goto`.
+That's okay. Become best friends with `goto`.
 
 ## Thingies
 
-The experts educated us that there are only four types of thing in existence:
+There are only four types of thing in Gotochan:
 
 - `nothing`: the absence of all things
 - `flag`: something that's either there or not there
-- `number`: a tally chart on a petition to ban water
-- `string`: stuff that you can say or scream
+- `number`: a numeric value
+- `string`: a list of graphemes
 
-These are the thingies that make up Gotochan.
+These are the four thingies that make up Gotochan.
 
 ## Comments
 
-We have no idea what a "comment" is but we saw some other languages using it so we added it.
+Since Gotochan is a stylistic, elegant language, there's no difficulty in understanding a Gotochan program, so you don't need comments to describe the code. However, comments can be useful for translating to another language.
 
 ```gotochan
-# hewwo (>.<)
+goto heaven # 天国に行く
 ```
 
 ## Interpreting
 
-You can interpret Gotochan code with 3 simple steps:
+Gotochan code can be interpreted with 3 simple steps:
 
 ```cs
 // Read source code
@@ -99,11 +93,11 @@ ParseResult ParseResult = Parser.Parse(Source).Value;
 Actor.Shared.Interpret(ParseResult);
 ```
 
-All code runs in an actor which has a lock, variables and gotos!
+All code runs in an actor which has a lock, variables and gotos.
 
 ## Compiling
 
-You can compile Gotochan code to C# code for super performance!
+Gotochan code can be compiled to C# code for better performance.
 
 Parse it as normal and then compile it:
 
@@ -112,9 +106,8 @@ Parse it as normal and then compile it:
 CompileResult CompileResult = Compiler.Compile(ParseResult).Value;
 ```
 
-Then create a file in your C# project and paste the resulting code!
+Then create a file in your C# project and paste the resulting code.
 
 ## Footnote
 
-This language was brought to you by the Gotochan Committee of Konekomi Castle.
-Come visit us on [Steam](https://store.steampowered.com/app/3812300)!
+Brought to you by the [Konekomi Castle Gotochan Committee](https://store.steampowered.com/app/3812300).
