@@ -544,10 +544,14 @@ public static class Compiler {
         return string.Join("\n", Lines);
     }
     private static string Indent(int Depth) {
-        if (Depth <= 0) {
-            return "";
-        }
-        return new string(' ', Depth * 4);
+        return Depth switch {
+            <= 0 => "",
+            1 => "    ",
+            2 => "        ",
+            3 => "            ",
+            4 => "                ",
+            _ => new string(' ', Depth * 4)
+        };
     }
 
     private record struct CompilerState() {
