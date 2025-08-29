@@ -21,7 +21,7 @@
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Title>GotochanCs</Title>
     <Authors>Joyless</Authors>
-    <Description>Everyone's least favorite programming language</Description>
+    <Description>A scripting language to power the universe.</Description>
     <PackageProjectUrl>https://github.com/gotochan-org/GotochanCs</PackageProjectUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/gotochan-org/GotochanCs</RepositoryUrl>
