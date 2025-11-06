@@ -72,10 +72,10 @@ These are the four thingies that make up Gotochan.
 
 ## Comments
 
-Since Gotochan is a stylistic, elegant language, there's no difficulty in understanding a Gotochan program, so you don't need comments to describe the code. However, comments can be useful for translating to another language.
+Since Gotochan is a stylistic, elegant language, there's no difficulty in understanding a Gotochan program, so you don't need comments to describe the code. However, comments can be useful for translating to inferior languages.
 
 ```gotochan
-goto heaven # 天国に行く
+goto heaven # die
 ```
 
 ## Interpreting
@@ -107,7 +107,3 @@ CompileResult CompileResult = Compiler.Compile(ParseResult).Value;
 ```
 
 Then create a file in your C# project and paste the resulting code.
-
-## Footnote
-
-Brought to you by the [Konekomi Castle Gotochan Committee](https://store.steampowered.com/app/3812300).
