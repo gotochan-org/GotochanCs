@@ -7,7 +7,7 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\GotochanCs\GotochanCs.csproj" />
+    <ProjectReference Include="../GotochanCs/GotochanCs.csproj" />
   </ItemGroup>
 
   <ItemGroup>
