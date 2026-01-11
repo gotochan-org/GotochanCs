@@ -14,7 +14,18 @@ public class StringSageBundle : Bundle {
         ["measure"] = Actor => {
             string What = Actor.GetVariable("what").CastString();
 
-            Actor.SetVariable("result", new StringInfo(What).LengthInTextElements);
+            int TextElementCount = 0;
+            int Index = 0;
+            while (true) {
+                int Length = StringInfo.GetNextTextElementLength(What, Index);
+                if (Length <= 0) {
+                    break;
+                }
+                TextElementCount++;
+                Index += Length;
+            }
+
+            Actor.SetVariable("result", TextElementCount);
         },
         // Converts a string to uppercase.
         ["caseup"] = Actor => {
