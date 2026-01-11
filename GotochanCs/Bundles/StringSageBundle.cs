@@ -3,7 +3,7 @@ using System.Globalization;
 namespace GotochanCs.Bundles;
 
 /// <summary>
-/// A bundle of string helper methods.
+/// A bundle of string helper methods. The great sage of strings.
 /// </summary>
 public class StringSageBundle : Bundle {
     /// <inheritdoc/>
@@ -14,16 +14,7 @@ public class StringSageBundle : Bundle {
         ["measure"] = Actor => {
             string What = Actor.GetVariable("what").CastString();
 
-            int TextElementCount = 0;
-            int Index = 0;
-            while (true) {
-                int Length = StringInfo.GetNextTextElementLength(What, Index);
-                if (Length <= 0) {
-                    break;
-                }
-                TextElementCount++;
-                Index += Length;
-            }
+            int TextElementCount = GetLengthInTextElements(What);
 
             Actor.SetVariable("result", TextElementCount);
         },
@@ -52,7 +43,7 @@ public class StringSageBundle : Bundle {
             string Target = Actor.GetVariable("target").CastString();
             string Replace = Actor.GetVariable("replace").CastString();
 
-            Actor.SetVariable("result", What.Replace(Target, Replace));
+            Actor.SetVariable("result", What.Replace(Target, Replace, StringComparison.Ordinal));
         },
         // Returns the grapheme index of a substring in a string, or nothing.
         ["find"] = Actor => {
@@ -63,10 +54,24 @@ public class StringSageBundle : Bundle {
 
             int? GraphemeIndex = null;
             if (CharIndex >= 0) {
-                GraphemeIndex = new StringInfo(What[..CharIndex]).LengthInTextElements;
+                GraphemeIndex = GetLengthInTextElements(What.AsSpan(..CharIndex));
             }
 
             Actor.SetVariable("result", GraphemeIndex);
         },
     };
+
+    private static int GetLengthInTextElements(scoped ReadOnlySpan<char> Input) {
+        int TextElementCount = 0;
+        int Index = 0;
+        while (true) {
+            int Length = StringInfo.GetNextTextElementLength(Input[Index..]);
+            if (Length <= 0) {
+                break;
+            }
+            TextElementCount++;
+            Index += Length;
+        }
+        return TextElementCount;
+    }
 }

@@ -1,7 +1,7 @@
 namespace GotochanCs.Bundles;
 
 /// <summary>
-/// A bundle of number helper methods.
+/// A bundle of number helper methods. The great sage of numbers.
 /// </summary>
 public class NumberSageBundle : Bundle {
     /// <inheritdoc/>
