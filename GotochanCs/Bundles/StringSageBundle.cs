@@ -33,7 +33,7 @@ public class StringSageBundle : Bundle {
             string What = Actor.GetVariable("what").CastString();
             int Where = (int)Actor.GetVariable("where").CastNumber();
 
-            Actor.SetVariable("result", new StringInfo(What).SubstringByTextElements(Where));
+            Actor.SetVariable("result", StringInfo.GetNextTextElement(What, Where));
         },
         // Finds every appearance of a substring in a string and replaces it with another substring.
         ["swap"] = Actor => {
