@@ -21,7 +21,7 @@ public class Tests {
         Parser.Optimize(ParseResult);
 
         Actor Actor = new(new ConsoleBundle());
-        Actor.Interpret(ParseResult).ShouldBe(Result.Success);
+        Actor.Interpret(ParseResult, TestContext.Current.CancellationToken).ShouldBe(Result.Success);
         Actor.GetVariable("what").ShouldBe("value: 10");
     }
     [Fact]
@@ -50,7 +50,7 @@ public class Tests {
         Parser.Optimize(ParseResult);
 
         Actor Actor = new(new ConsoleBundle());
-        Actor.Interpret(ParseResult).ShouldBe(Result.Success);
+        Actor.Interpret(ParseResult, TestContext.Current.CancellationToken).ShouldBe(Result.Success);
     }
     [Fact]
     public void LabelTest() {
@@ -69,7 +69,7 @@ public class Tests {
         Parser.Optimize(ParseResult);
 
         Actor Actor = new(new ConsoleBundle());
-        Actor.Interpret(ParseResult).ShouldBe(Result.Success);
+        Actor.Interpret(ParseResult, TestContext.Current.CancellationToken).ShouldBe(Result.Success);
         Actor.GetVariable("counter").ShouldBe(4);
     }
     [Fact]
@@ -112,7 +112,7 @@ public class Tests {
         Parser.Optimize(ParseResult);
 
         Actor Actor = new(new ConsoleBundle());
-        Actor.Interpret(ParseResult).ShouldBe(Result.Success);
+        Actor.Interpret(ParseResult, TestContext.Current.CancellationToken).ShouldBe(Result.Success);
         Actor.GetVariable("invalid").ShouldBe(false);
     }
     [Fact]
