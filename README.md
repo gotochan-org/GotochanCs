@@ -66,7 +66,7 @@ There are only four types of thing in Gotochan:
 - `nothing`: the absence of all things
 - `flag`: something that's either there or not there
 - `number`: a numeric value
-- `string`: a list of graphemes
+- `string`: a list of runes
 
 These are the four thingies that make up Gotochan.
 

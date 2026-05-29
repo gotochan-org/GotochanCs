@@ -29,7 +29,7 @@ public class ConsoleBundle : Bundle {
                 >= 3 => ConsoleColor.Red,
                 >= 2 => ConsoleColor.DarkYellow,
                 >= 1 => ConsoleColor.Yellow,
-                _ => throw new ArgumentOutOfRangeException("complain intensity must be 1 to 4")
+                _ => throw new ArgumentException("complain intensity must be 1 to 4")
             };
 
             ConsoleColor OriginalColor = Console.ForegroundColor;

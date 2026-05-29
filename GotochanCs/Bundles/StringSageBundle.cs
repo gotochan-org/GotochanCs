@@ -1,4 +1,5 @@
-using System.Globalization;
+using System.Buffers;
+using System.Text;
 
 namespace GotochanCs.Bundles;
 
@@ -10,13 +11,13 @@ public class StringSageBundle : Bundle {
     protected override string GetName() => "stringsage";
     /// <inheritdoc/>
     protected override Dictionary<string, Action<Actor>> GetExternalLabels() => new() {
-        // Returns the number of graphemes in a string.
+        // Returns the number of runes in a string.
         ["measure"] = Actor => {
             string What = Actor.GetVariable("what").CastString();
 
-            int TextElementCount = GetLengthInTextElements(What);
+            int RuneCount = GetRuneCount(What);
 
-            Actor.SetVariable("result", TextElementCount);
+            Actor.SetVariable("result", RuneCount);
         },
         // Converts a string to uppercase.
         ["caseup"] = Actor => {
@@ -30,12 +31,16 @@ public class StringSageBundle : Bundle {
 
             Actor.SetVariable("result", What.ToLowerInvariant());
         },
-        // Returns the Nth grapheme in a string.
+        // Returns the Nth rune in a string.
         ["peekat"] = Actor => {
             string What = Actor.GetVariable("what").CastString();
             int Where = (int)Actor.GetVariable("where").CastNumber();
 
-            Actor.SetVariable("result", StringInfo.GetNextTextElement(What, Where));
+            if (Where < 0) {
+                throw new ArgumentException("where must be positive or zero");
+            }
+
+            Actor.SetVariable("result", GetRuneAtRunePosition(What, Where)?.ToString());
         },
         // Finds every appearance of a substring in a string and replaces it with another substring.
         ["swap"] = Actor => {
@@ -45,28 +50,61 @@ public class StringSageBundle : Bundle {
 
             Actor.SetVariable("result", What.Replace(Target, Replace, StringComparison.Ordinal));
         },
-        // Returns the grapheme index of a substring in a string, or nothing.
+        // Returns the rune position of a substring in a string, or nothing.
         ["find"] = Actor => {
             string What = Actor.GetVariable("what").CastString();
             string Target = Actor.GetVariable("target").CastString();
 
-            int CharIndex = What.IndexOf(Target, StringComparison.Ordinal);
+            int RunePositionOfTarget = GetRunePositionOfSubstring(What, Target);
 
-            int? GraphemeIndex = null;
-            if (CharIndex >= 0) {
-                GraphemeIndex = GetLengthInTextElements(What.AsSpan(..CharIndex));
+            if (RunePositionOfTarget >= 0) {
+                Actor.SetVariable("result", RunePositionOfTarget);
             }
-
-            Actor.SetVariable("result", GraphemeIndex);
+            else {
+                Actor.SetVariable("result", (int?)null);
+            }
         },
     };
 
-    private static int GetLengthInTextElements(scoped ReadOnlySpan<char> Input) {
-        int Counter = 0;
-        while (!Input.IsEmpty) {
-            Input = Input[StringInfo.GetNextTextElementLength(Input)..];
-            Counter++;
+    private static int GetRuneCount(scoped ReadOnlySpan<char> Input) {
+        int RuneCount = 0;
+        int Index = 0;
+        while (true) {
+            if (Rune.DecodeFromUtf16(Input[Index..], out Rune _, out int CharsConsumed) is not OperationStatus.Done) {
+                return RuneCount;
+            }
+            Index += CharsConsumed;
+            RuneCount++;
         }
-        return Counter;
+    }
+    private static int GetRunePositionOfSubstring(scoped ReadOnlySpan<char> Input, scoped ReadOnlySpan<char> Target) {
+        int RunePosition = 0;
+        int Index = 0;
+        while (true) {
+            if (Input[Index..].StartsWith(Target, StringComparison.Ordinal)) {
+                return RunePosition;
+            }
+            if (Rune.DecodeFromUtf16(Input[Index..], out Rune _, out int CharsConsumed) is not OperationStatus.Done) {
+                return -1;
+            }
+            Index += CharsConsumed;
+            RunePosition++;
+        }
+    }
+    private static Rune? GetRuneAtRunePosition(scoped ReadOnlySpan<char> Input, int TargetRunePosition) {
+        ArgumentOutOfRangeException.ThrowIfNegative(TargetRunePosition);
+
+        int RunePosition = 0;
+        int Index = 0;
+        while (true) {
+            if (Rune.DecodeFromUtf16(Input[Index..], out Rune CurrentRune, out int CharsConsumed) is not OperationStatus.Done) {
+                return null;
+            }
+            if (RunePosition == TargetRunePosition) {
+                return CurrentRune;
+            }
+            Index += CharsConsumed;
+            RunePosition++;
+        }
     }
 }
