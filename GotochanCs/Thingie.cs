@@ -14,11 +14,11 @@ public readonly struct Thingie : IEquatable<Thingie> {
     /// <summary>
     /// The 8 byte data for flags and numbers.
     /// </summary>
-    private double NumberData { get; }
+    private readonly double NumberData;
     /// <summary>
     /// The 4-8 byte data for strings.
     /// </summary>
-    private string? StringData { get; }
+    private readonly string? StringData;
 
     /// <summary>
     /// Constructs a thingie with the given type and data.
