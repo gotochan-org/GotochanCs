@@ -62,16 +62,11 @@ public class StringSageBundle : Bundle {
     };
 
     private static int GetLengthInTextElements(scoped ReadOnlySpan<char> Input) {
-        int TextElementCount = 0;
-        int Index = 0;
-        while (true) {
-            int Length = StringInfo.GetNextTextElementLength(Input[Index..]);
-            if (Length <= 0) {
-                break;
-            }
-            TextElementCount++;
-            Index += Length;
+        int Counter = 0;
+        while (!Input.IsEmpty) {
+            Input = Input[StringInfo.GetNextTextElementLength(Input)..];
+            Counter++;
         }
-        return TextElementCount;
+        return Counter;
     }
 }
