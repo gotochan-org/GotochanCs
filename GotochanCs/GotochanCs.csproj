@@ -17,8 +17,8 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <GenerateDocumentationFile>True</GenerateDocumentationFile>
-    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Title>GotochanCs</Title>
     <Authors>Joyless</Authors>
     <Description>A scripting language to power the universe.</Description>
@@ -27,7 +27,7 @@
     <RepositoryUrl>https://github.com/gotochan-org/GotochanCs</RepositoryUrl>
     <PackageTags>gotochan; interpreter; compiler; esolang; esoteric; goto</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
   </PropertyGroup>
 
   <ItemGroup>
